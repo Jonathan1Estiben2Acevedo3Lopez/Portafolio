@@ -133,7 +133,13 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
             class="lang-toggle border border-outline-variant/20 bg-surface-container-highest/50"
             aria-label="Switch to English"
             title="Switch to English"
-          ></button>
+          >
+            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="#FCD116" />
+              <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+              <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+            </svg>
+          </button>
 
           <button
             type="button"

@@ -432,7 +432,7 @@ const elements = {
   contactPrimaryButton: document.getElementById("contact-primary-button"),
   themeToggle: document.getElementById("theme-toggle"),
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
-  langButtons: document.querySelectorAll("[data-lang-button]"),
+  languageToggle: document.getElementById("language-toggle"),
   filterButtons: document.querySelectorAll("[data-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
   homeLinks: document.querySelectorAll('a[href="#home"]'),
@@ -467,6 +467,49 @@ function renderIcon(icon, className = "") {
   }
 
   return `<span class="material-symbols-outlined ${className}">${icon}</span>`;
+}
+
+function renderLanguageFlag(lang) {
+  if (lang === "es") {
+    return `
+      <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="#FCD116" />
+        <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+        <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+      </svg>
+    `;
+  }
+
+  return `
+    <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <clipPath id="usa-flag-circle">
+          <circle cx="12" cy="12" r="10" />
+        </clipPath>
+      </defs>
+      <g clip-path="url(#usa-flag-circle)">
+        <rect x="2" y="2" width="20" height="20" fill="#fff" />
+        <rect x="2" y="2" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="5.08" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="8.15" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="11.23" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="14.31" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="17.38" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="20.46" width="20" height="1.54" fill="#B22234" />
+        <rect x="2" y="2" width="9" height="8.62" fill="#3C3B6E" />
+        <g fill="#fff">
+          <circle cx="4" cy="4" r="0.55" />
+          <circle cx="6.1" cy="4" r="0.55" />
+          <circle cx="8.2" cy="4" r="0.55" />
+          <circle cx="5.05" cy="5.8" r="0.55" />
+          <circle cx="7.15" cy="5.8" r="0.55" />
+          <circle cx="4" cy="7.6" r="0.55" />
+          <circle cx="6.1" cy="7.6" r="0.55" />
+          <circle cx="8.2" cy="7.6" r="0.55" />
+        </g>
+      </g>
+    </svg>
+  `;
 }
 
 function applyTheme(theme, persist = true) {
@@ -806,9 +849,11 @@ function renderContacts() {
 }
 
 function syncLanguageButtons() {
-  elements.langButtons.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.langButton === state.lang);
-  });
+  const nextLanguageLabel = state.lang === "es" ? "Switch to English" : "Cambiar a espanol";
+
+  elements.languageToggle.innerHTML = renderLanguageFlag(state.lang);
+  elements.languageToggle.setAttribute("aria-label", nextLanguageLabel);
+  elements.languageToggle.setAttribute("title", nextLanguageLabel);
 }
 
 function syncThemeButton() {
@@ -846,13 +891,11 @@ function wireEvents() {
     });
   });
 
-  elements.langButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.lang = button.dataset.langButton;
-      window.localStorage.setItem("portfolio-lang", state.lang);
-      applyStaticCopy();
-      wireScrollButtons();
-    });
+  elements.languageToggle.addEventListener("click", () => {
+    state.lang = state.lang === "es" ? "en" : "es";
+    window.localStorage.setItem("portfolio-lang", state.lang);
+    applyStaticCopy();
+    wireScrollButtons();
   });
 
   elements.filterButtons.forEach((button) => {
