@@ -1238,11 +1238,60 @@ function renderAboutMedia(preserveScroll = false) {
     .map((item, index) => ({ ...item, index }))
     .filter((item) => (state.aboutFilter === "all" ? true : item.filter === state.aboutFilter));
   const active = mediaItems.find((item) => item.index === state.activeMedia) || mediaItems[0];
-  const listScrollTop = preserveScroll ? elements.aboutMediaList.scrollTop : 0;
+  const mobileLayout = isMobileViewport();
+  const listScrollOffset = preserveScroll
+    ? mobileLayout
+      ? elements.aboutMediaList.scrollLeft
+      : elements.aboutMediaList.scrollTop
+    : 0;
 
   if (active) {
     state.activeMedia = active.index;
   }
+
+  if (mobileLayout) {
+    elements.aboutMediaList.innerHTML = mediaItems
+      .map(
+        (item) => `
+          <article class="project-card about-mobile-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+            <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
+            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.category}</p>
+                  <h3 class="mt-2 font-headline text-[1.18rem] font-bold leading-6 tracking-tight text-on-surface">${item.title}</h3>
+                </div>
+                <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${item.meta}</span>
+              </div>
+              <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                ${item.tags
+                  .map(
+                    (tag) => `
+                      <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                        ${tag}
+                      </span>
+                    `
+                  )
+                  .join("")}
+              </div>
+            </div>
+          </article>
+        `
+      )
+      .join("");
+
+    elements.aboutMediaFeature.innerHTML = "";
+    elements.aboutMediaFeature.classList.add("about-feature-mobile-hidden");
+
+    if (preserveScroll) {
+      elements.aboutMediaList.scrollLeft = listScrollOffset;
+    }
+
+    return;
+  }
+
+  elements.aboutMediaFeature.classList.remove("about-feature-mobile-hidden");
 
   elements.aboutMediaList.innerHTML = mediaItems
     .map((item) => {
@@ -1273,7 +1322,7 @@ function renderAboutMedia(preserveScroll = false) {
     .join("");
 
   if (preserveScroll) {
-    elements.aboutMediaList.scrollTop = listScrollTop;
+    elements.aboutMediaList.scrollTop = listScrollOffset;
   }
 
   elements.aboutMediaFeature.innerHTML = `
@@ -1396,7 +1445,7 @@ function renderContacts() {
   ];
 
   const identityCard = `
-    <div class="contact-card flex min-h-[10.5rem] flex-col justify-between rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/62 p-5 sm:col-span-2 xl:col-span-2 lg:min-h-[11.25rem]">
+    <div class="contact-card contact-identity-card flex h-fit flex-col justify-start rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/62 p-5 sm:col-span-2 xl:col-span-2 lg:min-h-[11.25rem]">
       <div>
         <h3 class="max-w-[13rem] font-headline text-[1.35rem] font-bold leading-tight tracking-tight text-on-surface sm:text-[1.55rem] lg:text-[1.7rem]">
           ${profile.fullName}
@@ -1627,6 +1676,7 @@ function wireEvents() {
     if (nextMobileLayout !== state.articleMobileLayout) {
       state.articleMobileLayout = nextMobileLayout;
       renderArticles(true);
+      renderAboutMedia(true);
     }
   });
 

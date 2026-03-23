@@ -926,6 +926,16 @@ header,
 
   #insights {
     padding-top: 2.35rem;
+    padding-bottom: 2.2rem;
+  }
+
+  #about {
+    padding-top: 2.2rem;
+    padding-bottom: 2.15rem;
+  }
+
+  #contact {
+    padding-top: 2.15rem;
   }
 
   #project-filters,
@@ -977,6 +987,42 @@ header,
 
   #article-feature.article-feature-mobile-hidden {
     display: none;
+  }
+
+  #about-media-list.articles-scroll-column {
+    display: flex;
+    gap: 1.15rem;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding: 0.2rem 0 0.5rem;
+    scroll-padding-left: 0.15rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  #about-media-list.articles-scroll-column > * {
+    flex: 0 0 min(82vw, 21rem);
+    scroll-snap-align: start;
+  }
+
+  #about-media-feature.about-feature-mobile-hidden {
+    display: none;
+  }
+
+  .contact-identity-card {
+    min-height: auto;
+    padding: 0.65rem 0.9rem 0.38rem;
+  }
+
+  .contact-identity-card h3 {
+    font-size: 1.1rem;
+    line-height: 1.08;
+  }
+
+  .contact-identity-card p {
+    margin-top: 0.12rem;
+    line-height: 1.2;
   }
 
   .orb-primary {
