@@ -287,6 +287,10 @@ body::-webkit-scrollbar {
     box-shadow 220ms ease;
 }
 
+.hero-focus-card {
+  background: rgb(var(--glass-bg) / 0.42);
+}
+
 .text-gradient-primary {
   background: linear-gradient(90deg, rgb(var(--color-primary)) 0%, rgb(var(--color-secondary)) 100%);
   -webkit-background-clip: text;
