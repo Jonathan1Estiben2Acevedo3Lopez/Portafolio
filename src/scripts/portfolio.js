@@ -1,5 +1,7 @@
 const profile = {
   name: "JONATHAN ACEVEDO",
+  fullName: "Jonathan Estiben Acevedo López",
+  initials: "JEAL",
   email: "jonalopezacevedo@gmail.com",
   linkedin: "https://www.linkedin.com/in/jonathan-estiben-acevedo-l%C3%B3pez-066b3226a",
   github: "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
@@ -384,8 +386,11 @@ const content = {
         "Disponible para proyectos web, redisenos, landing pages y productos digitales con criterio visual.",
       cta: "Iniciar conversacion",
       legal: "Portafolio personal. Edita el contenido en src/scripts/portfolio.js.",
+      legalLine: "© 2026 Jonathan Estiben Acevedo López • Todos los derechos reservados",
     },
     contact: {
+      title: "Contáctame",
+      identityRole: "Ingeniero de sistemas y computación",
       email: "Email",
       linkedin: "LinkedIn",
       github: "GitHub",
@@ -768,8 +773,11 @@ const content = {
         "Available for web projects, redesigns, landing pages and digital products with strong visual criteria.",
       cta: "Start a conversation",
       legal: "Personal portfolio. Edit content in src/scripts/portfolio.js.",
+      legalLine: "© 2026 Jonathan Estiben Acevedo López • All rights reserved",
     },
     contact: {
+      title: "Contact me",
+      identityRole: "Systems and Computer Engineer",
       email: "Email",
       linkedin: "LinkedIn",
       github: "GitHub",
@@ -809,7 +817,6 @@ const elements = {
   footerDescription: document.getElementById("footer-description"),
   footerYear: document.getElementById("footer-year"),
   contactGrid: document.getElementById("contact-grid"),
-  contactPrimaryButton: document.getElementById("contact-primary-button"),
   themeToggle: document.getElementById("theme-toggle"),
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
   languageToggle: document.getElementById("language-toggle"),
@@ -932,8 +939,6 @@ function applyStaticCopy() {
   elements.heroSecondaryButton.textContent = getCopy("hero.secondaryButton");
   elements.footerTitle.innerHTML = getCopy("footer.title");
   elements.footerDescription.textContent = getCopy("footer.description");
-  elements.contactPrimaryButton.textContent = getCopy("footer.cta");
-
   elements.footerYear.textContent = `(c) ${new Date().getFullYear()} `;
 
   renderHeroLinks();
@@ -1322,17 +1327,31 @@ function renderContacts() {
     },
   ];
 
-  elements.contactGrid.innerHTML = contacts
+  const identityCard = `
+    <div class="contact-card flex min-h-[10.5rem] flex-col justify-between rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/62 p-5 sm:col-span-2 xl:col-span-2 lg:min-h-[11.25rem]">
+      <div>
+        <h3 class="max-w-[13rem] font-headline text-[1.35rem] font-bold leading-tight tracking-tight text-on-surface sm:text-[1.55rem] lg:text-[1.7rem]">
+          ${profile.fullName}
+        </h3>
+        <p class="mt-2.5 text-sm leading-6 text-on-surface-variant">
+          ${labels.identityRole}
+        </p>
+      </div>
+    </div>
+  `;
+
+  elements.contactGrid.innerHTML =
+    identityCard +
+    contacts
     .map((item) => {
       const isExternal = item.href.startsWith("http");
 
       if (!item.active) {
         return `
-          <div class="contact-card flex min-h-[190px] flex-col justify-between rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/55 p-6 opacity-55">
+          <div class="contact-card flex min-h-[5.75rem] items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center opacity-55 lg:min-h-[6.15rem]">
             ${renderIcon(item.icon, "contact-card-icon text-on-surface-variant")}
-            <div>
+            <div class="min-w-0">
               <p class="text-sm font-headline font-bold tracking-tight text-on-surface">${item.label}</p>
-              <p class="mt-2 text-xs leading-6 text-on-surface-variant">${item.hint}</p>
             </div>
           </div>
         `;
@@ -1340,14 +1359,13 @@ function renderContacts() {
 
       return `
         <a
-          class="contact-card group flex min-h-[190px] flex-col justify-between rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/55 p-6"
+          class="contact-card group flex min-h-[5.75rem] items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center lg:min-h-[6.15rem]"
           href="${item.href}"
           ${isExternal ? 'target="_blank" rel="noreferrer"' : ""}
         >
-          ${renderIcon(item.icon, "contact-card-icon text-on-surface-variant transition duration-300 group-hover:-translate-y-1 group-hover:text-secondary")}
-          <div>
+          ${renderIcon(item.icon, "contact-card-icon text-on-surface-variant transition duration-300 group-hover:-translate-y-0.5 group-hover:text-secondary")}
+          <div class="min-w-0">
             <p class="text-sm font-headline font-bold tracking-tight text-on-surface">${item.label}</p>
-            <p class="mt-2 text-xs leading-6 text-on-surface-variant">${item.hint}</p>
           </div>
         </a>
       `;

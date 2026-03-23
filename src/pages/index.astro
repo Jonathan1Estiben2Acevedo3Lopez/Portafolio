@@ -358,8 +358,8 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
     </main>
 
     <footer id="contact" class="relative overflow-hidden border-t border-outline-variant/10 bg-background px-6 py-24 lg:px-8">
-      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center">
-        <div>
+      <div class="mx-auto max-w-7xl space-y-8">
+        <div class="hidden">
           <p class="text-sm font-black uppercase tracking-[0.26em] text-on-surface-variant" id="footer-brand">
             TU NOMBRE
           </p>
@@ -375,15 +375,25 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
         </div>
 
         <div class="space-y-8">
-          <div id="contact-grid" class="grid grid-cols-1 gap-5 sm:grid-cols-3"></div>
+          <h2 class="text-4xl font-bold tracking-tight text-on-surface sm:text-5xl" data-i18n="contact.title">
+            Contáctame
+          </h2>
 
-          <button
-            type="button"
-            id="contact-primary-button"
-            class="w-full rounded-[1.4rem] bg-primary px-8 py-5 font-headline text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_rgba(177,161,255,0.28)]"
+          <div id="contact-grid" class="mx-auto grid max-w-5xl grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-5"></div>
+          <div class="mx-auto mt-12 max-w-4xl" id="footer-legal-line">
+            <p
+              class="rounded-[1.45rem] border border-outline-variant/18 bg-surface-container-highest/74 px-5 py-4 text-center text-[0.78rem] font-bold tracking-[0.08em] text-on-surface-variant/90 shadow-[0_18px_40px_rgba(17,5,30,0.16)] sm:px-6 sm:text-sm"
+              data-i18n="footer.legalLine"
+            >
+              © 2026 Jonathan Estiben Acevedo López • Todos los derechos reservados
+            </p>
+          </div>
+          <p
+            class="text-center text-[0.68rem] font-black uppercase tracking-[0.2em] text-on-surface-variant/75 sm:text-xs"
+            data-i18n="footer.legalLine"
           >
-            Iniciar conversacion
-          </button>
+            © 2026 Jonathan Estiben Acevedo López • Todos los derechos reservados
+          </p>
         </div>
       </div>
     </footer>

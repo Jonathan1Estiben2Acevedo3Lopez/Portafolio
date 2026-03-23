@@ -323,8 +323,8 @@ body::-webkit-scrollbar {
 
 .contact-card-icon {
   flex-shrink: 0;
-  height: 2.25rem;
-  width: 2.25rem;
+  height: 1.9rem;
+  width: 1.9rem;
 }
 
 .filter-chip {
@@ -491,6 +491,15 @@ html.light .visual-portrait::before {
 .article-list-card:hover,
 .article-feature-card:hover {
   transform: translateY(-4px);
+}
+
+#footer-legal-line + p[data-i18n="footer.legalLine"] {
+  display: none;
+}
+
+#footer-legal-line p {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .project-card:hover,
