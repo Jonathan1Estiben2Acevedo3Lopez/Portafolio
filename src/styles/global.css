@@ -914,6 +914,15 @@ header,
 }
 
 @media (max-width: 767px) {
+  #home {
+    padding-top: 2.4rem;
+    padding-bottom: 2.75rem;
+  }
+
+  #projects {
+    padding-top: 2.75rem;
+  }
+
   .orb-primary {
     height: 12rem;
     width: 12rem;
