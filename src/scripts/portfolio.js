@@ -1447,12 +1447,18 @@ function queueActiveSectionSync() {
 }
 
 function scrollToSection(selector) {
-  const target = document.querySelector(selector);
+  const section = document.querySelector(selector);
+  const target = section?.querySelector("[data-section-anchor]") || section?.firstElementChild || section;
 
   if (!target) {
     return;
   }
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const header = document.querySelector("header");
+  const headerOffset = header ? header.getBoundingClientRect().height + 10 : 88;
+  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - headerOffset, 0);
+
+  window.scrollTo({ top, behavior: "smooth" });
 }
 
 function wireScrollButtons() {
@@ -1475,6 +1481,33 @@ function wireEvents() {
     link.addEventListener("click", (event) => {
       event.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+
+  elements.sectionLinks.forEach((link) => {
+    const hash = link.getAttribute("href");
+
+    if (!hash || !hash.startsWith("#") || hash === "#home") {
+      return;
+    }
+
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      if (link.classList.contains("mobile-link")) {
+        state.menuOpen = false;
+        elements.mobileMenu.classList.remove("is-open");
+        elements.menuToggle.setAttribute("aria-expanded", "false");
+        elements.menuToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+
+        window.requestAnimationFrame(() => {
+          scrollToSection(hash);
+        });
+
+        return;
+      }
+
+      scrollToSection(hash);
     });
   });
 
