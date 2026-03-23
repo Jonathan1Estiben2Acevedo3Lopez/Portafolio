@@ -234,20 +234,122 @@ const content = {
       },
     ],
     about: {
-      title: "Mas alla de la interfaz",
-      toolboxLabel: "Caja de herramientas",
+      title: "Sobre mi",
+      subtitle: "Esta seccion presenta mis intereses y gustos personales.",
       paragraphs: [
-        "Esta version del portafolio esta pensada como base editable. Puedes convertirla en una presentacion personal cambiando textos, proyectos y enlaces desde un unico archivo.",
-        "La direccion visual mezcla tecnologia, editorial y una atmosfera cinematica para que tu trabajo no se vea como una landing generica.",
-        "Si quieres personalizarla mas, puedes reemplazar los casos de ejemplo por tus proyectos reales, agregar CV, testimonios o un formulario conectado.",
+        "Fuera del trabajo, me interesa mucho todo lo que alimenta sensibilidad e imaginacion: peliculas, series, animes, libros y videojuegos.",
+        "Esas referencias no estan separadas de lo profesional. Muchas veces moldean como pienso el ritmo, la atmosfera y la narrativa dentro de una interfaz.",
+        "Esta parte del portafolio funciona como un mapa mas personal: cosas que disfruto, revisito y que de una u otra forma terminan influyendo en como diseno.",
       ],
-      toolbox: [
-        "HTML",
-        "Tailwind CDN",
-        "JavaScript",
-        "Responsive UI",
-        "Motion",
-        "Personal Branding",
+      filters: {
+        all: "Todo",
+        movies: "Peliculas",
+        series: "Series",
+        anime: "Animes",
+        books: "Libros",
+        games: "Videojuegos",
+      },
+      mediaItems: [
+        {
+          filter: "movies",
+          category: "Peliculas",
+          title: "Dune: Part Two",
+          meta: "Sci-fi / escala visual",
+          description: "Me atrae por la manera en que combina silencio, tension y composicion monumental.",
+          body: "Es una referencia clara cuando pienso en atmosfera, contraste y escenas que se sienten grandes sin saturarse. Me gusta como construye impacto desde la contencion.",
+          tags: ["Direccion", "Escala", "Atmosfera"],
+          visualClass: "visual-cinema",
+        },
+        {
+          filter: "movies",
+          category: "Peliculas",
+          title: "Blade Runner 2049",
+          meta: "Ciencia ficcion / ritmo",
+          description: "Una pelicula que me sigue pareciendo ejemplar en color, profundidad y ritmo contemplativo.",
+          body: "La tomo como referencia por su manejo de la luz, la arquitectura visual y la forma en que cada plano sostiene identidad sin perder claridad.",
+          tags: ["Color", "Profundidad", "Ritmo"],
+          visualClass: "visual-cinema",
+        },
+        {
+          filter: "series",
+          category: "Series",
+          title: "Dark",
+          meta: "Serie / estructura narrativa",
+          description: "Me interesa por su construccion de tension y por la forma en que ordena sistemas complejos sin perder misterio.",
+          body: "Cuando una historia tiene muchas capas, Dark demuestra que se puede sostener complejidad con una identidad muy coherente. Eso conecta mucho con como pienso sistemas y flujos.",
+          tags: ["Sistema", "Tension", "Coherencia"],
+          visualClass: "visual-series",
+        },
+        {
+          filter: "series",
+          category: "Series",
+          title: "Mr. Robot",
+          meta: "Serie / lenguaje visual",
+          description: "Me gusta su encuadre raro, su incomodidad visual y la forma en que usa composicion para contar el estado interno.",
+          body: "Es una referencia fuerte cuando pienso en interfaces con personalidad. No busca verse neutra: busca transmitir tension y punto de vista.",
+          tags: ["Encuadre", "Tono", "Personalidad"],
+          visualClass: "visual-series",
+        },
+        {
+          filter: "anime",
+          category: "Animes",
+          title: "Vinland Saga",
+          meta: "Anime / evolucion de personaje",
+          description: "Me interesa por su evolucion emocional, el peso de sus decisiones y su mirada sobre conflicto y sentido.",
+          body: "Mas que la accion, me marca la manera en que trabaja crecimiento, identidad y consecuencia. Ese tipo de progresion tambien me interesa al construir experiencias.",
+          tags: ["Narrativa", "Evolucion", "Intensidad"],
+          visualClass: "visual-anime",
+        },
+        {
+          filter: "anime",
+          category: "Animes",
+          title: "Monster",
+          meta: "Anime / suspenso psicologico",
+          description: "Lo valoro por su paciencia narrativa y por como hace que pequeños detalles carguen peso.",
+          body: "Es una referencia de ritmo y tension sostenida. Me recuerda que no todo impacto tiene que venir de algo ruidoso; muchas veces viene de una buena construccion.",
+          tags: ["Suspenso", "Ritmo", "Detalle"],
+          visualClass: "visual-anime",
+        },
+        {
+          filter: "books",
+          category: "Libros",
+          title: "Meditaciones",
+          meta: "Libro / claridad mental",
+          description: "Me gusta por su tono directo y por la forma en que vuelve simples ideas que siguen siendo profundas.",
+          body: "Lo relaciono con la importancia de quitar ruido. Tanto en lectura como en interfaz, la claridad suele nacer de una estructura sobria y bien pensada.",
+          tags: ["Claridad", "Criterio", "Enfoque"],
+          visualClass: "visual-library",
+        },
+        {
+          filter: "books",
+          category: "Libros",
+          title: "1984",
+          meta: "Libro / atmosfera",
+          description: "Sigue siendo una referencia fuerte por el peso del entorno y por como la atmosfera condiciona toda la experiencia.",
+          body: "Me interesa porque demuestra que el contexto cambia completamente la lectura de un sistema. El ambiente no es decoracion; afecta como se interpreta todo.",
+          tags: ["Contexto", "Atmosfera", "Lectura"],
+          visualClass: "visual-library",
+        },
+        {
+          filter: "games",
+          category: "Videojuegos",
+          title: "Elden Ring",
+          meta: "Videojuego / exploracion",
+          description: "Lo disfruto por su libertad, por el sentido de descubrimiento y por como recompensa curiosidad real.",
+          body: "Es una referencia de mundo, misterio y densidad bien medida. Me gusta como hace que explorar sea parte central de la experiencia, no un extra.",
+          tags: ["Exploracion", "Mundo", "Curiosidad"],
+          visualClass: "visual-gaming",
+        },
+        {
+          filter: "games",
+          category: "Videojuegos",
+          title: "The Last of Us",
+          meta: "Videojuego / narrativa",
+          description: "Me marca por el nivel de detalle emocional y por como integra historia, tension y recorrido.",
+          body: "Lo tomo como referencia por su capacidad de hacer que cada espacio, silencio o decision sume a la narrativa general. Todo tiene intencion.",
+          tags: ["Narrativa", "Detalle", "Tension"],
+          visualClass: "visual-gaming",
+        },
       ],
     },
     artifacts: [
@@ -516,20 +618,122 @@ const content = {
       },
     ],
     about: {
-      title: "Beyond the interface",
-      toolboxLabel: "Toolbox",
+      title: "About me",
+      subtitle: "This section presents my personal interests and tastes.",
       paragraphs: [
-        "This portfolio is built as an editable base. You can turn it into a personal presentation by replacing the copy, projects and links from a single file.",
-        "The visual direction mixes technology, editorial references and a cinematic atmosphere so the site avoids looking like a generic landing page.",
-        "If you want to push it further, you can swap the placeholder cases for real work, add a resume, testimonials or connect a real contact form.",
+        "Outside work, I care a lot about the things that feed imagination and sensitivity: movies, series, anime, books and video games.",
+        "Those references are not separate from professional work. They often shape how I think about rhythm, atmosphere and narrative inside an interface.",
+        "This part of the portfolio works as a more personal map: things I enjoy, revisit and that somehow end up influencing how I design.",
       ],
-      toolbox: [
-        "HTML",
-        "Tailwind CDN",
-        "JavaScript",
-        "Responsive UI",
-        "Motion",
-        "Personal Branding",
+      filters: {
+        all: "All",
+        movies: "Movies",
+        series: "Series",
+        anime: "Anime",
+        books: "Books",
+        games: "Games",
+      },
+      mediaItems: [
+        {
+          filter: "movies",
+          category: "Movies",
+          title: "Dune: Part Two",
+          meta: "Sci-fi / visual scale",
+          description: "I like how it combines silence, tension and monumental composition.",
+          body: "It is a clear reference when I think about atmosphere, contrast and scenes that feel huge without becoming noisy. A lot of its impact comes from restraint.",
+          tags: ["Direction", "Scale", "Atmosphere"],
+          visualClass: "visual-cinema",
+        },
+        {
+          filter: "movies",
+          category: "Movies",
+          title: "Blade Runner 2049",
+          meta: "Science fiction / pacing",
+          description: "It still feels exemplary to me in color, depth and contemplative rhythm.",
+          body: "I keep it as a reference because of its lighting, architectural framing and the way every shot carries identity without losing clarity.",
+          tags: ["Color", "Depth", "Pacing"],
+          visualClass: "visual-cinema",
+        },
+        {
+          filter: "series",
+          category: "Series",
+          title: "Dark",
+          meta: "Series / narrative structure",
+          description: "I am drawn to how it organizes complex systems without losing mystery.",
+          body: "When a story has many layers, Dark shows that complexity can still feel coherent. That connects a lot with how I think about systems and flows.",
+          tags: ["System", "Tension", "Coherence"],
+          visualClass: "visual-series",
+        },
+        {
+          filter: "series",
+          category: "Series",
+          title: "Mr. Robot",
+          meta: "Series / visual language",
+          description: "I like its awkward framing and the way composition communicates internal state.",
+          body: "It is a strong reference when I think about interfaces with personality. It does not try to feel neutral. It tries to convey tension and point of view.",
+          tags: ["Framing", "Tone", "Personality"],
+          visualClass: "visual-series",
+        },
+        {
+          filter: "anime",
+          category: "Anime",
+          title: "Vinland Saga",
+          meta: "Anime / character growth",
+          description: "It stands out to me because of its emotional evolution and the weight of decisions.",
+          body: "More than the action, what stays with me is how it works through growth, identity and consequence. That kind of progression matters to me in design too.",
+          tags: ["Narrative", "Growth", "Intensity"],
+          visualClass: "visual-anime",
+        },
+        {
+          filter: "anime",
+          category: "Anime",
+          title: "Monster",
+          meta: "Anime / psychological suspense",
+          description: "I value its patience and the way small details carry real weight.",
+          body: "It is a reference for pacing and sustained tension. It reminds me that impact does not always need noise. Sometimes it comes from strong construction.",
+          tags: ["Suspense", "Pacing", "Detail"],
+          visualClass: "visual-anime",
+        },
+        {
+          filter: "books",
+          category: "Books",
+          title: "Meditations",
+          meta: "Book / mental clarity",
+          description: "I like its direct tone and the way it keeps deep ideas simple.",
+          body: "I connect it with the value of removing noise. In reading and in interface work, clarity usually comes from a restrained and thoughtful structure.",
+          tags: ["Clarity", "Judgment", "Focus"],
+          visualClass: "visual-library",
+        },
+        {
+          filter: "books",
+          category: "Books",
+          title: "1984",
+          meta: "Book / atmosphere",
+          description: "It remains a strong reference because of how much the environment shapes the whole experience.",
+          body: "It interests me because it proves that context changes how an entire system is interpreted. Atmosphere is not decoration. It changes meaning.",
+          tags: ["Context", "Atmosphere", "Reading"],
+          visualClass: "visual-library",
+        },
+        {
+          filter: "games",
+          category: "Games",
+          title: "Elden Ring",
+          meta: "Game / exploration",
+          description: "I enjoy it because of its freedom, sense of discovery and how it rewards real curiosity.",
+          body: "It is a reference for world-building, mystery and measured density. I like how exploration feels central to the experience rather than optional.",
+          tags: ["Exploration", "World", "Curiosity"],
+          visualClass: "visual-gaming",
+        },
+        {
+          filter: "games",
+          category: "Games",
+          title: "The Last of Us",
+          meta: "Game / storytelling",
+          description: "It stays with me because of its emotional detail and how it merges story, tension and journey.",
+          body: "I keep it as a reference because every space, silence and decision contributes to the larger narrative. Nothing feels casual.",
+          tags: ["Narrative", "Detail", "Tension"],
+          visualClass: "visual-gaming",
+        },
       ],
     },
     artifacts: [
@@ -579,6 +783,8 @@ const state = {
   filter: "all",
   articleFilter: "all",
   activeArticle: 0,
+  aboutFilter: "all",
+  activeMedia: 0,
   menuOpen: false,
 };
 
@@ -595,7 +801,8 @@ const elements = {
   projectsGrid: document.getElementById("projects-grid"),
   articlesList: document.getElementById("articles-list"),
   articleFeature: document.getElementById("article-feature"),
-  aboutCopy: document.getElementById("about-copy"),
+  aboutMediaList: document.getElementById("about-media-list"),
+  aboutMediaFeature: document.getElementById("about-media-feature"),
   toolboxList: document.getElementById("toolbox-list"),
   artifactsGrid: document.getElementById("artifacts-grid"),
   footerTitle: document.getElementById("footer-title"),
@@ -609,6 +816,7 @@ const elements = {
   sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
   projectFilterButtons: document.querySelectorAll("#project-filters [data-filter]"),
   articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
+  aboutFilterButtons: document.querySelectorAll("#about-media-filters [data-about-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
   homeLinks: document.querySelectorAll('a[href="#home"]'),
   menuToggle: document.getElementById("menu-toggle"),
@@ -733,9 +941,8 @@ function applyStaticCopy() {
   renderArticleFilters();
   renderProjects();
   renderArticles();
-  renderAbout();
-  renderArtifacts();
-  renderToolbox();
+  renderAboutFilters();
+  renderAboutMedia();
   renderContacts();
   syncLanguageButtons();
   syncThemeButton();
@@ -944,12 +1151,99 @@ function renderArticles(preserveScroll = false) {
   });
 }
 
-function renderAbout() {
-  const paragraphs = getCopy("about.paragraphs");
+function renderAboutFilters() {
+  const labels = getCopy("about.filters");
 
-  elements.aboutCopy.innerHTML = paragraphs
-    .map((paragraph) => `<p>${paragraph}</p>`)
+  elements.aboutFilterButtons.forEach((button) => {
+    button.textContent = labels[button.dataset.aboutFilter];
+    button.classList.toggle("is-active", button.dataset.aboutFilter === state.aboutFilter);
+  });
+}
+
+function renderAboutMedia(preserveScroll = false) {
+  const mediaItems = getCopy("about.mediaItems")
+    .map((item, index) => ({ ...item, index }))
+    .filter((item) => (state.aboutFilter === "all" ? true : item.filter === state.aboutFilter));
+  const active = mediaItems.find((item) => item.index === state.activeMedia) || mediaItems[0];
+  const listScrollTop = preserveScroll ? elements.aboutMediaList.scrollTop : 0;
+
+  if (active) {
+    state.activeMedia = active.index;
+  }
+
+  elements.aboutMediaList.innerHTML = mediaItems
+    .map((item) => {
+      const activeClass = item.index === state.activeMedia ? "is-active" : "";
+
+      return `
+        <button
+          type="button"
+          class="article-list-card ${activeClass} flex min-h-[9.75rem] flex-col justify-between rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-high/78 p-4 text-left lg:min-h-[10.35rem]"
+          data-about-index="${item.index}"
+          aria-pressed="${item.index === state.activeMedia}"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-[0.62rem] font-black uppercase tracking-[0.2em] text-secondary">${item.category}</p>
+              <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface sm:text-[1.08rem]">${item.title}</h3>
+            </div>
+            <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${item.meta}</span>
+          </div>
+          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.index === state.activeMedia ? "text-primary" : "text-on-surface-variant"}">
+            <span>${item.index === state.activeMedia ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
+            <span class="material-symbols-outlined text-sm">arrow_outward</span>
+          </div>
+        </button>
+      `;
+    })
     .join("");
+
+  if (preserveScroll) {
+    elements.aboutMediaList.scrollTop = listScrollTop;
+  }
+
+  elements.aboutMediaFeature.innerHTML = `
+    <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[23.75rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
+      <div class="article-visual ${active.visualClass} min-h-[145px] lg:min-h-full"></div>
+      <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-4.5">
+        <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
+          <span class="text-primary">${active.category}</span>
+          <span>${active.meta}</span>
+        </div>
+        <h3 class="mt-4 max-w-3xl font-headline text-[1.7rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[2.35rem]">
+          ${active.title}
+        </h3>
+        <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.description}</p>
+        <p class="mt-4 max-w-3xl text-[0.96rem] leading-7 text-on-surface-variant lg:text-[1rem] lg:leading-7">${active.body}</p>
+        <div class="mt-5 flex flex-wrap gap-2">
+          ${active.tags
+            .map(
+              (tag) => `
+                <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                  ${tag}
+                </span>
+              `
+            )
+            .join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+  elements.aboutMediaList.querySelectorAll("[data-about-index]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeMedia = Number(button.dataset.aboutIndex);
+      renderAboutMedia(true);
+
+      if (window.innerWidth < 1024) {
+        window.requestAnimationFrame(() => {
+          const top = elements.aboutMediaFeature.getBoundingClientRect().top + window.scrollY - 116;
+          window.scrollTo({ top, behavior: "smooth" });
+        });
+      }
+    });
+  });
 }
 
 function renderArtifacts() {
@@ -1165,6 +1459,14 @@ function wireEvents() {
       renderArticleFilters();
       renderArticles();
       wireScrollButtons();
+    });
+  });
+
+  elements.aboutFilterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.aboutFilter = button.dataset.aboutFilter;
+      renderAboutFilters();
+      renderAboutMedia();
     });
   });
 

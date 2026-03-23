@@ -267,13 +267,13 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
                 />
 
                 <div class="absolute bottom-3 left-3 right-3 z-10 sm:inset-x-4 sm:bottom-4 lg:inset-x-5 lg:bottom-5">
-                  <div class="glass-panel hero-focus-card w-[17.25rem] max-w-full rounded-[1.2rem] border border-outline-variant/20 px-4 py-2.5 text-center sm:max-w-sm sm:rounded-[1.5rem] sm:p-5 lg:w-[24rem] lg:max-w-[24rem] lg:px-5 lg:py-3.5 xl:w-[26rem] xl:max-w-[26rem]">
-                    <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-primary sm:text-xs sm:tracking-[0.22em]" data-i18n="hero.focusLabel">
+                  <div class="glass-panel hero-focus-card w-[18rem] max-w-full rounded-[1.05rem] border border-outline-variant/20 px-3.5 py-1.5 text-center sm:w-[20rem] sm:rounded-[1.2rem] sm:px-4 sm:py-2.5 lg:w-[25.5rem] lg:max-w-[25.5rem] lg:px-4.5 lg:py-2.5 xl:w-[27rem] xl:max-w-[27rem]">
+                    <p class="text-[0.58rem] font-black uppercase tracking-[0.16em] text-primary sm:text-[0.64rem] sm:tracking-[0.18em]" data-i18n="hero.focusLabel">
                       Enfoque
                     </p>
                     <h2
                       id="hero-focus"
-                      class="mx-auto mt-1.5 max-w-[15rem] font-headline text-[0.95rem] font-bold leading-[1.22] text-on-surface sm:mt-2.5 sm:max-w-sm sm:text-xl sm:leading-tight lg:mt-2 lg:max-w-[20rem] lg:text-[1.5rem] lg:leading-[1.16] xl:max-w-[21.5rem] xl:text-[1.6rem]"
+                      class="mx-auto mt-1 max-w-[15.75rem] font-headline text-[0.82rem] font-bold leading-[1.16] text-on-surface sm:mt-1.5 sm:max-w-[17.5rem] sm:text-[0.94rem] sm:leading-[1.18] lg:mt-1.5 lg:max-w-[21rem] lg:text-[1.12rem] lg:leading-[1.12] xl:max-w-[22.5rem] xl:text-[1.2rem]"
                     >
                       Interfaces memorables con estrategia, sistema y detalle.
                     </h2>
@@ -329,24 +329,29 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
       </section>
 
       <section id="about" class="px-6 py-24 lg:px-8">
-        <div class="mx-auto grid max-w-7xl gap-14 lg:grid-cols-12">
-          <div class="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
-            <h2 class="text-4xl font-bold tracking-tight text-on-surface sm:text-5xl" data-i18n="about.title">
-              Mas alla de la interfaz
-            </h2>
-
-            <div id="about-copy" class="mt-8 space-y-6 text-lg leading-8 text-on-surface-variant"></div>
+        <div class="mx-auto max-w-7xl">
+          <div class="mb-8 flex flex-col gap-5 lg:mb-9 lg:flex-row lg:items-end lg:justify-between">
+            <div class="flex flex-col gap-3 lg:max-w-[32rem]">
+              <h2 class="text-4xl font-bold tracking-tight text-on-surface sm:text-5xl" data-i18n="about.title">
+                Sobre mi
+              </h2>
+              <p class="max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base" data-i18n="about.subtitle">
+                Esta seccion presenta mis intereses y gustos personales.
+              </p>
+            </div>
+            <div id="about-media-filters" class="flex flex-wrap gap-3">
+              <button type="button" class="filter-chip" data-about-filter="all">Todo</button>
+              <button type="button" class="filter-chip" data-about-filter="movies">Peliculas</button>
+              <button type="button" class="filter-chip" data-about-filter="series">Series</button>
+              <button type="button" class="filter-chip" data-about-filter="anime">Animes</button>
+              <button type="button" class="filter-chip" data-about-filter="books">Libros</button>
+              <button type="button" class="filter-chip" data-about-filter="games">Videojuegos</button>
+            </div>
           </div>
 
-          <div class="space-y-10 lg:col-span-7">
-            <div id="artifacts-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
-
-            <div class="glass-panel rounded-[2rem] border border-outline-variant/15 p-8">
-              <p class="text-xs font-black uppercase tracking-[0.26em] text-secondary" data-i18n="about.toolboxLabel">
-                Caja de herramientas
-              </p>
-              <div id="toolbox-list" class="mt-6 flex flex-wrap gap-3"></div>
-            </div>
+          <div class="grid gap-5 lg:grid-cols-[minmax(17rem,0.76fr)_minmax(0,1.24fr)] lg:items-start lg:gap-6">
+            <div id="about-media-list" class="articles-scroll-column custom-scrollbar order-2 lg:order-1"></div>
+            <article id="about-media-feature" class="order-1 lg:order-2 lg:sticky lg:top-28 lg:self-start"></article>
           </div>
         </div>
       </section>
