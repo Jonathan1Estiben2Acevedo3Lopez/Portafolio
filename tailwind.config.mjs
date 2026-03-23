@@ -1,0 +1,65 @@
+import forms from "@tailwindcss/forms";
+import containerQueries from "@tailwindcss/container-queries";
+
+const colorVar = (token) => `rgb(var(${token}) / <alpha-value>)`;
+
+export default {
+  darkMode: "class",
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  theme: {
+    extend: {
+      colors: {
+        "on-background": colorVar("--color-on-background"),
+        "on-primary-fixed": colorVar("--color-on-primary-fixed"),
+        "inverse-on-surface": colorVar("--color-inverse-on-surface"),
+        "on-error-container": colorVar("--color-on-error-container"),
+        "on-secondary-fixed-variant": colorVar("--color-on-secondary-fixed-variant"),
+        "on-secondary-fixed": colorVar("--color-on-secondary-fixed"),
+        outline: colorVar("--color-outline"),
+        background: colorVar("--color-background"),
+        "error-container": colorVar("--color-error-container"),
+        error: colorVar("--color-error"),
+        "primary-container": colorVar("--color-primary-container"),
+        "surface-container-highest": colorVar("--color-surface-container-highest"),
+        "secondary-fixed-dim": colorVar("--color-secondary-fixed-dim"),
+        "on-primary-fixed-variant": colorVar("--color-on-primary-fixed-variant"),
+        "on-primary-container": colorVar("--color-on-primary-container"),
+        "surface-dim": colorVar("--color-surface-dim"),
+        "secondary-fixed": colorVar("--color-secondary-fixed"),
+        "primary-fixed-dim": colorVar("--color-primary-fixed-dim"),
+        "surface-variant": colorVar("--color-surface-variant"),
+        "secondary-dim": colorVar("--color-secondary-dim"),
+        "on-secondary-container": colorVar("--color-on-secondary-container"),
+        secondary: colorVar("--color-secondary"),
+        "on-primary": colorVar("--color-on-primary"),
+        "outline-variant": colorVar("--color-outline-variant"),
+        "secondary-container": colorVar("--color-secondary-container"),
+        surface: colorVar("--color-surface"),
+        "inverse-primary": colorVar("--color-inverse-primary"),
+        "on-secondary": colorVar("--color-on-secondary"),
+        "surface-bright": colorVar("--color-surface-bright"),
+        primary: colorVar("--color-primary"),
+        "on-surface": colorVar("--color-on-surface"),
+        "inverse-surface": colorVar("--color-inverse-surface"),
+        "surface-container-high": colorVar("--color-surface-container-high"),
+        "surface-container-lowest": colorVar("--color-surface-container-lowest"),
+        tertiary: colorVar("--color-tertiary"),
+        "surface-container-low": colorVar("--color-surface-container-low"),
+        "surface-container": colorVar("--color-surface-container"),
+        "on-surface-variant": colorVar("--color-on-surface-variant"),
+      },
+      fontFamily: {
+        headline: ["Space Grotesk", "sans-serif"],
+        body: ["Manrope", "sans-serif"],
+        label: ["Manrope", "sans-serif"],
+      },
+      borderRadius: {
+        DEFAULT: "0.125rem",
+        lg: "0.25rem",
+        xl: "0.5rem",
+        full: "9999px",
+      },
+    },
+  },
+  plugins: [forms, containerQueries],
+};
