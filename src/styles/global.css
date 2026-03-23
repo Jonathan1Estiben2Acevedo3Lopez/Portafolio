@@ -143,6 +143,20 @@ body::-webkit-scrollbar {
   transform: translateY(-1px);
 }
 
+.nav-link.is-active,
+.mobile-link.is-active {
+  color: rgb(var(--color-secondary));
+}
+
+.nav-link.is-active {
+  text-shadow: 0 0 18px rgb(var(--color-secondary) / 0.14);
+}
+
+.mobile-link.is-active {
+  border-left: 2px solid rgb(var(--color-secondary) / 0.65);
+  padding-left: 0.6rem;
+}
+
 .mobile-menu {
   max-height: 0;
   overflow: hidden;
@@ -317,10 +331,10 @@ body::-webkit-scrollbar {
   border: 1px solid rgb(var(--color-outline) / 0.28);
   border-radius: 999px;
   color: rgb(var(--color-on-surface-variant));
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
-  padding: 0.82rem 1.2rem;
+  letter-spacing: 0.16em;
+  padding: 0.7rem 1rem;
   text-transform: uppercase;
   transition:
     color 180ms ease,
@@ -484,9 +498,62 @@ html.light .visual-portrait::before {
   box-shadow: var(--theme-shadow-elevated);
 }
 
+.articles-scroll-column {
+  display: grid;
+  gap: 0.9rem;
+  max-height: 22.75rem;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-right: 0.35rem;
+}
+
+@media (min-width: 1024px) {
+  .articles-scroll-column {
+    max-height: 31rem;
+  }
+}
+
+.projects-scroll-row {
+  display: flex;
+  gap: 1.35rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.65rem;
+  scroll-padding-left: 0.25rem;
+  scroll-snap-type: x mandatory;
+}
+
+.projects-scroll-row > * {
+  flex: 0 0 min(82vw, 21rem);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .projects-scroll-row > * {
+    flex-basis: min(68vw, 23rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-scroll-row > * {
+    flex-basis: min(39vw, 22.5rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .projects-scroll-row > * {
+    flex-basis: min(30vw, 22.75rem);
+  }
+}
+
 .article-list-card.is-active {
-  border-left-color: rgb(var(--color-primary));
-  background: rgb(var(--color-surface-container-highest) / 0.94);
+  border-color: rgb(var(--color-primary) / 0.46);
+  background:
+    linear-gradient(180deg, rgb(var(--color-surface-container-highest) / 0.96), rgb(var(--color-surface-container-high) / 0.92));
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--color-secondary) / 0.08),
+    0 16px 34px rgb(var(--color-background) / 0.14);
+  transform: translateY(-2px);
 }
 
 .article-visual,

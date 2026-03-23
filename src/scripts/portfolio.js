@@ -14,7 +14,7 @@ const content = {
     nav: {
       home: "Inicio",
       projects: "Proyectos",
-      insights: "Ideas",
+      insights: "Blog",
       about: "Sobre mi",
       contact: "Contacto",
     },
@@ -37,7 +37,7 @@ const content = {
       focus: '"Lo profesional empieza por lo humano."',
     },
     projects: {
-      title: "Proyectos destacados",
+      title: "Proyectos",
       filters: {
         all: "Todos",
         web: "Web",
@@ -46,6 +46,7 @@ const content = {
       },
       items: [
         {
+          slug: "control-hub",
           title: "Control Hub",
           category: "web",
           year: "2026",
@@ -53,10 +54,11 @@ const content = {
           description:
             "Panel para visualizar metricas, actividad y decisiones de producto en tiempo real.",
           accent: "Sistema interno",
-          href: "#contact",
+          href: "/proyectos/control-hub",
           visualClass: "visual-control",
         },
         {
+          slug: "launch-canvas",
           title: "Launch Canvas",
           category: "web",
           year: "2026",
@@ -64,10 +66,11 @@ const content = {
           description:
             "Landing editorial para presentar una marca personal con ritmo visual y conversion clara.",
           accent: "Marketing",
-          href: "#contact",
+          href: "/proyectos/launch-canvas",
           visualClass: "visual-launch",
         },
         {
+          slug: "pulse-identity",
           title: "Pulse Identity",
           category: "branding",
           year: "2026",
@@ -75,10 +78,11 @@ const content = {
           description:
             "Sistema visual modular para alinear tono, piezas digitales y presencia de marca.",
           accent: "Branding",
-          href: "#contact",
+          href: "/proyectos/pulse-identity",
           visualClass: "visual-brand",
         },
         {
+          slug: "notes-engine",
           title: "Notes Engine",
           category: "automation",
           year: "2026",
@@ -86,10 +90,11 @@ const content = {
           description:
             "Flujo para organizar ideas, publicar actualizaciones y mantener un archivo vivo del proceso.",
           accent: "Contenido",
-          href: "#contact",
+          href: "/proyectos/notes-engine",
           visualClass: "visual-notes",
         },
         {
+          slug: "system-atlas",
           title: "System Atlas",
           category: "branding",
           year: "2026",
@@ -97,10 +102,11 @@ const content = {
           description:
             "Biblioteca visual y tecnica para construir interfaces consistentes sin perder personalidad.",
           accent: "Escalabilidad",
-          href: "#contact",
+          href: "/proyectos/system-atlas",
           visualClass: "visual-system",
         },
         {
+          slug: "agent-flow",
           title: "Agent Flow",
           category: "automation",
           year: "2026",
@@ -108,18 +114,37 @@ const content = {
           description:
             "Asistentes y automatizaciones utiles para reducir tareas repetitivas y acelerar entregas.",
           accent: "Productividad",
-          href: "#contact",
+          href: "/proyectos/agent-flow",
           visualClass: "visual-ai",
         },
       ],
     },
     insights: {
-      title: "Notas recientes",
+      title: "Blog",
       cardLabel: "Seleccionado",
+      cardAction: "Abrir",
+      filters: {
+        all: "Todos",
+        design: "Diseno",
+        web: "Web",
+        automation: "Automatizacion",
+        content: "Contenido",
+      },
       cta: "Llevar esta idea a un proyecto",
     },
     articles: [
       {
+        filter: "web",
+        category: "Producto digital",
+        date: "Abril 2026",
+        title: "Interfaces que ayudan a decidir mas rapido",
+        excerpt: "Menos ruido visual, mejor lectura de prioridades y estados.",
+        body:
+          "Una interfaz util no solo muestra informacion: ayuda a tomar decisiones. Cuando los estados, alertas y jerarquias estan bien resueltos, el usuario entiende que mirar primero, que puede ignorar y que requiere accion inmediata. Ese criterio vuelve un panel mas claro y mucho mas valioso.",
+        visualClass: "visual-control",
+      },
+      {
+        filter: "design",
         category: "Diseno de sistemas",
         date: "Marzo 2026",
         title: "Sistemas visuales que no se sienten rigidos",
@@ -129,6 +154,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        filter: "web",
         category: "Proceso web",
         date: "Febrero 2026",
         title: "Menos efectos, mas direccion",
@@ -138,13 +164,64 @@ const content = {
         visualClass: "visual-launch",
       },
       {
-        category: "Automatizacion",
+        filter: "design",
+        category: "Marca personal",
         date: "Enero 2026",
+        title: "No todo portfolio necesita decirlo todo",
+        excerpt: "Seleccionar mejor comunica mas que acumular capturas y textos.",
+        body:
+          "Un buen portfolio no intenta demostrarlo todo a la vez. Funciona mejor cuando prioriza casos, deja respirar el contenido y ordena la informacion para que la lectura avance con naturalidad. Curar tambien es disenar: implica decidir que mostrar, en que orden y con que profundidad.",
+        visualClass: "visual-brand",
+      },
+      {
+        filter: "automation",
+        category: "Automatizacion",
+        date: "Diciembre 2025",
         title: "Automatizar sin perder el tono humano",
         excerpt: "La productividad importa, pero el resultado final sigue necesitando criterio.",
         body:
           "Automatizar no es delegar el gusto. Las mejores herramientas repiten procesos, no decisiones sensibles. Por eso conviene usar IA para acelerar documentacion, estructura y soporte, mientras el criterio final se mantiene cerca del producto y de la persona que lo usa.",
         visualClass: "visual-ai",
+      },
+      {
+        filter: "content",
+        category: "Contenido",
+        date: "Noviembre 2025",
+        title: "Escribir tambien es disenar producto",
+        excerpt: "Titulos, labels y microcopy pueden mejorar o romper una pantalla.",
+        body:
+          "La claridad no depende solo del layout. Muchas veces una interfaz se vuelve pesada porque el texto no tiene ritmo, precision o tono. Ajustar un titulo, una descripcion o una accion puede tener mas impacto que cambiar una paleta completa. El lenguaje tambien construye experiencia.",
+        visualClass: "visual-notes",
+      },
+      {
+        filter: "design",
+        category: "Diseno visual",
+        date: "Octubre 2025",
+        title: "Contraste, profundidad y capas que guian la mirada",
+        excerpt: "No todo debe resaltar: la clave esta en crear niveles de lectura.",
+        body:
+          "Cuando toda la interfaz compite por atencion, nada destaca de verdad. El contraste funciona mejor como sistema: fondos que sostienen, superficies que separan, acentos que orientan y puntos de mayor brillo reservados para lo realmente importante. Esa graduacion hace que la experiencia respire.",
+        visualClass: "visual-cinema",
+      },
+      {
+        filter: "web",
+        category: "Front-end",
+        date: "Septiembre 2025",
+        title: "Responsive no es solo reducir tamaños",
+        excerpt: "Cambiar el orden, la prioridad y el ritmo tambien hace parte del trabajo.",
+        body:
+          "Adaptar una interfaz a movil exige decidir otra vez que debe aparecer primero, que puede resumirse y que merece cambiar de posicion. La mejor version responsive no es una copia pequeña del escritorio: es una composicion distinta que conserva la intencion y mejora la lectura segun el contexto.",
+        visualClass: "visual-system",
+      },
+      {
+        filter: "content",
+        category: "Proceso",
+        date: "Agosto 2025",
+        title: "Prototipar para conversar mejor con el cliente",
+        excerpt: "Un buen prototipo no solo vende una idea: aclara decisiones.",
+        body:
+          "Los prototipos ayudan cuando aterrizan conversaciones abstractas. Permiten hablar de orden, tono, densidad, animacion y jerarquia con algo visible sobre la mesa. Eso ahorra ambiguedad, acelera validaciones y hace mucho mas facil alinear expectativas desde temprano.",
+        visualClass: "visual-gaming",
       },
     ],
     about: {
@@ -210,7 +287,7 @@ const content = {
     nav: {
       home: "Home",
       projects: "Projects",
-      insights: "Insights",
+      insights: "Blog",
       about: "About",
       contact: "Contact",
     },
@@ -233,7 +310,7 @@ const content = {
       focus: '"Professional work starts with the human side."',
     },
     projects: {
-      title: "Featured work",
+      title: "Projects",
       filters: {
         all: "All",
         web: "Web",
@@ -242,6 +319,7 @@ const content = {
       },
       items: [
         {
+          slug: "control-hub",
           title: "Control Hub",
           category: "web",
           year: "2026",
@@ -249,10 +327,11 @@ const content = {
           description:
             "A control panel to surface metrics, activity and product decisions in real time.",
           accent: "Internal system",
-          href: "#contact",
+          href: "/proyectos/control-hub",
           visualClass: "visual-control",
         },
         {
+          slug: "launch-canvas",
           title: "Launch Canvas",
           category: "web",
           year: "2026",
@@ -260,10 +339,11 @@ const content = {
           description:
             "An editorial landing page for a personal brand with visual rhythm and clear conversion.",
           accent: "Marketing",
-          href: "#contact",
+          href: "/proyectos/launch-canvas",
           visualClass: "visual-launch",
         },
         {
+          slug: "pulse-identity",
           title: "Pulse Identity",
           category: "branding",
           year: "2026",
@@ -271,10 +351,11 @@ const content = {
           description:
             "A modular visual system to align tone, digital pieces and brand presence.",
           accent: "Branding",
-          href: "#contact",
+          href: "/proyectos/pulse-identity",
           visualClass: "visual-brand",
         },
         {
+          slug: "notes-engine",
           title: "Notes Engine",
           category: "automation",
           year: "2026",
@@ -282,10 +363,11 @@ const content = {
           description:
             "A lightweight workflow to organize ideas, publish updates and keep a living archive.",
           accent: "Content",
-          href: "#contact",
+          href: "/proyectos/notes-engine",
           visualClass: "visual-notes",
         },
         {
+          slug: "system-atlas",
           title: "System Atlas",
           category: "branding",
           year: "2026",
@@ -293,10 +375,11 @@ const content = {
           description:
             "A visual and technical library to build consistent interfaces without losing character.",
           accent: "Scalability",
-          href: "#contact",
+          href: "/proyectos/system-atlas",
           visualClass: "visual-system",
         },
         {
+          slug: "agent-flow",
           title: "Agent Flow",
           category: "automation",
           year: "2026",
@@ -304,18 +387,37 @@ const content = {
           description:
             "Useful assistants and automations that reduce repetitive work and speed up delivery.",
           accent: "Productivity",
-          href: "#contact",
+          href: "/proyectos/agent-flow",
           visualClass: "visual-ai",
         },
       ],
     },
     insights: {
-      title: "Recent notes",
+      title: "Blog",
       cardLabel: "Selected",
+      cardAction: "Open",
+      filters: {
+        all: "All",
+        design: "Design",
+        web: "Web",
+        automation: "Automation",
+        content: "Content",
+      },
       cta: "Turn this idea into a project",
     },
     articles: [
       {
+        filter: "web",
+        category: "Digital product",
+        date: "April 2026",
+        title: "Interfaces that help people decide faster",
+        excerpt: "Less visual noise, better priority reading and clearer states.",
+        body:
+          "A useful interface does more than display information: it helps people make decisions. When states, alerts and hierarchy are resolved well, users instantly understand what to check first, what can wait and what needs immediate action. That judgment makes a dashboard far more valuable.",
+        visualClass: "visual-control",
+      },
+      {
+        filter: "design",
         category: "Design systems",
         date: "March 2026",
         title: "Visual systems that do not feel rigid",
@@ -325,6 +427,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        filter: "web",
         category: "Web process",
         date: "February 2026",
         title: "Less effects, more direction",
@@ -334,13 +437,64 @@ const content = {
         visualClass: "visual-launch",
       },
       {
-        category: "Automation",
+        filter: "design",
+        category: "Personal branding",
         date: "January 2026",
+        title: "Not every portfolio needs to say everything",
+        excerpt: "Selection often communicates better than a pile of screenshots and copy.",
+        body:
+          "A strong portfolio does not try to prove everything at once. It works better when it prioritizes a few cases, gives content room to breathe and orders information so the reading flow feels natural. Curation is also design: it is the act of choosing what to show, in what order and at what depth.",
+        visualClass: "visual-brand",
+      },
+      {
+        filter: "automation",
+        category: "Automation",
+        date: "December 2025",
         title: "Automate without losing the human tone",
         excerpt: "Productivity matters, but the final output still needs judgment.",
         body:
           "Automation should repeat process, not replace taste. The best workflows use AI to accelerate documentation, structure and support while keeping sensitive decisions close to the product and the person using it. That balance is what makes automation genuinely useful.",
         visualClass: "visual-ai",
+      },
+      {
+        filter: "content",
+        category: "Content",
+        date: "November 2025",
+        title: "Writing is also product design",
+        excerpt: "Titles, labels and microcopy can strengthen or break a screen.",
+        body:
+          "Clarity is not only a layout problem. Many interfaces feel heavy because the text lacks rhythm, precision or tone. Adjusting a heading, a description or an action label can have more impact than changing an entire palette. Language is part of the experience.",
+        visualClass: "visual-notes",
+      },
+      {
+        filter: "design",
+        category: "Visual design",
+        date: "October 2025",
+        title: "Contrast, depth and layers that guide the eye",
+        excerpt: "Not everything should stand out. The key is creating reading levels.",
+        body:
+          "When every area fights for attention, nothing truly leads. Contrast works best as a system: backgrounds that support, surfaces that separate, accents that orient and brighter points reserved for what really matters. That graduation gives the interface rhythm and breathing room.",
+        visualClass: "visual-cinema",
+      },
+      {
+        filter: "web",
+        category: "Front-end",
+        date: "September 2025",
+        title: "Responsive is not just shrinking things down",
+        excerpt: "Order, priority and pacing also need to change across screens.",
+        body:
+          "Adapting an interface for mobile means rethinking what should appear first, what can be summarized and what deserves a different position. The best responsive version is not a smaller desktop copy. It is a new composition that keeps the intention while improving readability in context.",
+        visualClass: "visual-system",
+      },
+      {
+        filter: "content",
+        category: "Process",
+        date: "August 2025",
+        title: "Prototype to have better conversations with clients",
+        excerpt: "A good prototype does not only sell an idea. It clarifies decisions.",
+        body:
+          "Prototypes are most useful when they ground abstract conversations. They let teams discuss order, tone, density, motion and hierarchy with something visible on the table. That reduces ambiguity, speeds up validation and makes expectation-setting much easier from the start.",
+        visualClass: "visual-gaming",
       },
     ],
     about: {
@@ -405,6 +559,7 @@ const state = {
   lang: window.localStorage.getItem("portfolio-lang") || "es",
   theme: document.documentElement.dataset.theme || "dark",
   filter: "all",
+  articleFilter: "all",
   activeArticle: 0,
   menuOpen: false,
 };
@@ -433,7 +588,9 @@ const elements = {
   themeToggle: document.getElementById("theme-toggle"),
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
   languageToggle: document.getElementById("language-toggle"),
-  filterButtons: document.querySelectorAll("[data-filter]"),
+  sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
+  projectFilterButtons: document.querySelectorAll("#project-filters [data-filter]"),
+  articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
   homeLinks: document.querySelectorAll('a[href="#home"]'),
   menuToggle: document.getElementById("menu-toggle"),
@@ -555,6 +712,7 @@ function applyStaticCopy() {
 
   renderHeroLinks();
   renderFilters();
+  renderArticleFilters();
   renderProjects();
   renderArticles();
   renderAbout();
@@ -563,6 +721,7 @@ function applyStaticCopy() {
   renderContacts();
   syncLanguageButtons();
   syncThemeButton();
+  syncActiveSectionLink();
 }
 
 function renderHeroLinks() {
@@ -627,9 +786,18 @@ function renderHeroLinks() {
 function renderFilters() {
   const labels = getCopy("projects.filters");
 
-  elements.filterButtons.forEach((button) => {
+  elements.projectFilterButtons.forEach((button) => {
     button.textContent = labels[button.dataset.filter];
     button.classList.toggle("is-active", button.dataset.filter === state.filter);
+  });
+}
+
+function renderArticleFilters() {
+  const labels = getCopy("insights.filters");
+
+  elements.articleFilterButtons.forEach((button) => {
+    button.textContent = labels[button.dataset.articleFilter];
+    button.classList.toggle("is-active", button.dataset.articleFilter === state.articleFilter);
   });
 }
 
@@ -640,25 +808,26 @@ function renderProjects() {
 
   elements.projectsGrid.innerHTML = projects
     .map((item) => {
-      const isExternal = item.href.startsWith("http");
+      const detailHref = item.href || `/proyectos/${item.slug}`;
 
       return `
         <a
-          class="project-card group flex h-full flex-col overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 p-4"
-          href="${item.href}"
-          ${isExternal ? 'target="_blank" rel="noreferrer"' : ""}
+          class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
+          href="${detailHref}"
+          target="_blank"
+          rel="noreferrer"
         >
-          <div class="project-visual ${item.visualClass} aspect-[4/3] rounded-[1.5rem]"></div>
-          <div class="flex h-full flex-col px-2 pb-2 pt-6">
+          <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
+          <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
             <div class="flex items-start justify-between gap-4">
               <div>
                 <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
-                <h3 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">${item.title}</h3>
+                <h3 class="mt-2 font-headline text-[1.45rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
               </div>
               <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
             </div>
-            <p class="mt-4 flex-1 text-sm leading-7 text-on-surface-variant">${item.description}</p>
-            <div class="mt-6 flex items-center gap-4 text-[0.7rem] font-black uppercase tracking-[0.2em] text-on-surface-variant">
+            <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+            <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
               <span>${item.tag}</span>
               <span class="h-1 w-1 rounded-full bg-outline"></span>
               <span>${item.year}</span>
@@ -670,49 +839,65 @@ function renderProjects() {
     .join("");
 }
 
-function renderArticles() {
-  const articles = getCopy("articles");
-  const active = articles[state.activeArticle] || articles[0];
+function renderArticles(preserveScroll = false) {
+  const articles = getCopy("articles")
+    .map((article, index) => ({ ...article, index }))
+    .filter((article) => (state.articleFilter === "all" ? true : article.filter === state.articleFilter));
+  const active = articles.find((article) => article.index === state.activeArticle) || articles[0];
+  const listScrollTop = preserveScroll ? elements.articlesList.scrollTop : 0;
+
+  if (active) {
+    state.activeArticle = active.index;
+  }
 
   elements.articlesList.innerHTML = articles
-    .map((article, index) => {
-      const activeClass = index === state.activeArticle ? "is-active" : "";
+    .map((article) => {
+      const activeClass = article.index === state.activeArticle ? "is-active" : "";
 
       return `
         <button
           type="button"
-          class="article-list-card ${activeClass} rounded-[1.4rem] border border-l-4 border-outline-variant/15 bg-surface-container-high/80 p-6 text-left"
-          data-article-index="${index}"
+          class="article-list-card ${activeClass} flex min-h-[9.75rem] flex-col justify-between rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-high/78 p-4 text-left lg:min-h-[10.35rem]"
+          data-article-index="${article.index}"
+          aria-pressed="${article.index === state.activeArticle}"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-[0.62rem] font-black uppercase tracking-[0.2em] text-secondary">${article.category}</p>
-              <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">${article.title}</h3>
+              <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface sm:text-[1.08rem]">${article.title}</h3>
             </div>
             <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${article.date}</span>
           </div>
-          <p class="mt-4 text-sm leading-7 text-on-surface-variant">${article.excerpt}</p>
+          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
+          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
+            <span>${article.index === state.activeArticle ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
+            <span class="material-symbols-outlined text-sm">arrow_outward</span>
+          </div>
         </button>
       `;
     })
     .join("");
 
+  if (preserveScroll) {
+    elements.articlesList.scrollTop = listScrollTop;
+  }
+
   elements.articleFeature.innerHTML = `
-    <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90">
-      <div class="article-visual ${active.visualClass} min-h-[320px]"></div>
-      <div class="glass-panel border-t border-outline-variant/15 p-8 lg:p-10">
+    <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[27.5rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
+      <div class="article-visual ${active.visualClass} min-h-[160px] lg:min-h-full"></div>
+      <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-5">
         <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
           <span class="text-primary">${getCopy("insights.cardLabel")}</span>
           <span>${active.category}</span>
           <span>${active.date}</span>
         </div>
-        <h3 class="mt-5 max-w-3xl font-headline text-3xl font-bold leading-tight tracking-tight text-on-surface lg:text-5xl">
+        <h3 class="mt-4 max-w-3xl font-headline text-[1.7rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[2.35rem]">
           ${active.title}
         </h3>
-        <p class="mt-5 max-w-3xl text-lg leading-8 text-on-surface-variant">${active.body}</p>
+        <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.body}</p>
         <button
           type="button"
-          class="mt-8 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition hover:gap-4"
+          class="mt-5 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition hover:gap-4"
           data-scroll-target="#contact"
         >
           <span>${getCopy("insights.cta")}</span>
@@ -725,8 +910,15 @@ function renderArticles() {
   elements.articlesList.querySelectorAll("[data-article-index]").forEach((button) => {
     button.addEventListener("click", () => {
       state.activeArticle = Number(button.dataset.articleIndex);
-      renderArticles();
+      renderArticles(true);
       wireScrollButtons();
+
+      if (window.innerWidth < 1024) {
+        window.requestAnimationFrame(() => {
+          const top = elements.articleFeature.getBoundingClientRect().top + window.scrollY - 116;
+          window.scrollTo({ top, behavior: "smooth" });
+        });
+      }
     });
   });
 }
@@ -866,6 +1058,46 @@ function syncThemeButton() {
   elements.themeToggle.dataset.theme = state.theme;
 }
 
+function syncActiveSectionLink() {
+  const sections = ["home", "projects", "insights", "about", "contact"]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  const scrollReference = window.scrollY + 140;
+  let activeId = "home";
+
+  sections.forEach((section) => {
+    if (section.offsetTop <= scrollReference) {
+      activeId = section.id;
+    }
+  });
+
+  elements.sectionLinks.forEach((link) => {
+    const isActive = link.getAttribute("href") === `#${activeId}`;
+
+    link.classList.toggle("is-active", isActive);
+
+    if (isActive) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
+let activeSectionFrame = null;
+
+function queueActiveSectionSync() {
+  if (activeSectionFrame !== null) {
+    return;
+  }
+
+  activeSectionFrame = window.requestAnimationFrame(() => {
+    syncActiveSectionLink();
+    activeSectionFrame = null;
+  });
+}
+
 function wireScrollButtons() {
   document.querySelectorAll("[data-scroll-target]").forEach((button) => {
     button.onclick = () => {
@@ -898,11 +1130,20 @@ function wireEvents() {
     wireScrollButtons();
   });
 
-  elements.filterButtons.forEach((button) => {
+  elements.projectFilterButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.filter = button.dataset.filter;
       renderFilters();
       renderProjects();
+    });
+  });
+
+  elements.articleFilterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.articleFilter = button.dataset.articleFilter;
+      renderArticleFilters();
+      renderArticles();
+      wireScrollButtons();
     });
   });
 
@@ -932,6 +1173,10 @@ function wireEvents() {
     window.location.href = `mailto:${profile.email}`;
   });
 
+  window.addEventListener("scroll", queueActiveSectionSync, { passive: true });
+  window.addEventListener("resize", queueActiveSectionSync);
+
+  queueActiveSectionSync();
   wireScrollButtons();
 }
 
