@@ -392,6 +392,8 @@ const content = {
       title: "Contáctame",
       identityRole: "Ingeniero de sistemas y computación",
       email: "Email",
+      emailSubject: "Hola Jonathan, me gustaria hablar contigo",
+      emailBody: "Hola Jonathan,\n\nQuiero hablar contigo sobre:\n\n\nGracias.",
       linkedin: "LinkedIn",
       github: "GitHub",
     },
@@ -779,6 +781,8 @@ const content = {
       title: "Contact me",
       identityRole: "Systems and Computer Engineer",
       email: "Email",
+      emailSubject: "Hi Jonathan, I would like to talk with you",
+      emailBody: "Hi Jonathan,\n\nI would like to talk with you about:\n\n\nThank you.",
       linkedin: "LinkedIn",
       github: "GitHub",
     },
@@ -833,6 +837,14 @@ const elements = {
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
+}
+
+function buildMailtoLink() {
+  const subject = getCopy("contact.emailSubject") || "";
+  const body = getCopy("contact.emailBody") || "";
+  const query = new URLSearchParams({ subject, body });
+
+  return `mailto:${profile.email}?${query.toString()}`;
 }
 
 function hasRealProfileLink(value) {
@@ -933,7 +945,7 @@ function applyStaticCopy() {
   elements.heroTitle.innerHTML = getCopy("hero.title");
   elements.heroDescription.textContent = getCopy("hero.description");
   elements.heroFocus.textContent = getCopy("hero.focus");
-  elements.heroEmail.href = `mailto:${profile.email}`;
+  elements.heroEmail.href = buildMailtoLink();
   elements.heroEmail.lastElementChild.textContent = profile.email;
   elements.heroPrimaryButton.textContent = getCopy("hero.primaryButton");
   elements.heroSecondaryButton.textContent = getCopy("hero.secondaryButton");
@@ -1308,7 +1320,7 @@ function renderContacts() {
       label: labels.email,
       icon: "mail",
       hint: profile.email,
-      href: `mailto:${profile.email}`,
+      href: buildMailtoLink(),
       active: true,
     },
     {
@@ -1431,13 +1443,20 @@ function queueActiveSectionSync() {
   });
 }
 
+function scrollToSection(selector) {
+  const target = document.querySelector(selector);
+
+  if (!target) {
+    return;
+  }
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function wireScrollButtons() {
   document.querySelectorAll("[data-scroll-target]").forEach((button) => {
     button.onclick = () => {
-      const target = document.querySelector(button.dataset.scrollTarget);
-
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (button.dataset.scrollTarget) {
+        scrollToSection(button.dataset.scrollTarget);
       }
     };
   });
@@ -1508,10 +1527,6 @@ function wireEvents() {
       elements.menuToggle.setAttribute("aria-expanded", "false");
       elements.menuToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
     });
-  });
-
-  elements.contactPrimaryButton.addEventListener("click", () => {
-    window.location.href = `mailto:${profile.email}`;
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });
