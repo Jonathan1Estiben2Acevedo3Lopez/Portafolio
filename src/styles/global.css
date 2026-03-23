@@ -356,11 +356,7 @@ body::-webkit-scrollbar {
   letter-spacing: 0.16em;
   padding: 0.7rem 1rem;
   text-transform: uppercase;
-  transition:
-    color 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease,
-    transform 180ms ease;
+  transition: transform 180ms ease, opacity 180ms ease;
 }
 
 .filter-chip:hover {

@@ -801,6 +801,7 @@ const state = {
   articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
   headerOffset: 88,
   sectionMetrics: [],
+  deferredSectionsReady: false,
 };
 
 const elements = {
@@ -1015,11 +1016,17 @@ function applyStaticCopy() {
   renderHeroLinks();
   renderFilters();
   renderArticleFilters();
-  renderProjects();
-  renderArticles();
   renderAboutFilters();
-  renderAboutMedia();
-  renderContacts();
+
+  if (state.deferredSectionsReady) {
+    renderProjects();
+    renderArticles();
+    renderAboutMedia();
+    renderContacts();
+  } else {
+    scheduleDeferredSections();
+  }
+
   syncLanguageButtons();
   syncThemeButton();
   queueSectionMetricsRefresh();
@@ -1606,6 +1613,34 @@ function syncActiveSectionLink() {
 
 let activeSectionFrame = null;
 let sectionMetricsFrame = null;
+let deferredSectionsFrame = null;
+
+function renderDeferredSections() {
+  renderProjects();
+  renderArticles();
+  renderAboutMedia();
+  renderContacts();
+  state.deferredSectionsReady = true;
+  queueSectionMetricsRefresh();
+}
+
+function scheduleDeferredSections() {
+  if (state.deferredSectionsReady || deferredSectionsFrame !== null) {
+    return;
+  }
+
+  const schedule = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 180));
+
+  deferredSectionsFrame = schedule(
+    () => {
+      deferredSectionsFrame = null;
+      window.requestAnimationFrame(() => {
+        renderDeferredSections();
+      });
+    },
+    { timeout: 420 }
+  );
+}
 
 function queueActiveSectionSync() {
   if (activeSectionFrame !== null) {
