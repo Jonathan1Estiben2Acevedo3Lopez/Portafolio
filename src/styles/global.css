@@ -512,6 +512,18 @@ html.light #footer-legal-line p {
   box-shadow: 0 12px 28px rgb(var(--color-on-background) / 0.08);
 }
 
+html.light .hero-focus-card {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--color-surface-container-highest) / 0.94) 0%,
+    rgb(var(--color-surface-container-high) / 0.9) 100%
+  );
+  border-color: rgb(var(--color-primary) / 0.4);
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--color-on-surface) / 0.06),
+    0 16px 34px rgb(var(--color-on-background) / 0.12);
+}
+
 .project-card,
 .artifact-card,
 .contact-card,
