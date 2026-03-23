@@ -17,7 +17,7 @@ const content = {
       home: "Inicio",
       projects: "Proyectos",
       insights: "Blog",
-      about: "Sobre mi",
+      about: "Sobre mí",
       contact: "Contacto",
     },
     controls: {
@@ -236,7 +236,7 @@ const content = {
       },
     ],
     about: {
-      title: "Sobre mi",
+      title: "Sobre mí",
       subtitle: "Esta seccion presenta mis intereses y gustos personales.",
       paragraphs: [
         "Fuera del trabajo, me interesa mucho todo lo que alimenta sensibilidad e imaginacion: peliculas, series, animes, libros y videojuegos.",

@@ -608,6 +608,10 @@ html.light .hero-focus-card {
 }
 
 @media (min-width: 1024px) {
+  .projects-scroll-row {
+    padding-top: 0.45rem;
+  }
+
   .projects-scroll-row > * {
     flex-basis: min(39vw, 22.5rem);
   }
