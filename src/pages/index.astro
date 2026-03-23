@@ -31,6 +31,20 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
     />
     <script is:inline>
       (() => {
+        if ("scrollRestoration" in window.history) {
+          window.history.scrollRestoration = "manual";
+        }
+
+        window.addEventListener(
+          "pageshow",
+          () => {
+            window.requestAnimationFrame(() => {
+              window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+            });
+          },
+          { once: true },
+        );
+
         const storedTheme = window.localStorage.getItem("portfolio-theme");
         const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = storedTheme || (systemPrefersDark ? "dark" : "light");
