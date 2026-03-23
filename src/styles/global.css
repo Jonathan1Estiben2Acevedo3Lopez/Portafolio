@@ -59,45 +59,45 @@ html.light {
   --color-on-error-container: 115 0 32;
   --color-on-secondary-fixed-variant: 0 102 126;
   --color-on-secondary-fixed: 8 78 95;
-  --color-outline: 147 133 175;
-  --color-background: 247 244 255;
+  --color-outline: 131 117 162;
+  --color-background: 238 232 247;
   --color-error-container: 255 218 225;
   --color-error: 186 26 69;
-  --color-primary-container: 221 214 255;
-  --color-surface-container-highest: 226 220 240;
+  --color-primary-container: 214 206 248;
+  --color-surface-container-highest: 222 214 238;
   --color-secondary-fixed-dim: 0 189 230;
   --color-on-primary-fixed-variant: 62 31 143;
   --color-on-primary-container: 44 16 127;
-  --color-surface-dim: 239 233 250;
+  --color-surface-dim: 228 221 242;
   --color-secondary-fixed: 163 233 245;
   --color-primary-fixed-dim: 176 160 255;
-  --color-surface-variant: 232 226 245;
+  --color-surface-variant: 223 215 239;
   --color-secondary-dim: 0 146 180;
   --color-on-secondary-container: 10 61 74;
   --color-secondary: 0 128 160;
   --color-on-primary: 255 255 255;
-  --color-outline-variant: 211 203 229;
+  --color-outline-variant: 186 176 211;
   --color-secondary-container: 204 241 247;
-  --color-surface: 247 244 255;
+  --color-surface: 238 232 247;
   --color-inverse-primary: 199 189 255;
   --color-on-secondary: 255 255 255;
-  --color-surface-bright: 255 255 255;
+  --color-surface-bright: 248 244 255;
   --color-primary: 93 70 219;
   --color-on-surface: 31 21 54;
   --color-inverse-surface: 44 31 72;
-  --color-surface-container-high: 232 226 245;
+  --color-surface-container-high: 228 220 242;
   --color-surface-container-lowest: 255 255 255;
   --color-tertiary: 204 80 127;
-  --color-surface-container-low: 244 239 251;
-  --color-surface-container: 238 232 248;
-  --color-on-surface-variant: 96 84 122;
-  --page-glow-primary: 129 102 255;
-  --page-glow-secondary: 0 168 204;
-  --glass-bg: 255 255 255;
-  --glass-border: 211 203 229;
-  --theme-shadow-elevated: 0 28px 90px rgba(86, 63, 140, 0.16);
-  --theme-shadow-soft: 0 20px 60px rgba(86, 63, 140, 0.12);
-  --grid-line: 104 90 140;
+  --color-surface-container-low: 234 228 245;
+  --color-surface-container: 230 223 242;
+  --color-on-surface-variant: 72 61 98;
+  --page-glow-primary: 112 89 228;
+  --page-glow-secondary: 0 145 181;
+  --glass-bg: 248 244 255;
+  --glass-border: 186 176 211;
+  --theme-shadow-elevated: 0 28px 90px rgba(72, 55, 119, 0.22);
+  --theme-shadow-soft: 0 18px 48px rgba(72, 55, 119, 0.15);
+  --grid-line: 82 64 103;
 }
 
 html {
@@ -387,6 +387,10 @@ body::-webkit-scrollbar {
   box-shadow:
     inset 0 0 0 1px rgb(var(--color-secondary) / 0.08),
     0 18px 36px rgb(var(--color-background) / 0.12);
+  transition:
+    box-shadow 420ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease;
 }
 
 .text-gradient-primary {
@@ -444,10 +448,11 @@ body::-webkit-scrollbar {
 }
 
 .visual-portrait {
+  isolation: isolate;
   background:
-    radial-gradient(circle at 72% 20%, rgba(0, 210, 253, 0.28), transparent 22%),
-    radial-gradient(circle at 24% 24%, rgba(177, 161, 255, 0.4), transparent 24%),
-    linear-gradient(160deg, rgba(36, 14, 59, 0.95), rgba(19, 9, 40, 0.94) 56%, rgba(7, 2, 16, 0.92));
+    radial-gradient(circle at top, rgb(var(--page-glow-primary) / 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgb(var(--page-glow-secondary) / 0.1), transparent 24%),
+    rgb(var(--color-background));
 }
 
 .hero-photo {
@@ -462,31 +467,49 @@ body::-webkit-scrollbar {
 
 .visual-portrait::before {
   inset: 0;
-  background:
-    radial-gradient(circle at 72% 18%, rgba(0, 210, 253, 0.18), transparent 24%),
-    linear-gradient(180deg, rgba(15, 7, 26, 0.08) 0%, rgba(15, 7, 26, 0.18) 42%, rgba(15, 7, 26, 0.74) 100%);
+  background: linear-gradient(
+    180deg,
+    rgb(var(--color-background) / 0.02) 0%,
+    rgb(var(--color-background) / 0.08) 42%,
+    rgb(var(--color-background) / 0.58) 100%
+  );
   z-index: 1;
-}
-
-.visual-portrait::after {
-  display: none;
-}
-
-html.light .visual-portrait {
-  background:
-    radial-gradient(circle at 74% 20%, rgba(0, 168, 204, 0.16), transparent 22%),
-    radial-gradient(circle at 24% 22%, rgba(129, 102, 255, 0.2), transparent 24%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(238, 232, 248, 0.96) 54%, rgba(226, 220, 240, 0.98));
 }
 
 html.light .hero-photo {
   object-position: center top;
 }
 
-html.light .visual-portrait::before {
-  background:
-    radial-gradient(circle at 72% 18%, rgba(0, 168, 204, 0.12), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(247, 244, 255, 0.06) 44%, rgba(247, 244, 255, 0.52) 100%);
+html.light .nav-link,
+html.light .mobile-link {
+  color: rgb(var(--color-on-surface) / 0.82);
+}
+
+html.light .filter-chip {
+  background: rgb(var(--color-surface-container-highest) / 0.72);
+  border-color: rgb(var(--color-outline) / 0.42);
+  color: rgb(var(--color-on-surface) / 0.86);
+}
+
+html.light .glass-panel {
+  background: rgb(var(--glass-bg) / 0.74);
+  border-color: rgb(var(--glass-border) / 0.5);
+}
+
+html.light .project-card,
+html.light .artifact-card,
+html.light .contact-card,
+html.light .article-list-card,
+html.light .article-feature-card,
+html.light .mobile-menu-panel {
+  border-color: rgb(var(--color-outline-variant) / 0.4);
+  box-shadow: 0 18px 42px rgb(var(--color-on-background) / 0.08);
+}
+
+html.light .hero-focus-card,
+html.light .mobile-menu-panel,
+html.light #footer-legal-line p {
+  box-shadow: 0 12px 28px rgb(var(--color-on-background) / 0.08);
 }
 
 .project-card,
@@ -1050,4 +1073,5 @@ header,
     height: 10rem;
     width: 10rem;
   }
+
 }

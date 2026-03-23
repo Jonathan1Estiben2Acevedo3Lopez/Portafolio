@@ -212,32 +212,30 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
           </div>
 
           <div class="relative order-2 w-full lg:order-none lg:col-span-5">
-            <div class="glass-panel relative mx-auto max-w-[30rem] overflow-hidden rounded-[2rem] border border-outline-variant/15 p-4 shadow-[0_35px_120px_rgba(0,0,0,0.35)] lg:max-w-none lg:p-5">
-              <div class="visual-panel visual-portrait min-h-[320px] rounded-[1.6rem] sm:min-h-[420px] lg:min-h-[480px]">
-                <Image
-                  src={portraitImage}
-                  alt="Foto de Jonathan Acevedo"
-                  class="hero-photo"
-                  widths={[480, 640, 768, 960, 1280]}
-                  sizes="(max-width: 639px) calc(100vw - 4rem), (max-width: 1023px) calc(50vw - 4rem), 38rem"
-                  quality={72}
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                />
+            <div class="visual-panel visual-portrait mx-auto min-h-[320px] max-w-[30rem] rounded-[1.8rem] sm:min-h-[420px] lg:min-h-[480px] lg:max-w-none">
+              <Image
+                src={portraitImage}
+                alt="Foto de Jonathan Acevedo"
+                class="hero-photo"
+                widths={[480, 640, 768, 960, 1280]}
+                sizes="(max-width: 639px) calc(100vw - 4rem), (max-width: 1023px) calc(50vw - 4rem), 38rem"
+                quality={72}
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
+              />
 
-                <div class="absolute bottom-3 left-3 right-3 z-10 sm:inset-x-4 sm:bottom-4 lg:inset-x-5 lg:bottom-5">
-                  <div class="glass-panel hero-focus-card w-[18rem] max-w-full rounded-[1.05rem] border border-outline-variant/20 px-3.5 py-1.5 text-center sm:w-[20rem] sm:rounded-[1.2rem] sm:px-4 sm:py-2.5 lg:w-[25.5rem] lg:max-w-[25.5rem] lg:px-4.5 lg:py-2.5 xl:w-[27rem] xl:max-w-[27rem]">
-                    <p class="text-[0.58rem] font-black uppercase tracking-[0.16em] text-primary sm:text-[0.64rem] sm:tracking-[0.18em]" data-i18n="hero.focusLabel">
-                      Enfoque
-                    </p>
-                    <h2
-                      id="hero-focus"
-                      class="mx-auto mt-1 max-w-[15.75rem] font-headline text-[0.82rem] font-bold leading-[1.16] text-on-surface sm:mt-1.5 sm:max-w-[17.5rem] sm:text-[0.94rem] sm:leading-[1.18] lg:mt-1.5 lg:max-w-[21rem] lg:text-[1.12rem] lg:leading-[1.12] xl:max-w-[22.5rem] xl:text-[1.2rem]"
-                    >
-                      Interfaces memorables con estrategia, sistema y detalle.
-                    </h2>
-                  </div>
+              <div class="absolute bottom-3 left-3 right-3 z-10 sm:inset-x-4 sm:bottom-4 lg:inset-x-5 lg:bottom-5">
+                <div class="glass-panel hero-focus-card w-[18rem] max-w-full rounded-[1.05rem] border border-outline-variant/20 px-3.5 py-1.5 text-center sm:w-[20rem] sm:rounded-[1.2rem] sm:px-4 sm:py-2.5 lg:w-[25.5rem] lg:max-w-[25.5rem] lg:px-4.5 lg:py-2.5 xl:w-[27rem] xl:max-w-[27rem]">
+                  <p class="text-[0.58rem] font-black uppercase tracking-[0.16em] text-primary sm:text-[0.64rem] sm:tracking-[0.18em]" data-i18n="hero.focusLabel">
+                    Enfoque
+                  </p>
+                  <h2
+                    id="hero-focus"
+                    class="mx-auto mt-1 max-w-[15.75rem] font-headline text-[0.82rem] font-bold leading-[1.16] text-on-surface sm:mt-1.5 sm:max-w-[17.5rem] sm:text-[0.94rem] sm:leading-[1.18] lg:mt-1.5 lg:max-w-[21rem] lg:text-[1.12rem] lg:leading-[1.12] xl:max-w-[22.5rem] xl:text-[1.2rem]"
+                  >
+                    Interfaces memorables con estrategia, sistema y detalle.
+                  </h2>
                 </div>
               </div>
             </div>
