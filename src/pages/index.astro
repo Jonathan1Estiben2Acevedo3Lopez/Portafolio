@@ -1,11 +1,12 @@
 ---
 import { Image } from "astro:assets";
 import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import portraitImage from "../assets/Jonathan_Acevedo.webp";
 import portfolioScript from "../scripts/portfolio.js?url";
 import "../styles/global.css";
 
-const cvFileExists = existsSync(new URL("../../public/CV_Ejemplo.pdf", import.meta.url));
+const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf"));
 ---
 
 <!DOCTYPE html>
