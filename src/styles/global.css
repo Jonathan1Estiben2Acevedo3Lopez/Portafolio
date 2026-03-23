@@ -153,6 +153,16 @@ body::-webkit-scrollbar {
   max-height: 340px;
 }
 
+.mobile-menu-panel {
+  background: rgb(var(--color-surface-container-high) / 0.97);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.mobile-menu .mobile-link {
+  color: rgb(var(--color-on-surface) / 0.92);
+}
+
 .lang-toggle {
   display: inline-flex;
   align-items: center;
