@@ -290,6 +290,15 @@ body::-webkit-scrollbar {
   }
 }
 
+@media (min-width: 1024px) {
+  .hero-action-link,
+  .hero-action-disabled {
+    width: auto;
+    min-width: 10.75rem;
+    padding-right: 1.1rem;
+  }
+}
+
 .contact-card-icon {
   flex-shrink: 0;
   height: 2.25rem;
