@@ -130,10 +130,11 @@ const content = {
         automation: "Automatizacion",
         content: "Contenido",
       },
-      cta: "Llevar esta idea a un proyecto",
+      cta: "Leer blog completo",
     },
     articles: [
       {
+        slug: "interfaces-que-ayudan-a-decidir",
         filter: "web",
         category: "Producto digital",
         date: "Abril 2026",
@@ -144,6 +145,7 @@ const content = {
         visualClass: "visual-control",
       },
       {
+        slug: "sistemas-visuales-que-no-se-sienten-rigidos",
         filter: "design",
         category: "Diseno de sistemas",
         date: "Marzo 2026",
@@ -154,6 +156,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        slug: "menos-efectos-mas-direccion",
         filter: "web",
         category: "Proceso web",
         date: "Febrero 2026",
@@ -164,6 +167,7 @@ const content = {
         visualClass: "visual-launch",
       },
       {
+        slug: "no-todo-portfolio-necesita-decirlo-todo",
         filter: "design",
         category: "Marca personal",
         date: "Enero 2026",
@@ -174,6 +178,7 @@ const content = {
         visualClass: "visual-brand",
       },
       {
+        slug: "automatizar-sin-perder-el-tono-humano",
         filter: "automation",
         category: "Automatizacion",
         date: "Diciembre 2025",
@@ -184,6 +189,7 @@ const content = {
         visualClass: "visual-ai",
       },
       {
+        slug: "escribir-tambien-es-disenar-producto",
         filter: "content",
         category: "Contenido",
         date: "Noviembre 2025",
@@ -194,6 +200,7 @@ const content = {
         visualClass: "visual-notes",
       },
       {
+        slug: "contraste-profundidad-y-capas",
         filter: "design",
         category: "Diseno visual",
         date: "Octubre 2025",
@@ -204,6 +211,7 @@ const content = {
         visualClass: "visual-cinema",
       },
       {
+        slug: "responsive-no-es-solo-reducir-tamanos",
         filter: "web",
         category: "Front-end",
         date: "Septiembre 2025",
@@ -214,6 +222,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        slug: "prototipar-para-conversar-mejor",
         filter: "content",
         category: "Proceso",
         date: "Agosto 2025",
@@ -403,10 +412,11 @@ const content = {
         automation: "Automation",
         content: "Content",
       },
-      cta: "Turn this idea into a project",
+      cta: "Read full post",
     },
     articles: [
       {
+        slug: "interfaces-que-ayudan-a-decidir",
         filter: "web",
         category: "Digital product",
         date: "April 2026",
@@ -417,6 +427,7 @@ const content = {
         visualClass: "visual-control",
       },
       {
+        slug: "sistemas-visuales-que-no-se-sienten-rigidos",
         filter: "design",
         category: "Design systems",
         date: "March 2026",
@@ -427,6 +438,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        slug: "menos-efectos-mas-direccion",
         filter: "web",
         category: "Web process",
         date: "February 2026",
@@ -437,6 +449,7 @@ const content = {
         visualClass: "visual-launch",
       },
       {
+        slug: "no-todo-portfolio-necesita-decirlo-todo",
         filter: "design",
         category: "Personal branding",
         date: "January 2026",
@@ -447,6 +460,7 @@ const content = {
         visualClass: "visual-brand",
       },
       {
+        slug: "automatizar-sin-perder-el-tono-humano",
         filter: "automation",
         category: "Automation",
         date: "December 2025",
@@ -457,6 +471,7 @@ const content = {
         visualClass: "visual-ai",
       },
       {
+        slug: "escribir-tambien-es-disenar-producto",
         filter: "content",
         category: "Content",
         date: "November 2025",
@@ -467,6 +482,7 @@ const content = {
         visualClass: "visual-notes",
       },
       {
+        slug: "contraste-profundidad-y-capas",
         filter: "design",
         category: "Visual design",
         date: "October 2025",
@@ -477,6 +493,7 @@ const content = {
         visualClass: "visual-cinema",
       },
       {
+        slug: "responsive-no-es-solo-reducir-tamanos",
         filter: "web",
         category: "Front-end",
         date: "September 2025",
@@ -487,6 +504,7 @@ const content = {
         visualClass: "visual-system",
       },
       {
+        slug: "prototipar-para-conversar-mejor",
         filter: "content",
         category: "Process",
         date: "August 2025",
@@ -882,8 +900,15 @@ function renderArticles(preserveScroll = false) {
     elements.articlesList.scrollTop = listScrollTop;
   }
 
+  const detailHref = `/blog/${active.slug}`;
+
   elements.articleFeature.innerHTML = `
-    <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[27.5rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
+    <a
+      href="${detailHref}"
+      target="_blank"
+      rel="noreferrer"
+      class="article-feature-card group block overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[27.5rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]"
+    >
       <div class="article-visual ${active.visualClass} min-h-[160px] lg:min-h-full"></div>
       <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-5">
         <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
@@ -895,16 +920,12 @@ function renderArticles(preserveScroll = false) {
           ${active.title}
         </h3>
         <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.body}</p>
-        <button
-          type="button"
-          class="mt-5 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition hover:gap-4"
-          data-scroll-target="#contact"
-        >
+        <div class="mt-5 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition group-hover:gap-4">
           <span>${getCopy("insights.cta")}</span>
           <span class="material-symbols-outlined text-base">arrow_forward</span>
-        </button>
+        </div>
       </div>
-    </div>
+    </a>
   `;
 
   elements.articlesList.querySelectorAll("[data-article-index]").forEach((button) => {

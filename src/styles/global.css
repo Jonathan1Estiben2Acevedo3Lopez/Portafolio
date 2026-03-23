@@ -504,7 +504,7 @@ html.light .visual-portrait::before {
   max-height: 22.75rem;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-  padding-right: 0.35rem;
+  padding: 0.4rem 0.35rem 0.35rem 0;
 }
 
 @media (min-width: 1024px) {
