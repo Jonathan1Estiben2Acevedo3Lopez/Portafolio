@@ -26,7 +26,7 @@ const content = {
       title:
         '<span class="hero-word" style="--word-index: 0">Hola,</span> <span class="hero-word" style="--word-index: 1">soy</span> <span class="hero-word text-primary" style="--word-index: 2">Jonathan,</span><br /><span class="hero-word" style="--word-index: 3">ingeniero</span> <span class="hero-word" style="--word-index: 4">de</span> <span class="hero-word" style="--word-index: 5">sistemas.</span>',
       description:
-        "Transformo ideas en experiencias digitales claras, expresivas y listas para produccion.",
+        "Me considero una persona curiosa, apasionada por los retos y por encontrar soluciones innovadoras. Disfruto relacionarme con las personas, enfrentar nuevos desafíos y trabajar en equipo para crecer, aportar y generar un impacto positivo.",
       primaryButton: "Ver proyectos",
       secondaryButton: "Hablemos",
       downloadCv: "Descargar CV",
