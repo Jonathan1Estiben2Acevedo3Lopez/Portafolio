@@ -22,13 +22,17 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-      rel="stylesheet"
-    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
     <script is:inline>
       (() => {
         if ("scrollRestoration" in window.history) {
@@ -99,7 +103,19 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
             aria-label="Cambiar a modo claro"
             title="Cambiar a modo claro"
           >
-            <span class="material-symbols-outlined theme-toggle-icon" id="theme-toggle-icon">light_mode</span>
+            <span class="theme-toggle-icon" id="theme-toggle-icon" aria-hidden="true">
+              <svg class="icon-symbol theme-toggle-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2.2"></path>
+                <path d="M12 19.8V22"></path>
+                <path d="m4.93 4.93 1.56 1.56"></path>
+                <path d="m17.51 17.51 1.56 1.56"></path>
+                <path d="M2 12h2.2"></path>
+                <path d="M19.8 12H22"></path>
+                <path d="m4.93 19.07 1.56-1.56"></path>
+                <path d="m17.51 6.49 1.56-1.56"></path>
+              </svg>
+            </span>
           </button>
 
           <button
@@ -110,7 +126,11 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
             aria-controls="mobile-menu"
             aria-label="Abrir menu"
           >
-            <span class="material-symbols-outlined">menu</span>
+            <svg class="icon-symbol menu-toggle-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
           </button>
         </div>
       </nav>
@@ -179,7 +199,10 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
                   class="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-on-surface-variant transition hover:text-secondary"
                   href="mailto:jonalopezacevedo@gmail.com"
                 >
-                  <span class="material-symbols-outlined text-base">mail</span>
+                  <svg class="icon-symbol text-base" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                    <path d="m4 7 8 6 8-6"></path>
+                  </svg>
                   <span>jonalopezacevedo@gmail.com</span>
                 </a>
               </div>
@@ -195,11 +218,11 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
                   src={portraitImage}
                   alt="Foto de Jonathan Acevedo"
                   class="hero-photo"
-                  widths={[720, 960, 1280, 1600, 2048]}
-                  sizes="(min-width: 1024px) 38rem, (min-width: 768px) 50vw, 100vw"
-                  quality={100}
+                  widths={[480, 640, 768, 960, 1280]}
+                  sizes="(max-width: 639px) calc(100vw - 4rem), (max-width: 1023px) calc(50vw - 4rem), 38rem"
+                  quality={72}
                   loading="eager"
-                  decoding="sync"
+                  decoding="async"
                   fetchpriority="high"
                 />
 

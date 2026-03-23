@@ -799,6 +799,8 @@ const state = {
   activeMedia: 0,
   menuOpen: false,
   articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
+  headerOffset: 88,
+  sectionMetrics: [],
 };
 
 const elements = {
@@ -834,7 +836,10 @@ const elements = {
   menuToggle: document.getElementById("menu-toggle"),
   mobileMenu: document.getElementById("mobile-menu"),
   mobileLinks: document.querySelectorAll(".mobile-link"),
+  header: document.querySelector("header"),
 };
+
+const sectionIds = ["home", "projects", "insights", "about", "contact"];
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
@@ -860,9 +865,15 @@ function hasRealProfileLink(value) {
 }
 
 function renderIcon(icon, className = "") {
+  const strokeIcon = (paths, viewBox = "0 0 24 24") => `
+    <svg viewBox="${viewBox}" aria-hidden="true" class="icon-symbol ${className}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      ${paths}
+    </svg>
+  `;
+
   if (icon === "linkedin") {
     return `
-      <svg viewBox="0 0 24 24" aria-hidden="true" class="${className}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-symbol ${className}">
         <path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.48 1h.02C3.87 1 4.98 2.12 4.98 3.5ZM.5 8h4V23h-4V8Zm7 0h3.8v2h.1c.53-1 1.83-2.5 4.6-2.5 4.92 0 5.83 3.24 5.83 7.45V23h-4v-6.2c0-1.48-.03-3.39-2.06-3.39-2.06 0-2.38 1.61-2.38 3.28V23h-4V8Z"/>
       </svg>
     `;
@@ -870,13 +881,53 @@ function renderIcon(icon, className = "") {
 
   if (icon === "github") {
     return `
-      <svg viewBox="0 0 24 24" aria-hidden="true" class="${className}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-symbol ${className}">
         <path fill="currentColor" d="M12 .5A11.5 11.5 0 0 0 .5 12.24c0 5.13 3.29 9.47 7.86 11.01.58.11.79-.26.79-.57 0-.28-.01-1.03-.02-2.02-3.2.71-3.87-1.58-3.87-1.58-.52-1.36-1.28-1.72-1.28-1.72-1.04-.73.08-.72.08-.72 1.16.08 1.76 1.21 1.76 1.21 1.02 1.8 2.68 1.28 3.34.98.1-.76.4-1.28.73-1.57-2.56-.3-5.25-1.32-5.25-5.86 0-1.3.46-2.36 1.2-3.19-.12-.31-.52-1.54.12-3.22 0 0 .98-.32 3.21 1.22A10.9 10.9 0 0 1 12 6.18c.97 0 1.95.13 2.86.39 2.23-1.54 3.2-1.22 3.2-1.22.64 1.68.24 2.91.12 3.22.75.83 1.2 1.89 1.2 3.19 0 4.55-2.7 5.55-5.27 5.85.41.37.78 1.09.78 2.2 0 1.58-.02 2.86-.02 3.25 0 .31.21.69.8.57a11.76 11.76 0 0 0 7.84-11.01A11.5 11.5 0 0 0 12 .5Z"/>
       </svg>
     `;
   }
 
-  return `<span class="material-symbols-outlined ${className}">${icon}</span>`;
+  if (icon === "mail") {
+    return strokeIcon('<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path>');
+  }
+
+  if (icon === "light_mode") {
+    return strokeIcon('<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2"></path><path d="M12 19.8V22"></path><path d="m4.93 4.93 1.56 1.56"></path><path d="m17.51 17.51 1.56 1.56"></path><path d="M2 12h2.2"></path><path d="M19.8 12H22"></path><path d="m4.93 19.07 1.56-1.56"></path><path d="m17.51 6.49 1.56-1.56"></path>');
+  }
+
+  if (icon === "dark_mode") {
+    return strokeIcon('<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>');
+  }
+
+  if (icon === "menu") {
+    return strokeIcon('<path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path>');
+  }
+
+  if (icon === "close") {
+    return strokeIcon('<path d="M6 6l12 12"></path><path d="M18 6 6 18"></path>');
+  }
+
+  if (icon === "arrow_forward") {
+    return strokeIcon('<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>');
+  }
+
+  if (icon === "arrow_outward" || icon === "north_east") {
+    return strokeIcon('<path d="M7 17 17 7"></path><path d="M9 7h8v8"></path>');
+  }
+
+  if (icon === "sports_esports") {
+    return strokeIcon('<path d="M6.5 10h11a4.5 4.5 0 0 1 4.4 5.4l-.4 2a2.5 2.5 0 0 1-4.6.9l-1.2-2H8.3l-1.2 2a2.5 2.5 0 0 1-4.6-.9l-.4-2A4.5 4.5 0 0 1 6.5 10Z"></path><path d="M8 13h4"></path><path d="M10 11v4"></path><circle cx="16.5" cy="12.5" r=".9" fill="currentColor" stroke="none"></circle><circle cx="19" cy="14.5" r=".9" fill="currentColor" stroke="none"></circle>');
+  }
+
+  if (icon === "movie_filter") {
+    return strokeIcon('<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 5v14"></path><path d="M17 5v14"></path><path d="M3 9h4"></path><path d="M17 9h4"></path><path d="M3 15h4"></path><path d="M17 15h4"></path>');
+  }
+
+  if (icon === "auto_awesome") {
+    return strokeIcon('<path d="m12 3 2.2 5.3L19 11l-4.8 2.7L12 19l-2.2-5.3L5 11l4.8-2.7Z"></path>');
+  }
+
+  return "";
 }
 
 function renderLanguageFlag(lang) {
@@ -971,7 +1022,7 @@ function applyStaticCopy() {
   renderContacts();
   syncLanguageButtons();
   syncThemeButton();
-  syncActiveSectionLink();
+  queueSectionMetricsRefresh();
 }
 
 function renderHeroLinks() {
@@ -1074,7 +1125,7 @@ function renderProjects() {
                 <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
                 <h3 class="mt-2 font-headline text-[1.45rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
               </div>
-              <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
+              ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
             </div>
             <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${item.description}</p>
             <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
@@ -1124,7 +1175,7 @@ function renderArticles(preserveScroll = false) {
                   <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${article.category}</p>
                   <h3 class="mt-2 font-headline text-[1.18rem] font-bold leading-6 tracking-tight text-on-surface">${article.title}</h3>
                 </div>
-                <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
+                ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
               </div>
               <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
               <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
@@ -1169,7 +1220,7 @@ function renderArticles(preserveScroll = false) {
           <p class="mt-3 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
           <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
             <span>${article.index === state.activeArticle ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
-            <span class="material-symbols-outlined text-sm">arrow_outward</span>
+            ${renderIcon("arrow_outward", "text-sm")}
           </div>
         </button>
       `;
@@ -1202,7 +1253,7 @@ function renderArticles(preserveScroll = false) {
         <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.body}</p>
         <div class="mt-5 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition group-hover:gap-4">
           <span>${getCopy("insights.cta")}</span>
-          <span class="material-symbols-outlined text-base">arrow_forward</span>
+          ${renderIcon("arrow_forward", "text-base")}
         </div>
       </div>
     </a>
@@ -1314,7 +1365,7 @@ function renderAboutMedia(preserveScroll = false) {
           <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
           <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.index === state.activeMedia ? "text-primary" : "text-on-surface-variant"}">
             <span>${item.index === state.activeMedia ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
-            <span class="material-symbols-outlined text-sm">arrow_outward</span>
+            ${renderIcon("arrow_outward", "text-sm")}
           </div>
         </button>
       `;
@@ -1380,7 +1431,7 @@ function renderArtifacts() {
             <div class="absolute inset-x-6 bottom-6">
               <div class="glass-panel rounded-[1.3rem] border border-outline-variant/18 p-5">
                 <div class="flex items-center gap-3">
-                  <span class="material-symbols-outlined text-2xl ${item.accentClass}">${item.icon}</span>
+                  ${renderIcon(item.icon, `text-2xl ${item.accentClass}`)}
                   <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface">${item.title}</h3>
                 </div>
                 <p class="mt-4 text-sm leading-7 text-on-surface-variant">${item.description}</p>
@@ -1502,22 +1553,40 @@ function syncThemeButton() {
   const nextTheme = state.theme === "dark" ? "light" : "dark";
   const nextThemeLabel = nextTheme === "dark" ? getCopy("controls.themeToDark") : getCopy("controls.themeToLight");
 
-  elements.themeToggleIcon.textContent = state.theme === "dark" ? "light_mode" : "dark_mode";
+  elements.themeToggleIcon.innerHTML = renderIcon(
+    state.theme === "dark" ? "light_mode" : "dark_mode",
+    "theme-toggle-glyph"
+  );
   elements.themeToggle.setAttribute("aria-label", nextThemeLabel);
   elements.themeToggle.setAttribute("title", nextThemeLabel);
   elements.themeToggle.dataset.theme = state.theme;
 }
 
-function syncActiveSectionLink() {
-  const sections = ["home", "projects", "insights", "about", "contact"]
-    .map((id) => document.getElementById(id))
-    .filter(Boolean);
+function refreshSectionMetrics() {
+  state.headerOffset = elements.header ? elements.header.offsetHeight + 10 : 88;
+  state.sectionMetrics = sectionIds
+    .map((id) => {
+      const section = document.getElementById(id);
+      const target = section?.querySelector("[data-section-anchor]") || section?.firstElementChild || section;
 
-  const scrollReference = window.scrollY + 140;
+      if (!target) {
+        return null;
+      }
+
+      return {
+        id,
+        top: target.getBoundingClientRect().top + window.scrollY,
+      };
+    })
+    .filter(Boolean);
+}
+
+function syncActiveSectionLink() {
+  const scrollReference = window.scrollY + state.headerOffset + 42;
   let activeId = "home";
 
-  sections.forEach((section) => {
-    if (section.offsetTop <= scrollReference) {
+  state.sectionMetrics.forEach((section) => {
+    if (section.top <= scrollReference) {
       activeId = section.id;
     }
   });
@@ -1536,6 +1605,7 @@ function syncActiveSectionLink() {
 }
 
 let activeSectionFrame = null;
+let sectionMetricsFrame = null;
 
 function queueActiveSectionSync() {
   if (activeSectionFrame !== null) {
@@ -1548,7 +1618,28 @@ function queueActiveSectionSync() {
   });
 }
 
+function queueSectionMetricsRefresh() {
+  if (sectionMetricsFrame !== null) {
+    return;
+  }
+
+  sectionMetricsFrame = window.requestAnimationFrame(() => {
+    refreshSectionMetrics();
+    syncActiveSectionLink();
+    sectionMetricsFrame = null;
+  });
+}
+
 function scrollToSection(selector) {
+  const sectionId = selector.replace("#", "");
+  const metric = state.sectionMetrics.find((item) => item.id === sectionId);
+
+  if (metric) {
+    const top = Math.max(metric.top - state.headerOffset, 0);
+    window.scrollTo({ top, behavior: "smooth" });
+    return;
+  }
+
   const section = document.querySelector(selector);
   const target = section?.querySelector("[data-section-anchor]") || section?.firstElementChild || section;
 
@@ -1556,9 +1647,7 @@ function scrollToSection(selector) {
     return;
   }
 
-  const header = document.querySelector("header");
-  const headerOffset = header ? header.getBoundingClientRect().height + 10 : 88;
-  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - headerOffset, 0);
+  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - state.headerOffset, 0);
 
   window.scrollTo({ top, behavior: "smooth" });
 }
@@ -1600,7 +1689,8 @@ function wireEvents() {
         state.menuOpen = false;
         elements.mobileMenu.classList.remove("is-open");
         elements.menuToggle.setAttribute("aria-expanded", "false");
-        elements.menuToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+        elements.menuToggle.innerHTML = renderIcon("menu", "menu-toggle-icon");
+        queueSectionMetricsRefresh();
 
         window.requestAnimationFrame(() => {
           scrollToSection(hash);
@@ -1625,6 +1715,7 @@ function wireEvents() {
       state.filter = button.dataset.filter;
       renderFilters();
       renderProjects();
+      queueSectionMetricsRefresh();
     });
   });
 
@@ -1634,6 +1725,7 @@ function wireEvents() {
       renderArticleFilters();
       renderArticles();
       wireScrollButtons();
+      queueSectionMetricsRefresh();
     });
   });
 
@@ -1642,6 +1734,7 @@ function wireEvents() {
       state.aboutFilter = button.dataset.aboutFilter;
       renderAboutFilters();
       renderAboutMedia();
+      queueSectionMetricsRefresh();
     });
   });
 
@@ -1653,9 +1746,8 @@ function wireEvents() {
     state.menuOpen = !state.menuOpen;
     elements.mobileMenu.classList.toggle("is-open", state.menuOpen);
     elements.menuToggle.setAttribute("aria-expanded", String(state.menuOpen));
-    elements.menuToggle.innerHTML = `<span class="material-symbols-outlined">${
-      state.menuOpen ? "close" : "menu"
-    }</span>`;
+    elements.menuToggle.innerHTML = renderIcon(state.menuOpen ? "close" : "menu", "menu-toggle-icon");
+    queueSectionMetricsRefresh();
   });
 
   elements.mobileLinks.forEach((link) => {
@@ -1663,14 +1755,13 @@ function wireEvents() {
       state.menuOpen = false;
       elements.mobileMenu.classList.remove("is-open");
       elements.menuToggle.setAttribute("aria-expanded", "false");
-      elements.menuToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+      elements.menuToggle.innerHTML = renderIcon("menu", "menu-toggle-icon");
+      queueSectionMetricsRefresh();
     });
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });
   window.addEventListener("resize", () => {
-    queueActiveSectionSync();
-
     const nextMobileLayout = isMobileViewport();
 
     if (nextMobileLayout !== state.articleMobileLayout) {
@@ -1678,9 +1769,16 @@ function wireEvents() {
       renderArticles(true);
       renderAboutMedia(true);
     }
+
+    queueSectionMetricsRefresh();
   });
 
-  queueActiveSectionSync();
+  window.addEventListener("load", queueSectionMetricsRefresh, { once: true });
+  document.fonts?.ready?.then(() => {
+    queueSectionMetricsRefresh();
+  });
+
+  queueSectionMetricsRefresh();
   wireScrollButtons();
 }
 

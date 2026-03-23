@@ -123,10 +123,12 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-.material-symbols-outlined {
+.icon-symbol {
   display: inline-block;
-  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
-  line-height: 1;
+  flex-shrink: 0;
+  height: 1em;
+  width: 1em;
+  vertical-align: middle;
 }
 
 .nav-link,
@@ -233,7 +235,21 @@ body::-webkit-scrollbar {
 }
 
 .theme-toggle-icon {
-  font-size: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.35rem;
+  width: 1.35rem;
+}
+
+.theme-toggle-glyph {
+  height: 100%;
+  width: 100%;
+}
+
+.menu-toggle-icon {
+  height: 1.25rem;
+  width: 1.25rem;
 }
 
 .hero-title-animated .hero-word {
