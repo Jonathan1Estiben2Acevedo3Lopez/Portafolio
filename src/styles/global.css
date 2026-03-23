@@ -497,16 +497,11 @@ html.light .filter-chip:hover {
 }
 
 html.light .filter-chip.is-active {
-  background: linear-gradient(
-    135deg,
-    rgb(var(--color-primary) / 0.9) 0%,
-    rgb(var(--color-secondary) / 0.84) 100%
-  );
+  background: rgb(var(--color-primary) / 0.92);
   border-color: rgb(var(--color-primary) / 0.72);
   color: rgb(var(--color-on-primary-fixed));
-  box-shadow:
-    inset 0 0 0 1px rgb(var(--color-on-primary-fixed) / 0.12),
-    0 10px 24px rgb(var(--color-primary) / 0.24);
+  box-shadow: none;
+  transform: none;
 }
 
 html.light .glass-panel {
