@@ -958,6 +958,27 @@ header,
     white-space: nowrap;
   }
 
+  #articles-list.articles-scroll-column {
+    display: flex;
+    gap: 1.15rem;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding: 0.2rem 0 0.5rem;
+    scroll-padding-left: 0.15rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  #articles-list.articles-scroll-column > * {
+    flex: 0 0 min(82vw, 21rem);
+    scroll-snap-align: start;
+  }
+
+  #article-feature.article-feature-mobile-hidden {
+    display: none;
+  }
+
   .orb-primary {
     height: 12rem;
     width: 12rem;

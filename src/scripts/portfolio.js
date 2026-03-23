@@ -798,6 +798,7 @@ const state = {
   aboutFilter: "all",
   activeMedia: 0,
   menuOpen: false,
+  articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
 };
 
 const elements = {
@@ -837,6 +838,10 @@ const elements = {
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
+}
+
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 767px)").matches;
 }
 
 function buildMailtoLink() {
@@ -1089,11 +1094,59 @@ function renderArticles(preserveScroll = false) {
     .map((article, index) => ({ ...article, index }))
     .filter((article) => (state.articleFilter === "all" ? true : article.filter === state.articleFilter));
   const active = articles.find((article) => article.index === state.activeArticle) || articles[0];
-  const listScrollTop = preserveScroll ? elements.articlesList.scrollTop : 0;
+  const mobileLayout = isMobileViewport();
+  const listScrollOffset = preserveScroll
+    ? mobileLayout
+      ? elements.articlesList.scrollLeft
+      : elements.articlesList.scrollTop
+    : 0;
 
   if (active) {
     state.activeArticle = active.index;
   }
+
+  if (mobileLayout) {
+    elements.articlesList.innerHTML = articles
+      .map((article) => {
+        const detailHref = `/blog/${article.slug}`;
+
+        return `
+          <a
+            class="project-card article-mobile-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
+            href="${detailHref}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div class="project-visual ${article.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
+            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${article.category}</p>
+                  <h3 class="mt-2 font-headline text-[1.18rem] font-bold leading-6 tracking-tight text-on-surface">${article.title}</h3>
+                </div>
+                <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
+              <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
+                <span>${article.date}</span>
+              </div>
+            </div>
+          </a>
+        `;
+      })
+      .join("");
+
+    elements.articleFeature.innerHTML = "";
+    elements.articleFeature.classList.add("article-feature-mobile-hidden");
+
+    if (preserveScroll) {
+      elements.articlesList.scrollLeft = listScrollOffset;
+    }
+
+    return;
+  }
+
+  elements.articleFeature.classList.remove("article-feature-mobile-hidden");
 
   elements.articlesList.innerHTML = articles
     .map((article) => {
@@ -1124,7 +1177,7 @@ function renderArticles(preserveScroll = false) {
     .join("");
 
   if (preserveScroll) {
-    elements.articlesList.scrollTop = listScrollTop;
+    elements.articlesList.scrollTop = listScrollOffset;
   }
 
   const detailHref = `/blog/${active.slug}`;
@@ -1566,7 +1619,16 @@ function wireEvents() {
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });
-  window.addEventListener("resize", queueActiveSectionSync);
+  window.addEventListener("resize", () => {
+    queueActiveSectionSync();
+
+    const nextMobileLayout = isMobileViewport();
+
+    if (nextMobileLayout !== state.articleMobileLayout) {
+      state.articleMobileLayout = nextMobileLayout;
+      renderArticles(true);
+    }
+  });
 
   queueActiveSectionSync();
   wireScrollButtons();
