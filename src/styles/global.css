@@ -923,6 +923,31 @@ header,
     padding-top: 2.75rem;
   }
 
+  #project-filters,
+  #insights-filters,
+  #about-media-filters {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.7rem;
+    padding-bottom: 0.15rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #project-filters::-webkit-scrollbar,
+  #insights-filters::-webkit-scrollbar,
+  #about-media-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  #project-filters .filter-chip,
+  #insights-filters .filter-chip,
+  #about-media-filters .filter-chip {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
   .orb-primary {
     height: 12rem;
     width: 12rem;
