@@ -842,9 +842,12 @@ function getCopy(path) {
 function buildMailtoLink() {
   const subject = getCopy("contact.emailSubject") || "";
   const body = getCopy("contact.emailBody") || "";
-  const query = new URLSearchParams({ subject, body });
+  const query = [
+    `subject=${encodeURIComponent(subject)}`,
+    `body=${encodeURIComponent(body)}`,
+  ].join("&");
 
-  return `mailto:${profile.email}?${query.toString()}`;
+  return `mailto:${profile.email}?${query}`;
 }
 
 function hasRealProfileLink(value) {
