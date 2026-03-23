@@ -127,57 +127,13 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
         </div>
 
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-1 rounded-full border border-outline-variant/20 bg-surface-container-highest/50 p-1">
-            <button
-              type="button"
-              class="lang-toggle"
-              data-lang-button="es"
-              aria-label="Cambiar a espanol"
-              title="Espanol"
-            >
-              <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" fill="#FCD116" />
-                <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
-                <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="lang-toggle"
-              data-lang-button="en"
-              aria-label="Switch to English"
-              title="English"
-            >
-              <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
-                <defs>
-                  <clipPath id="usa-flag-circle">
-                    <circle cx="12" cy="12" r="10" />
-                  </clipPath>
-                </defs>
-                <g clip-path="url(#usa-flag-circle)">
-                  <rect x="2" y="2" width="20" height="20" fill="#fff" />
-                  <rect x="2" y="2" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="5.08" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="8.15" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="11.23" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="14.31" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="17.38" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="20.46" width="20" height="1.54" fill="#B22234" />
-                  <rect x="2" y="2" width="9" height="8.62" fill="#3C3B6E" />
-                  <g fill="#fff">
-                    <circle cx="4" cy="4" r="0.55" />
-                    <circle cx="6.1" cy="4" r="0.55" />
-                    <circle cx="8.2" cy="4" r="0.55" />
-                    <circle cx="5.05" cy="5.8" r="0.55" />
-                    <circle cx="7.15" cy="5.8" r="0.55" />
-                    <circle cx="4" cy="7.6" r="0.55" />
-                    <circle cx="6.1" cy="7.6" r="0.55" />
-                    <circle cx="8.2" cy="7.6" r="0.55" />
-                  </g>
-                </g>
-              </svg>
-            </button>
-          </div>
+          <button
+            type="button"
+            id="language-toggle"
+            class="lang-toggle border border-outline-variant/20 bg-surface-container-highest/50"
+            aria-label="Switch to English"
+            title="Switch to English"
+          ></button>
 
           <button
             type="button"
