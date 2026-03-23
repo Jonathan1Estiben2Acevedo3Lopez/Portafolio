@@ -222,7 +222,7 @@ const content = {
       title:
         '<span class="hero-word" style="--word-index: 0">Hi,</span> <span class="hero-word" style="--word-index: 1">I&apos;m</span> <span class="hero-word text-primary" style="--word-index: 2">Jonathan,</span><br /><span class="hero-word" style="--word-index: 3">a</span> <span class="hero-word" style="--word-index: 4">systems</span> <span class="hero-word" style="--word-index: 5">engineer.</span>',
       description:
-        "I turn ideas into digital experiences that feel clear, expressive and ready for production.",
+        "I consider myself a curious person, passionate about challenges and about finding innovative solutions. I enjoy connecting with people, facing new challenges and working as a team to grow, contribute and create a positive impact.",
       primaryButton: "View projects",
       secondaryButton: "Let's talk",
       downloadCv: "Download CV",
