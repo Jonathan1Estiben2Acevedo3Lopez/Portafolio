@@ -39,11 +39,33 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
           window.history.scrollRestoration = "manual";
         }
 
+        const resetToHome = () => {
+          if (window.location.hash) {
+            window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+          }
+
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        };
+
+        resetToHome();
+
         window.addEventListener(
           "pageshow",
           () => {
             window.requestAnimationFrame(() => {
-              window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+              resetToHome();
+            });
+          },
+          { once: true },
+        );
+
+        window.addEventListener(
+          "load",
+          () => {
+            window.requestAnimationFrame(() => {
+              resetToHome();
+              window.setTimeout(resetToHome, 120);
+              window.setTimeout(resetToHome, 360);
             });
           },
           { once: true },
