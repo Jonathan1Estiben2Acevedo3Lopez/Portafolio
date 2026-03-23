@@ -921,6 +921,11 @@ header,
 
   #projects {
     padding-top: 2.75rem;
+    padding-bottom: 2.35rem;
+  }
+
+  #insights {
+    padding-top: 2.35rem;
   }
 
   #project-filters,
