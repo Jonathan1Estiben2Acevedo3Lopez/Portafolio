@@ -190,11 +190,22 @@ body::-webkit-scrollbar {
 }
 
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 999px;
   box-shadow: var(--theme-shadow-soft);
 }
 
 .theme-toggle:hover {
+  transform: translateY(-1px);
   box-shadow: 0 18px 34px rgb(var(--color-secondary) / 0.14);
+}
+
+.theme-toggle-icon {
+  font-size: 1.35rem;
 }
 
 .hero-title-animated .hero-word {
