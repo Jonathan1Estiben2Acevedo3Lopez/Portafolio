@@ -154,17 +154,39 @@ body::-webkit-scrollbar {
 }
 
 .lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 999px;
   color: rgb(var(--color-on-surface) / 0.55);
   transition:
     color 180ms ease,
     background-color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.lang-toggle:hover {
+  transform: translateY(-1px);
+}
+
+.lang-flag {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgb(var(--color-on-surface) / 0.08);
 }
 
 .lang-toggle.is-active {
   background: rgb(var(--color-secondary));
   color: rgb(var(--color-on-secondary-fixed));
   box-shadow: 0 8px 24px rgb(var(--color-secondary) / 0.24);
+}
+
+.lang-toggle.is-active .lang-flag {
+  box-shadow: 0 0 0 1px rgb(var(--color-on-secondary-fixed) / 0.14);
 }
 
 .theme-toggle {
