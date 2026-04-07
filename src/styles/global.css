@@ -4,6 +4,9 @@
 
 :root {
   color-scheme: dark;
+  --site-shell-max: 80rem;
+  --site-shell-compact-max: 64rem;
+  --contact-shell-max: 64rem;
   --color-on-background: 241 223 255;
   --color-on-primary-fixed: 0 0 0;
   --color-inverse-on-surface: 96 77 117;
@@ -116,6 +119,19 @@ body {
     background-color 220ms ease,
     color 220ms ease;
   -ms-overflow-style: none;
+}
+
+.site-shell {
+  width: 100%;
+  max-width: var(--site-shell-max) !important;
+}
+
+.site-shell--compact {
+  max-width: var(--site-shell-compact-max) !important;
+}
+
+.contact-responsive-grid {
+  max-width: var(--contact-shell-max) !important;
 }
 
 html::-webkit-scrollbar,
@@ -275,6 +291,10 @@ body::-webkit-scrollbar {
 
 .hero-description-copy {
   text-align: justify;
+}
+
+.hero-copy {
+  max-width: 42rem !important;
 }
 
 .hero-action-link,
@@ -451,6 +471,10 @@ body::-webkit-scrollbar {
     rgb(var(--color-background));
 }
 
+.hero-portrait-shell {
+  min-height: clamp(20rem, 72vw, 30rem) !important;
+}
+
 .hero-photo {
   display: block;
   position: absolute;
@@ -579,6 +603,151 @@ html.light .hero-focus-card {
   }
 }
 
+@media (min-width: 1280px) {
+  :root {
+    --site-shell-max: min(calc(100vw - 4rem), 92rem);
+    --site-shell-compact-max: min(calc(100vw - 8rem), 74rem);
+    --contact-shell-max: min(calc(100vw - 10rem), 78rem);
+  }
+
+  .hero-shell {
+    gap: clamp(2rem, 2.5vw, 3.5rem) !important;
+  }
+
+  .hero-display {
+    font-size: clamp(4rem, 4.3vw, 5.75rem) !important;
+    line-height: 0.98 !important;
+  }
+
+  .detail-display {
+    font-size: clamp(4rem, 4.4vw, 5.75rem) !important;
+    line-height: 1.01 !important;
+  }
+
+  .hero-copy {
+    font-size: 1.08rem !important;
+    line-height: 1.95rem !important;
+  }
+
+  .hero-portrait-shell {
+    min-height: clamp(31rem, 40vw, 40rem) !important;
+  }
+
+  .split-feature-grid {
+    gap: clamp(1.5rem, 1.8vw, 2.3rem) !important;
+  }
+
+  .articles-scroll-column {
+    max-height: 34rem;
+  }
+
+  .detail-page-main {
+    padding-top: 3.5rem !important;
+    padding-bottom: 5rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --site-shell-max: min(calc(100vw - 5rem), 108rem);
+    --site-shell-compact-max: min(calc(100vw - 12rem), 82rem);
+    --contact-shell-max: min(calc(100vw - 12rem), 96rem);
+  }
+
+  .hero-shell {
+    gap: clamp(2.5rem, 3vw, 4.5rem) !important;
+  }
+
+  .hero-display {
+    max-width: 10ch !important;
+    font-size: clamp(4.75rem, 4.6vw, 6.5rem) !important;
+  }
+
+  .detail-display {
+    max-width: 12ch !important;
+    font-size: clamp(4.5rem, 4.1vw, 6rem) !important;
+  }
+
+  .hero-copy {
+    max-width: 44rem !important;
+    font-size: 1.15rem !important;
+    line-height: 2rem !important;
+  }
+
+  .hero-portrait-shell {
+    min-height: clamp(34rem, 36vw, 45rem) !important;
+  }
+
+  .hero-focus-card {
+    width: clamp(30rem, 24vw, 38rem) !important;
+    max-width: min(100%, clamp(30rem, 24vw, 38rem)) !important;
+    padding-inline: 1.5rem !important;
+    padding-block: 0.95rem !important;
+  }
+
+  #hero-focus {
+    max-width: 30rem !important;
+    font-size: clamp(1.25rem, 1.1vw, 1.55rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .projects-scroll-row {
+    gap: 1.5rem;
+  }
+
+  .projects-scroll-row > * {
+    flex-basis: min(24rem, 26vw);
+  }
+
+  .articles-scroll-column {
+    max-height: 36rem;
+  }
+
+  .detail-lead-grid {
+    gap: clamp(2.5rem, 2.8vw, 4rem) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --site-shell-max: min(calc(100vw - 7rem), 124rem);
+    --site-shell-compact-max: min(calc(100vw - 16rem), 90rem);
+    --contact-shell-max: min(calc(100vw - 16rem), 104rem);
+  }
+
+  .hero-display {
+    font-size: clamp(5.2rem, 4.2vw, 7rem) !important;
+  }
+
+  .detail-display {
+    font-size: clamp(4.8rem, 3.8vw, 6.35rem) !important;
+  }
+
+  .projects-scroll-row > * {
+    flex-basis: min(23rem, 22vw);
+  }
+
+  .articles-scroll-column {
+    max-height: 38rem;
+  }
+}
+
+@media (min-width: 2400px) {
+  :root {
+    --site-shell-max: min(calc(100vw - 10rem), 138rem);
+    --site-shell-compact-max: min(calc(100vw - 20rem), 96rem);
+    --contact-shell-max: min(calc(100vw - 20rem), 114rem);
+  }
+
+  .hero-display {
+    font-size: clamp(5.8rem, 3.8vw, 7.5rem) !important;
+  }
+
+  .projects-scroll-row > * {
+    flex-basis: min(22rem, 18vw);
+  }
+}
+
 .projects-scroll-row {
   display: flex;
   gap: 1.35rem;
@@ -613,6 +782,28 @@ html.light .hero-focus-card {
 @media (min-width: 1280px) {
   .projects-scroll-row > * {
     flex-basis: min(30vw, 22.75rem);
+  }
+}
+
+@media (min-width: 1536px) {
+  .projects-scroll-row {
+    gap: 1.5rem !important;
+  }
+
+  .projects-scroll-row > * {
+    flex-basis: min(24rem, 26vw) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .projects-scroll-row > * {
+    flex-basis: min(23rem, 22vw) !important;
+  }
+}
+
+@media (min-width: 2400px) {
+  .projects-scroll-row > * {
+    flex-basis: min(22rem, 18vw) !important;
   }
 }
 
