@@ -1,27 +1,28 @@
 export const projectDetails = [
   {
-    slug: "control-hub",
-    title: "Control Hub",
-    accent: "Sistema interno",
-    tag: "Dashboard",
+    slug: "docqee",
+    title: "Docqee",
+    accent: "Proyecto de grado",
+    tag: "Plataforma web",
     year: "2026",
     category: "Web",
     visualClass: "visual-control",
     summary:
-      "Dashboard operativo para concentrar metricas clave, actividad reciente y alertas de producto en un solo lugar.",
+      "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
     overview:
-      "La idea de Control Hub fue reducir la friccion entre datos dispersos y decisiones rapidas. El proyecto se planteo como una interfaz clara para equipos internos que necesitan leer el estado del negocio, detectar cambios y actuar sin depender de multiples paneles abiertos al tiempo.",
+      "Docqee fue desarrollado como mi proyecto de grado con la idea de digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y bien acompanado desde el primer contacto.",
     challenge:
-      "El reto principal estaba en ordenar una gran cantidad de informacion sin saturar la pantalla. Habia que mostrar indicadores, actividad reciente, prioridades y estados criticos dentro de una misma experiencia, manteniendo una jerarquia visual facil de escanear.",
+      "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
     solution:
-      "La solucion se enfoco en bloques modulares, una navegacion breve y una narrativa visual que separa lo estrategico de lo inmediato. La interfaz prioriza lectura rapida, estados claros y componentes reutilizables para que el dashboard pueda crecer sin perder consistencia.",
+      "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervison profesional.",
     results: [
-      "Vista unificada para KPIs, actividad y decisiones activas.",
-      "Jerarquia visual pensada para lectura rapida en equipos internos.",
-      "Base de componentes lista para escalar nuevas vistas del sistema.",
+      "Presentacion clara de la propuesta de atencion odontologica universitaria.",
+      "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
+      "Base digital lista para seguir escalando nuevos modulos y procesos academicos.",
     ],
-    stack: ["Astro", "JavaScript", "Design Tokens", "Responsive UI", "Data Visualization"],
-    deliverables: ["Dashboard principal", "Tarjetas de estado", "Sistema de alertas", "Biblioteca visual base"],
+    stack: ["React", "Vite", "Responsive UI", "Arquitectura por roles", "Vercel"],
+    deliverables: ["Landing principal", "Flujos por rol", "Vista institucional", "Demo funcional online"],
+    liveUrl: "https://docqee.vercel.app/",
   },
   {
     slug: "launch-canvas",

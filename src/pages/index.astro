@@ -247,8 +247,8 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
                 fetchpriority="high"
               />
 
-              <div class="absolute bottom-3 left-3 right-3 z-10 sm:inset-x-4 sm:bottom-4 lg:inset-x-5 lg:bottom-5">
-                <div class="glass-panel hero-focus-card w-[20rem] max-w-full rounded-[1.05rem] px-3.5 py-1.5 text-center sm:w-[22rem] sm:rounded-[1.2rem] sm:px-4 sm:py-2.5 lg:w-[28.5rem] lg:max-w-[28.5rem] lg:px-4.5 lg:py-2.5 xl:w-[30rem] xl:max-w-[30rem]">
+              <div class="absolute bottom-3 left-3 right-3 z-10 flex justify-center sm:inset-x-4 sm:bottom-4 lg:inset-x-5 lg:bottom-5">
+                <div class="glass-panel hero-focus-card mx-auto w-[20rem] max-w-full rounded-[1.05rem] px-3.5 py-1.5 text-center sm:w-[22rem] sm:rounded-[1.2rem] sm:px-4 sm:py-2.5 lg:w-[28.5rem] lg:max-w-[28.5rem] lg:px-4.5 lg:py-2.5 xl:w-[30rem] xl:max-w-[30rem]">
                   <p class="text-[0.58rem] font-black uppercase tracking-[0.16em] text-primary sm:text-[0.64rem] sm:tracking-[0.18em]" data-i18n="hero.focusLabel">
                     Enfoque
                   </p>
@@ -377,6 +377,59 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
         </div>
       </div>
     </footer>
+
+    <div
+      id="project-preview-modal"
+      class="project-preview-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="project-preview-modal-title"
+    >
+      <div class="project-preview-backdrop" data-project-modal-close></div>
+      <div class="project-preview-shell">
+        <div class="project-preview-window">
+          <div class="project-preview-window-top">
+            <div>
+              <p class="project-preview-window-label">Demo interactiva</p>
+              <h2 id="project-preview-modal-title" class="project-preview-window-title">Docqee</h2>
+            </div>
+
+            <div class="project-preview-window-actions">
+              <a
+                id="project-preview-open-site"
+                href="https://docqee.vercel.app/"
+                target="_blank"
+                rel="noreferrer"
+                class="project-preview-open-link"
+              >
+                Ir al sitio
+              </a>
+              <button
+                type="button"
+                id="project-preview-close"
+                class="project-preview-close"
+                aria-label="Cerrar vista interactiva"
+                data-project-modal-close
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+
+          <div class="project-preview-browser">
+            <iframe
+              id="project-preview-iframe"
+              src="about:blank"
+              title="Vista interactiva del proyecto"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              class="project-preview-browser-frame"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script type="module" src={portfolioScript}></script>
   </body>

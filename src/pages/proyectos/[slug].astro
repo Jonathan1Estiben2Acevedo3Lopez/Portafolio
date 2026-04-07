@@ -11,70 +11,48 @@ export function getStaticPaths() {
 
 const { project } = Astro.props;
 const relatedProjects = projectDetails.filter((item) => item.slug !== project.slug).slice(0, 2);
-const isControlHub = project.slug === "control-hub";
+const isDocqee = project.slug === "docqee";
 
 const controlHubMetrics = [
-  { value: "14", label: "KPIs activos" },
-  { value: "3", label: "niveles de prioridad" },
-  { value: "42", label: "eventos monitoreados" },
-];
-
-const controlHubSidebar = ["Resumen", "Metricas", "Alertas", "Actividad"];
-
-const controlHubSignals = [
-  { label: "Revenue", value: "+18.4%" },
-  { label: "Activation", value: "74%" },
-  { label: "Ops", value: "03 issues" },
-];
-
-const controlHubBars = [56, 82, 68, 104, 91, 126, 112, 138];
-
-const controlHubAlerts = [
-  { title: "Pico de trafico en onboarding", tone: "text-secondary" },
-  { title: "Caida leve en activacion mobile", tone: "text-tertiary" },
-  { title: "Decision pendiente en pricing", tone: "text-primary" },
-];
-
-const controlHubActivity = [
-  "Revision de metricas clave por equipo de producto.",
-  "Actividad reciente con contexto y responsables visibles.",
-  "Bloque de decisiones para reducir dispersion operativa.",
+  { value: "3", label: "roles principales" },
+  { value: "1", label: "ecosistema conectado" },
+  { value: "100%", label: "supervision docente" },
 ];
 
 const controlHubModules = [
   {
-    title: "Resumen ejecutivo",
-    description: "KPIs clave arriba, lectura rapida y estados visibles desde el primer vistazo.",
+    title: "Acceso para pacientes",
+    description: "Presenta la propuesta, facilita el primer contacto y ordena el inicio del proceso de atencion.",
   },
   {
-    title: "Centro de alertas",
-    description: "Alertas priorizadas por urgencia para separar ruido de asuntos criticos.",
+    title: "Gestion estudiantil",
+    description: "Organiza el seguimiento del caso dentro de una interfaz clara para estudiantes en formacion.",
   },
   {
-    title: "Actividad reciente",
-    description: "Registro de cambios, hitos y eventos relevantes para darle contexto a los datos.",
+    title: "Supervision docente",
+    description: "Mantiene visible la revision academica y profesional que respalda cada atencion.",
   },
   {
-    title: "Decision queue",
-    description: "Bloque para agrupar pendientes y decisiones de producto sin perder trazabilidad.",
+    title: "Recorrido institucional",
+    description: "Conecta la experiencia completa dentro de una logica universitaria organizada y confiable.",
   },
 ];
 
 const controlHubFlow = [
   {
     step: "01",
-    title: "Lectura inicial",
-    description: "La pantalla abre con un resumen claro para entender salud general y prioridades.",
+    title: "Descubrimiento",
+    description: "La plataforma explica el servicio y ayuda al paciente a entender el entorno universitario.",
   },
   {
     step: "02",
-    title: "Deteccion de desajustes",
-    description: "El equipo identifica cambios en activacion, operacion o revenue con menos friccion.",
+    title: "Conexion",
+    description: "El flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente.",
   },
   {
     step: "03",
-    title: "Decision accionable",
-    description: "Los paneles laterales ayudan a pasar de observar a decidir en la misma vista.",
+    title: "Seguimiento",
+    description: "La experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden.",
   },
 ];
 ---
@@ -219,10 +197,10 @@ const controlHubFlow = [
     </header>
 
     <main class="detail-page-main px-6 pb-20 pt-10 lg:px-8 lg:pt-12">
-      {isControlHub ? (
+      {isDocqee ? (
         <>
-          <section class="site-shell site-shell--main mx-auto grid max-w-7xl gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
-            <div class="lg:col-span-6">
+          <section class="site-shell site-shell--main mx-auto max-w-5xl">
+            <div>
               <p class="text-[0.72rem] font-black uppercase tracking-[0.22em] text-secondary">
                 {project.accent} - {project.year}
               </p>
@@ -255,103 +233,6 @@ const controlHubFlow = [
                 </article>
               </div>
             </div>
-
-            <div class="lg:col-span-6">
-              <div class="glass-panel rounded-[2.2rem] border border-outline-variant/15 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.3)] lg:p-5">
-                <div class="overflow-hidden rounded-[1.8rem] border border-outline-variant/15 bg-[linear-gradient(150deg,rgba(10,42,58,0.96),rgba(28,8,50,0.95))] p-4 lg:p-5">
-                  <div class="grid gap-4 lg:grid-cols-[92px_minmax(0,1fr)]">
-                    <aside class="rounded-[1.35rem] border border-white/10 bg-background/25 p-3">
-                      <div class="mb-5 flex items-center gap-2">
-                        <span class="h-2.5 w-2.5 rounded-full bg-secondary"></span>
-                        <span class="text-[0.62rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">Hub</span>
-                      </div>
-                      <div class="space-y-2.5">
-                        {controlHubSidebar.map((item) => (
-                          <div class="rounded-full border border-white/8 bg-white/5 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
-                            {item}
-                          </div>
-                        ))}
-                      </div>
-                    </aside>
-
-                    <div class="space-y-4">
-                      <div class="grid gap-3 sm:grid-cols-3">
-                        {controlHubSignals.map((item) => (
-                          <div class="rounded-[1.2rem] border border-white/10 bg-white/6 px-4 py-4">
-                            <p class="text-[0.6rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
-                              {item.label}
-                            </p>
-                            <p class="mt-2 text-lg font-headline font-bold text-on-surface">{item.value}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div class="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.95fr)]">
-                        <div class="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
-                          <div class="flex items-center justify-between gap-4">
-                            <div>
-                              <p class="text-[0.62rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">Metricas</p>
-                              <h2 class="mt-2 font-headline text-lg font-bold text-on-surface">Panorama semanal</h2>
-                            </div>
-                            <span class="rounded-full border border-secondary/25 bg-secondary/10 px-3 py-1 text-[0.62rem] font-black uppercase tracking-[0.16em] text-secondary">
-                              en tiempo real
-                            </span>
-                          </div>
-
-                          <div class="mt-6 flex h-40 items-end gap-2">
-                            {controlHubBars.map((bar) => (
-                              <div class="flex-1 rounded-t-full bg-[linear-gradient(180deg,rgba(177,161,255,0.95),rgba(0,210,253,0.28))]" style={`height:${bar}px;`}></div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div class="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
-                          <p class="text-[0.62rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">Alertas</p>
-                          <div class="mt-5 space-y-3">
-                            {controlHubAlerts.map((item) => (
-                              <div class="rounded-[1.1rem] border border-white/8 bg-background/28 px-4 py-3">
-                                <p class={`text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.tone}`}>activo</p>
-                                <p class="mt-2 text-sm leading-6 text-on-surface">{item.title}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="grid gap-4 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-                        <div class="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
-                          <p class="text-[0.62rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">Actividad reciente</p>
-                          <div class="mt-5 space-y-3">
-                            {controlHubActivity.map((item, index) => (
-                              <div class="flex items-start gap-3">
-                                <span class="mt-2 inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border border-secondary/25 bg-secondary/10 text-[0.65rem] font-black text-secondary">
-                                  {index + 1}
-                                </span>
-                                <p class="text-sm leading-6 text-on-surface-variant">{item}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div class="rounded-[1.5rem] border border-white/10 bg-white/6 p-4">
-                          <p class="text-[0.62rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">Decision queue</p>
-                          <div class="mt-5 space-y-3">
-                            <div class="rounded-[1.1rem] border border-white/8 bg-background/28 px-4 py-3">
-                              <p class="text-[0.62rem] font-black uppercase tracking-[0.16em] text-primary">pricing</p>
-                              <p class="mt-2 text-sm leading-6 text-on-surface">Definir ajuste de paquete intermedio.</p>
-                            </div>
-                            <div class="rounded-[1.1rem] border border-white/8 bg-background/28 px-4 py-3">
-                              <p class="text-[0.62rem] font-black uppercase tracking-[0.16em] text-secondary">mobile</p>
-                              <p class="mt-2 text-sm leading-6 text-on-surface">Revisar caida de activacion en onboarding.</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
 
           <section class="site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
@@ -368,7 +249,7 @@ const controlHubFlow = [
                     <h2 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Modulos principales</h2>
                   </div>
                   <p class="max-w-xl text-sm leading-7 text-on-surface-variant">
-                    La pantalla se penso para leer estado, detectar ruido importante y convertir observaciones en decisiones.
+                    La interfaz se penso para hacer visible el recorrido entre paciente, estudiante y supervision docente.
                   </p>
                 </div>
 
@@ -526,6 +407,64 @@ const controlHubFlow = [
           </section>
         </>
       )}
+
+      {project.liveUrl ? (
+        <section class="site-shell site-shell--main mx-auto mt-12 max-w-7xl">
+          <div class="glass-panel overflow-hidden rounded-[2rem] border border-outline-variant/15 p-5 shadow-[0_28px_80px_rgba(0,0,0,0.22)] sm:p-6 lg:p-8">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div class="max-w-3xl">
+                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Vista interactiva</p>
+                <h2 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+                  Explora Docqee desde el portafolio
+                </h2>
+                <p class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
+                  Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha.
+                </p>
+              </div>
+
+              <div class="flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5"
+                >
+                  Abrir en pestaña nueva
+                </a>
+                <a
+                  href="/#contact"
+                  class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-5 py-3 text-sm font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5"
+                >
+                  Hablar del proyecto
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-6 overflow-hidden rounded-[1.7rem] border border-outline-variant/18 bg-white shadow-[0_22px_60px_rgba(8,16,38,0.22)]">
+              <div class="flex items-center gap-2 border-b border-slate-200 bg-slate-100 px-4 py-3">
+                <span class="h-3 w-3 rounded-full bg-rose-400"></span>
+                <span class="h-3 w-3 rounded-full bg-amber-400"></span>
+                <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+                <span class="ml-3 rounded-full bg-white px-3 py-1 text-xs font-semibold tracking-tight text-slate-500">
+                  {project.liveUrl}
+                </span>
+              </div>
+
+              <iframe
+                src={project.liveUrl}
+                title={`Demo interactiva de ${project.title}`}
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                class="h-[34rem] w-full bg-white sm:h-[38rem] lg:h-[46rem]"
+              ></iframe>
+            </div>
+
+            <p class="mt-4 text-xs font-semibold tracking-tight text-on-surface-variant sm:text-sm">
+              Si tu navegador bloquea la vista embebida, puedes abrir Docqee en una pestaña nueva con el boton superior.
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       <section class="site-shell site-shell--main mx-auto mt-12 max-w-7xl">
         <div class="mb-6 flex items-center justify-between gap-4">

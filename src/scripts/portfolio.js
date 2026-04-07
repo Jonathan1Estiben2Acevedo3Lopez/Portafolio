@@ -40,6 +40,13 @@ const content = {
     },
     projects: {
       title: "Proyectos",
+      liveDemoLabel: "Proyecto real",
+      imageAlt: "Vista previa de Docqee",
+      interactCta: "Interactuar",
+      detailCta: "Ver ficha",
+      openSiteCta: "Abrir sitio",
+      modalLabel: "Demo interactiva",
+      closePreview: "Cerrar",
       filters: {
         all: "Todos",
         web: "Web",
@@ -48,15 +55,17 @@ const content = {
       },
       items: [
         {
-          slug: "control-hub",
-          title: "Control Hub",
+          slug: "docqee",
+          title: "Docqee",
           category: "web",
           year: "2026",
-          tag: "Dashboard",
+          tag: "Proyecto de grado",
           description:
-            "Panel para visualizar metricas, actividad y decisiones de producto en tiempo real.",
-          accent: "Sistema interno",
-          href: "/proyectos/control-hub",
+            "Plataforma para conectar pacientes con atencion odontologica universitaria organizada y supervisada.",
+          accent: "HealthTech",
+          href: "/proyectos/docqee",
+          liveUrl: "https://docqee.vercel.app/",
+          previewImage: "/docqee-preview.png",
           visualClass: "visual-control",
         },
         {
@@ -429,6 +438,13 @@ const content = {
     },
     projects: {
       title: "Projects",
+      liveDemoLabel: "Real project",
+      imageAlt: "Docqee preview",
+      interactCta: "Interact",
+      detailCta: "View case",
+      openSiteCta: "Open site",
+      modalLabel: "Interactive demo",
+      closePreview: "Close",
       filters: {
         all: "All",
         web: "Web",
@@ -437,15 +453,17 @@ const content = {
       },
       items: [
         {
-          slug: "control-hub",
-          title: "Control Hub",
+          slug: "docqee",
+          title: "Docqee",
           category: "web",
           year: "2026",
-          tag: "Dashboard",
+          tag: "Degree project",
           description:
-            "A control panel to surface metrics, activity and product decisions in real time.",
-          accent: "Internal system",
-          href: "/proyectos/control-hub",
+            "A platform that connects patients with supervised university dental care through a clearer digital experience.",
+          accent: "HealthTech",
+          href: "/proyectos/docqee",
+          liveUrl: "https://docqee.vercel.app/",
+          previewImage: "/docqee-preview.png",
           visualClass: "visual-control",
         },
         {
@@ -798,6 +816,9 @@ const state = {
   aboutFilter: "all",
   activeMedia: 0,
   menuOpen: false,
+  projectPreviewOpen: false,
+  activeProjectPreviewTitle: "Docqee",
+  activeProjectPreviewUrl: "https://docqee.vercel.app/",
   articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
   headerOffset: 88,
   sectionMetrics: [],
@@ -825,6 +846,11 @@ const elements = {
   footerDescription: document.getElementById("footer-description"),
   footerYear: document.getElementById("footer-year"),
   contactGrid: document.getElementById("contact-grid"),
+  projectPreviewModal: document.getElementById("project-preview-modal"),
+  projectPreviewModalTitle: document.getElementById("project-preview-modal-title"),
+  projectPreviewModalFrame: document.getElementById("project-preview-iframe"),
+  projectPreviewOpenSite: document.getElementById("project-preview-open-site"),
+  projectPreviewClose: document.getElementById("project-preview-close"),
   themeToggle: document.getElementById("theme-toggle"),
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
   languageToggle: document.getElementById("language-toggle"),
@@ -1029,6 +1055,7 @@ function applyStaticCopy() {
 
   syncLanguageButtons();
   syncThemeButton();
+  syncProjectPreviewModalCopy();
   queueSectionMetricsRefresh();
 }
 
@@ -1109,14 +1136,116 @@ function renderArticleFilters() {
   });
 }
 
+function syncProjectPreviewModalCopy() {
+  const projectCopy = getCopy("projects");
+
+  if (!elements.projectPreviewModal || !elements.projectPreviewModalTitle || !elements.projectPreviewOpenSite || !elements.projectPreviewClose) {
+    return;
+  }
+
+  const modalLabel = elements.projectPreviewModal.querySelector(".project-preview-window-label");
+
+  if (modalLabel) {
+    modalLabel.textContent = projectCopy.modalLabel;
+  }
+
+  elements.projectPreviewModalTitle.textContent = state.activeProjectPreviewTitle;
+  elements.projectPreviewOpenSite.textContent = projectCopy.openSiteCta;
+  elements.projectPreviewOpenSite.href = state.activeProjectPreviewUrl;
+  elements.projectPreviewClose.textContent = projectCopy.closePreview;
+  elements.projectPreviewClose.setAttribute("aria-label", projectCopy.closePreview);
+}
+
+function openProjectPreview(url, title) {
+  state.projectPreviewOpen = true;
+  state.activeProjectPreviewTitle = title;
+  state.activeProjectPreviewUrl = url;
+
+  syncProjectPreviewModalCopy();
+
+  elements.projectPreviewModalFrame.src = url;
+  elements.projectPreviewModal.classList.add("is-open");
+  elements.projectPreviewModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("project-preview-open");
+}
+
+function closeProjectPreview() {
+  if (!state.projectPreviewOpen) {
+    return;
+  }
+
+  state.projectPreviewOpen = false;
+  elements.projectPreviewModal.classList.remove("is-open");
+  elements.projectPreviewModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("project-preview-open");
+  elements.projectPreviewModalFrame.src = "about:blank";
+}
+
 function renderProjects() {
   const projects = getCopy("projects.items").filter((item) => {
     return state.filter === "all" ? true : item.category === state.filter;
   });
+  const projectCopy = getCopy("projects");
 
   elements.projectsGrid.innerHTML = projects
     .map((item) => {
       const detailHref = item.href || `/proyectos/${item.slug}`;
+
+      if (item.liveUrl) {
+        return `
+          <article class="project-card project-live-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+            <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
+              <img
+                src="${item.previewImage}"
+                alt="${projectCopy.imageAlt}"
+                loading="lazy"
+                class="project-preview-image"
+              />
+            </div>
+            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
+                  <h3 class="mt-2 font-headline text-[1.45rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
+                </div>
+                ${renderIcon("north_east", "text-primary")}
+              </div>
+              <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+              <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
+                <span>${item.tag}</span>
+                <span class="h-1 w-1 rounded-full bg-outline"></span>
+                <span>${item.year}</span>
+              </div>
+              <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-primary transition hover:-translate-y-0.5"
+                  data-project-modal-open="${item.liveUrl}"
+                  data-project-title="${item.title}"
+                >
+                  ${projectCopy.interactCta}
+                </button>
+                <a
+                  class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-secondary transition hover:border-secondary hover:bg-secondary/5"
+                  href="${item.liveUrl}"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${projectCopy.openSiteCta}
+                </a>
+                <a
+                  class="inline-flex items-center justify-center rounded-2xl border border-outline-variant/22 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-surface transition hover:border-primary/45 hover:text-primary"
+                  href="${detailHref}"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${projectCopy.detailCta}
+                </a>
+              </div>
+            </div>
+          </article>
+        `;
+      }
 
       return `
         <a
@@ -1773,6 +1902,17 @@ function wireEvents() {
     });
   });
 
+  elements.projectsGrid?.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-project-modal-open]");
+
+    if (!trigger) {
+      return;
+    }
+
+    event.preventDefault();
+    openProjectPreview(trigger.dataset.projectModalOpen, trigger.dataset.projectTitle || "Docqee");
+  });
+
   elements.themeToggle.addEventListener("click", () => {
     applyTheme(state.theme === "dark" ? "light" : "dark");
   });
@@ -1793,6 +1933,18 @@ function wireEvents() {
       elements.menuToggle.innerHTML = renderIcon("menu", "menu-toggle-icon");
       queueSectionMetricsRefresh();
     });
+  });
+
+  elements.projectPreviewModal?.addEventListener("click", (event) => {
+    if (event.target.closest("[data-project-modal-close]")) {
+      closeProjectPreview();
+    }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeProjectPreview();
+    }
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });
