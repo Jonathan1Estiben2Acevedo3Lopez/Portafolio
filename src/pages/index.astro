@@ -39,9 +39,10 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
           window.history.scrollRestoration = "manual";
         }
 
+        const shouldResetToHome = !window.location.hash;
         const resetToHome = () => {
-          if (window.location.hash) {
-            window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+          if (!shouldResetToHome) {
+            return;
           }
 
           window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -400,7 +401,7 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
                 id="project-preview-open-site"
                 href="https://docqee.vercel.app/"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 class="project-preview-open-link"
               >
                 Ir al sitio
@@ -424,6 +425,8 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
               title="Vista interactiva del proyecto"
               loading="lazy"
               referrerpolicy="strict-origin-when-cross-origin"
+              sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+              allow="fullscreen"
               class="project-preview-browser-frame"
             ></iframe>
           </div>

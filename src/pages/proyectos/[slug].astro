@@ -89,69 +89,6 @@ const controlHubFlow = [
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <script is:inline src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script is:inline>
-      const colorVar = (token) => `rgb(var(${token}) / <alpha-value>)`;
-
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "on-background": colorVar("--color-on-background"),
-              "on-primary-fixed": colorVar("--color-on-primary-fixed"),
-              "inverse-on-surface": colorVar("--color-inverse-on-surface"),
-              "on-error-container": colorVar("--color-on-error-container"),
-              "on-secondary-fixed-variant": colorVar("--color-on-secondary-fixed-variant"),
-              "on-secondary-fixed": colorVar("--color-on-secondary-fixed"),
-              outline: colorVar("--color-outline"),
-              background: colorVar("--color-background"),
-              "error-container": colorVar("--color-error-container"),
-              error: colorVar("--color-error"),
-              "primary-container": colorVar("--color-primary-container"),
-              "surface-container-highest": colorVar("--color-surface-container-highest"),
-              "secondary-fixed-dim": colorVar("--color-secondary-fixed-dim"),
-              "on-primary-fixed-variant": colorVar("--color-on-primary-fixed-variant"),
-              "on-primary-container": colorVar("--color-on-primary-container"),
-              "surface-dim": colorVar("--color-surface-dim"),
-              "secondary-fixed": colorVar("--color-secondary-fixed"),
-              "primary-fixed-dim": colorVar("--color-primary-fixed-dim"),
-              "surface-variant": colorVar("--color-surface-variant"),
-              "secondary-dim": colorVar("--color-secondary-dim"),
-              "on-secondary-container": colorVar("--color-on-secondary-container"),
-              secondary: colorVar("--color-secondary"),
-              "on-primary": colorVar("--color-on-primary"),
-              "outline-variant": colorVar("--color-outline-variant"),
-              "secondary-container": colorVar("--color-secondary-container"),
-              surface: colorVar("--color-surface"),
-              "inverse-primary": colorVar("--color-inverse-primary"),
-              "on-secondary": colorVar("--color-on-secondary"),
-              "surface-bright": colorVar("--color-surface-bright"),
-              primary: colorVar("--color-primary"),
-              "on-surface": colorVar("--color-on-surface"),
-              "inverse-surface": colorVar("--color-inverse-surface"),
-              "surface-container-high": colorVar("--color-surface-container-high"),
-              "surface-container-lowest": colorVar("--color-surface-container-lowest"),
-              tertiary: colorVar("--color-tertiary"),
-              "surface-container-low": colorVar("--color-surface-container-low"),
-              "surface-container": colorVar("--color-surface-container"),
-              "on-surface-variant": colorVar("--color-on-surface-variant"),
-            },
-            fontFamily: {
-              headline: ["Space Grotesk", "sans-serif"],
-              body: ["Manrope", "sans-serif"],
-              label: ["Manrope", "sans-serif"],
-            },
-            borderRadius: {
-              DEFAULT: "0.125rem",
-              lg: "0.25rem",
-              xl: "0.5rem",
-              full: "9999px",
-            },
-          },
-        },
-      };
-    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="bg-background font-body text-on-surface selection:bg-secondary/30">
@@ -173,16 +110,6 @@ const controlHubFlow = [
         </a>
 
         <div class="flex items-center gap-3">
-          <button
-            type="button"
-            id="detail-language-toggle"
-            class="lang-toggle border border-outline-variant/20 bg-surface-container-highest/50"
-            aria-label="Switch to English"
-            title="Switch to English"
-          >
-            <span id="detail-language-flag" class="inline-flex" aria-hidden="true"></span>
-          </button>
-
           <button
             type="button"
             id="detail-theme-toggle"
@@ -426,7 +353,7 @@ const controlHubFlow = [
                 <a
                   href={project.liveUrl}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   class="inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5"
                 >
                   Abrir en pestaña nueva
@@ -455,6 +382,8 @@ const controlHubFlow = [
                 title={`Demo interactiva de ${project.title}`}
                 loading="lazy"
                 referrerpolicy="strict-origin-when-cross-origin"
+                sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                allow="fullscreen"
                 class="h-[34rem] w-full bg-white sm:h-[38rem] lg:h-[46rem]"
               ></iframe>
             </div>
@@ -504,56 +433,12 @@ const controlHubFlow = [
     <script is:inline>
       (() => {
         const copy = {
-          es: {
-            back: "Volver al portafolio",
-            relatedTitle: "Otros proyectos",
-            relatedCta: "Ver todos",
-            themeToDark: "Cambiar a modo oscuro",
-            themeToLight: "Cambiar a modo claro",
-            switchToEnglish: "Switch to English",
-          },
-          en: {
-            back: "Back to portfolio",
-            relatedTitle: "More projects",
-            relatedCta: "View all",
-            themeToDark: "Switch to dark mode",
-            themeToLight: "Switch to light mode",
-            switchToSpanish: "Cambiar a espanol",
-          },
+          themeToDark: "Cambiar a modo oscuro",
+          themeToLight: "Cambiar a modo claro",
         };
 
-        const languageToggle = document.getElementById("detail-language-toggle");
-        const languageFlag = document.getElementById("detail-language-flag");
         const themeToggle = document.getElementById("detail-theme-toggle");
         const themeToggleIcon = document.getElementById("detail-theme-toggle-icon");
-        const backLabel = document.getElementById("detail-back-label");
-        const relatedTitle = document.getElementById("detail-related-title");
-        const relatedLink = document.getElementById("detail-related-link");
-
-        const flagMarkup = {
-          es: `
-            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" fill="#FCD116"></circle>
-              <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893"></path>
-              <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126"></path>
-            </svg>
-          `,
-          en: `
-            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
-              <defs>
-                <clipPath id="flag-us-detail-project">
-                  <circle cx="12" cy="12" r="10"></circle>
-                </clipPath>
-              </defs>
-              <g clip-path="url(#flag-us-detail-project)">
-                <rect width="24" height="24" fill="#B22234"></rect>
-                <path d="M0 2.8h24M0 6h24M0 9.2h24M0 12.4h24M0 15.6h24M0 18.8h24M0 22h24" stroke="#FFFFFF" stroke-width="1.6"></path>
-                <rect width="11" height="10.6" fill="#3C3B6E"></rect>
-              </g>
-              <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(0,0,0,0.08)"></circle>
-            </svg>
-          `,
-        };
 
         const themeIconMarkup = {
           dark: `
@@ -576,10 +461,15 @@ const controlHubFlow = [
           `,
         };
 
-        const storedLang = window.localStorage.getItem("portfolio-lang") || "es";
         const storedTheme = document.documentElement.dataset.theme || window.localStorage.getItem("portfolio-theme") || "dark";
+        const state = {
+          theme: storedTheme,
+        };
+
+        document.documentElement.lang = "es";
 
         const applyTheme = (theme, persist = true) => {
+          state.theme = theme;
           document.documentElement.classList.toggle("dark", theme === "dark");
           document.documentElement.classList.toggle("light", theme === "light");
           document.documentElement.dataset.theme = theme;
@@ -593,57 +483,13 @@ const controlHubFlow = [
           }
 
           if (themeToggle) {
-            const label = theme === "dark" ? copy[state.lang].themeToLight : copy[state.lang].themeToDark;
+            const label = theme === "dark" ? copy.themeToLight : copy.themeToDark;
             themeToggle.setAttribute("aria-label", label);
             themeToggle.setAttribute("title", label);
           }
         };
 
-        const state = {
-          lang: storedLang,
-          theme: storedTheme,
-        };
-
-        const applyLanguage = (lang, persist = true) => {
-          state.lang = lang;
-          document.documentElement.lang = lang;
-
-          if (persist) {
-            window.localStorage.setItem("portfolio-lang", lang);
-          }
-
-          if (backLabel) {
-            backLabel.textContent = copy[lang].back;
-          }
-
-          if (relatedTitle) {
-            relatedTitle.textContent = copy[lang].relatedTitle;
-          }
-
-          if (relatedLink) {
-            relatedLink.textContent = copy[lang].relatedCta;
-          }
-
-          if (languageFlag) {
-            languageFlag.innerHTML = flagMarkup[lang];
-          }
-
-          if (languageToggle) {
-            const toggleLabel = lang === "es" ? copy.es.switchToEnglish : copy.en.switchToSpanish;
-            languageToggle.setAttribute("aria-label", toggleLabel);
-            languageToggle.setAttribute("title", toggleLabel);
-            languageToggle.classList.toggle("is-active", lang === "en");
-          }
-
-          applyTheme(state.theme, false);
-        };
-
-        applyLanguage(state.lang, false);
         applyTheme(state.theme, false);
-
-        languageToggle?.addEventListener("click", () => {
-          applyLanguage(state.lang === "es" ? "en" : "es");
-        });
 
         themeToggle?.addEventListener("click", () => {
           state.theme = state.theme === "dark" ? "light" : "dark";

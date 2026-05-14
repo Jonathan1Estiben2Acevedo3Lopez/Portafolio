@@ -918,6 +918,14 @@ function renderIcon(icon, className = "") {
     return strokeIcon('<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path>');
   }
 
+  if (icon === "download") {
+    return strokeIcon('<path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>');
+  }
+
+  if (icon === "visibility") {
+    return strokeIcon('<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="3"></circle>');
+  }
+
   if (icon === "light_mode") {
     return strokeIcon('<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2"></path><path d="M12 19.8V22"></path><path d="m4.93 4.93 1.56 1.56"></path><path d="m17.51 17.51 1.56 1.56"></path><path d="M2 12h2.2"></path><path d="M19.8 12H22"></path><path d="m4.93 19.07 1.56-1.56"></path><path d="m17.51 6.49 1.56-1.56"></path>');
   }
@@ -1099,7 +1107,7 @@ function renderHeroLinks() {
           <a
             class="hero-action-link"
             href="${item.href}"
-            ${isExternal ? 'target="_blank" rel="noreferrer"' : ""}
+            ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}
             ${item.downloadable ? "download" : ""}
           >
             ${renderIcon(item.icon, "hero-action-icon")}
@@ -1229,15 +1237,13 @@ function renderProjects() {
                   class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-secondary transition hover:border-secondary hover:bg-secondary/5"
                   href="${item.liveUrl}"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   ${projectCopy.openSiteCta}
                 </a>
                 <a
                   class="inline-flex items-center justify-center rounded-2xl border border-outline-variant/22 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-surface transition hover:border-primary/45 hover:text-primary"
                   href="${detailHref}"
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   ${projectCopy.detailCta}
                 </a>
@@ -1251,8 +1257,6 @@ function renderProjects() {
         <a
           class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
           href="${detailHref}"
-          target="_blank"
-          rel="noreferrer"
         >
           <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
           <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
@@ -1301,8 +1305,6 @@ function renderArticles(preserveScroll = false) {
           <a
             class="project-card article-mobile-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
             href="${detailHref}"
-            target="_blank"
-            rel="noreferrer"
           >
             <div class="project-visual ${article.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
             <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
@@ -1372,8 +1374,6 @@ function renderArticles(preserveScroll = false) {
   elements.articleFeature.innerHTML = `
     <a
       href="${detailHref}"
-      target="_blank"
-      rel="noreferrer"
       class="article-feature-card group block overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[27.5rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]"
     >
       <div class="article-visual ${active.visualClass} min-h-[160px] lg:min-h-full"></div>
@@ -1665,7 +1665,7 @@ function renderContacts() {
         <a
           class="contact-card group flex min-h-[5.75rem] items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center lg:min-h-[6.15rem]"
           href="${item.href}"
-          ${isExternal ? 'target="_blank" rel="noreferrer"' : ""}
+          ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}
         >
           ${renderIcon(item.icon, "contact-card-icon text-on-surface-variant transition duration-300 group-hover:-translate-y-0.5 group-hover:text-secondary")}
           <div class="min-w-0">

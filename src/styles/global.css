@@ -105,7 +105,6 @@ html.light {
 
 html {
   scroll-behavior: smooth;
-  scrollbar-width: none;
 }
 
 body {
@@ -118,7 +117,6 @@ body {
   transition:
     background-color 220ms ease,
     color 220ms ease;
-  -ms-overflow-style: none;
 }
 
 .site-shell {
@@ -132,11 +130,6 @@ body {
 
 .contact-responsive-grid {
   max-width: var(--contact-shell-max) !important;
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
 }
 
 .icon-symbol {
