@@ -3,10 +3,11 @@ import { Image } from "astro:assets";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import portraitImage from "../assets/Jonathan_Acevedo.webp";
-import portfolioScript from "../scripts/portfolio.js?url";
 import "../styles/global.css";
 
 const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf"));
+const baseUrl = import.meta.env.BASE_URL || "/";
+const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
 ---
 
 <!DOCTYPE html>
@@ -81,9 +82,13 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
   </head>
-  <body class="bg-background font-body text-on-surface selection:bg-secondary/30" data-cv-available={cvFileExists ? "true" : "false"}>
+  <body
+    class="bg-background font-body text-on-surface selection:bg-secondary/30"
+    data-base-url={baseUrl}
+    data-cv-available={cvFileExists ? "true" : "false"}
+  >
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
       <div class="orb orb-primary"></div>
       <div class="orb orb-secondary"></div>
@@ -181,10 +186,10 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
           <div
             class="hero-mascot hero-mascot--kira"
             data-hero-mascot
-            data-idle-src="/pets/vscode-pets/dog/brown_idle_8fps.gif"
-            data-walk-src="/pets/vscode-pets/dog/brown_walk_8fps.gif"
-            data-title-src="/pets/vscode-pets/dog/brown_swipe_8fps.gif"
-            data-card-src="/pets/vscode-pets/dog/brown_walk_8fps.gif"
+            data-idle-src={withBase("/pets/vscode-pets/dog/brown_idle_8fps.gif")}
+            data-walk-src={withBase("/pets/vscode-pets/dog/brown_walk_8fps.gif")}
+            data-title-src={withBase("/pets/vscode-pets/dog/brown_swipe_8fps.gif")}
+            data-card-src={withBase("/pets/vscode-pets/dog/brown_walk_8fps.gif")}
             data-pet-name="Kira"
           >
             <div class="hero-mascot-core">
@@ -192,7 +197,7 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
               <span class="hero-mascot-name">Kira</span>
               <img
                 class="hero-mascot-sprite"
-                src="/pets/vscode-pets/dog/brown_walk_8fps.gif"
+                src={withBase("/pets/vscode-pets/dog/brown_walk_8fps.gif")}
                 alt=""
                 draggable="false"
               />
@@ -202,10 +207,10 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
           <div
             class="hero-mascot hero-mascot--paco"
             data-hero-mascot
-            data-idle-src="/pets/vscode-pets/dog/black_idle_8fps.gif"
-            data-walk-src="/pets/vscode-pets/dog/black_walk_8fps.gif"
-            data-title-src="/pets/vscode-pets/dog/black_walk_8fps.gif"
-            data-card-src="/pets/vscode-pets/dog/black_swipe_8fps.gif"
+            data-idle-src={withBase("/pets/vscode-pets/dog/black_idle_8fps.gif")}
+            data-walk-src={withBase("/pets/vscode-pets/dog/black_walk_8fps.gif")}
+            data-title-src={withBase("/pets/vscode-pets/dog/black_walk_8fps.gif")}
+            data-card-src={withBase("/pets/vscode-pets/dog/black_swipe_8fps.gif")}
             data-pet-name="Paco"
           >
             <div class="hero-mascot-core">
@@ -214,7 +219,7 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
               <span class="hero-mascot-name">Paco</span>
               <img
                 class="hero-mascot-sprite"
-                src="/pets/vscode-pets/dog/black_walk_8fps.gif"
+                src={withBase("/pets/vscode-pets/dog/black_walk_8fps.gif")}
                 alt=""
                 draggable="false"
               />
@@ -507,6 +512,8 @@ const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Ejemplo.pdf
       </div>
     </div>
 
-    <script type="module" src={portfolioScript}></script>
+    <script>
+      import "../scripts/portfolio.js";
+    </script>
   </body>
 </html>

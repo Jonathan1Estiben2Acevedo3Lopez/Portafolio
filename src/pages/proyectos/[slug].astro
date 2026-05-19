@@ -12,6 +12,8 @@ export function getStaticPaths() {
 const { project } = Astro.props;
 const relatedProjects = projectDetails.filter((item) => item.slug !== project.slug).slice(0, 2);
 const isDocqee = project.slug === "docqee";
+const baseUrl = import.meta.env.BASE_URL || "/";
+const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
 
 const controlHubMetrics = [
   { value: "3", label: "roles principales" },
@@ -89,7 +91,7 @@ const controlHubFlow = [
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
   </head>
   <body class="bg-background font-body text-on-surface selection:bg-secondary/30">
     <div class="pointer-events-none fixed inset-0 overflow-hidden">
@@ -102,7 +104,7 @@ const controlHubFlow = [
       <nav class="site-shell site-shell--nav mx-auto flex max-w-7xl items-center justify-between rounded-[1.7rem] border border-outline-variant/15 bg-background/72 px-5 py-3 shadow-[0_18px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl lg:px-7">
         <a
           id="detail-back-link"
-          href="/#projects"
+          href={withBase("/#projects")}
           class="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-highest/50 px-4 py-2 text-sm font-bold tracking-tight text-on-surface transition hover:border-secondary hover:text-secondary"
         >
           <span class="material-symbols-outlined text-[1.15rem]">arrow_back</span>
@@ -359,7 +361,7 @@ const controlHubFlow = [
                   Abrir en pestaña nueva
                 </a>
                 <a
-                  href="/#contact"
+                  href={withBase("/#contact")}
                   class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-5 py-3 text-sm font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5"
                 >
                   Hablar del proyecto
@@ -400,7 +402,7 @@ const controlHubFlow = [
           <h2 id="detail-related-title" class="font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">Otros proyectos</h2>
           <a
             id="detail-related-link"
-            href="/#projects"
+            href={withBase("/#projects")}
             class="text-sm font-bold tracking-tight text-secondary transition hover:text-on-surface"
           >
             Ver todos
@@ -410,7 +412,7 @@ const controlHubFlow = [
         <div class="grid gap-6 lg:grid-cols-2">
           {relatedProjects.map((item) => (
             <a
-              href={`/proyectos/${item.slug}`}
+              href={withBase(`/proyectos/${item.slug}`)}
               class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
             >
               <div class={`project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]`}></div>

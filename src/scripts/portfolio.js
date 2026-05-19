@@ -4,6 +4,27 @@ import certificateCards from "../data/certificates.json";
 import interestCards from "../data/interests.json";
 import projectCards from "../data/projects.json";
 
+const baseUrl = document.body?.dataset.baseUrl || "/";
+const basePath = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
+function withBase(path) {
+  if (!path || /^(?:[a-z][a-z\d+\-.]*:|#)/i.test(path)) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (!basePath || basePath === "/") {
+    return normalizedPath;
+  }
+
+  if (normalizedPath === basePath || normalizedPath.startsWith(`${basePath}/`)) {
+    return normalizedPath;
+  }
+
+  return `${basePath}${normalizedPath}`;
+}
+
 const getLocalizedItems = (items, language) =>
   items.map(({ copy, ...item }) => ({
     ...item,
@@ -562,11 +583,12 @@ function renderHeroLinks() {
     .map((item) => {
       if (item.active) {
         const isExternal = item.href.startsWith("http") || item.newTab;
+        const href = withBase(item.href);
 
         return `
           <a
             class="hero-action-link"
-            href="${item.href}"
+            href="${href}"
             ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}
             ${item.downloadable ? "download" : ""}
           >
@@ -663,7 +685,7 @@ function buildCertificateViewerUrl(item) {
     title: item.title,
   });
 
-  return `/certificados/ver/?${params.toString()}`;
+  return withBase(`/certificados/ver/?${params.toString()}`);
 }
 
 function renderCertificatePreview(item) {
@@ -672,7 +694,7 @@ function renderCertificatePreview(item) {
   if (preview) {
     return `
       <img
-        src="${preview}"
+        src="${withBase(preview)}"
         alt="${item.title}"
         loading="lazy"
         draggable="false"
@@ -781,14 +803,14 @@ function renderProjects() {
 
   elements.projectsGrid.innerHTML = projects
     .map((item) => {
-      const detailHref = item.href || `/proyectos/${item.slug}`;
+      const detailHref = withBase(item.href || `/proyectos/${item.slug}`);
 
       if (item.liveUrl) {
         return `
           <article class="project-card project-live-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
             <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
               <img
-                src="${item.previewImage}"
+                src="${withBase(item.previewImage)}"
                 alt="${projectCopy.imageAlt}"
                 loading="lazy"
                 class="project-preview-image"
@@ -883,7 +905,7 @@ function renderArticles(preserveScroll = false) {
   if (mobileLayout) {
     elements.articlesList.innerHTML = articles
       .map((article) => {
-        const detailHref = `/blog/${article.slug}`;
+        const detailHref = withBase(`/blog/${article.slug}`);
 
         return `
           <a
@@ -953,7 +975,7 @@ function renderArticles(preserveScroll = false) {
     elements.articlesList.scrollTop = listScrollOffset;
   }
 
-  const detailHref = `/blog/${active.slug}`;
+  const detailHref = withBase(`/blog/${active.slug}`);
 
   elements.articleFeature.innerHTML = `
     <a
