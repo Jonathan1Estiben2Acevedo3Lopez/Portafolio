@@ -83,7 +83,7 @@ const content = {
     projects: {
       title: "Proyectos",
       liveDemoLabel: "Proyecto real",
-      imageAlt: "Vista previa de Docqee",
+      imageAlt: "Vista previa del proyecto",
       interactCta: "Interactuar",
       detailCta: "Ver ficha",
       openSiteCta: "Abrir sitio",
@@ -187,7 +187,7 @@ const content = {
     projects: {
       title: "Projects",
       liveDemoLabel: "Real project",
-      imageAlt: "Docqee preview",
+      imageAlt: "Project preview",
       interactCta: "Interact",
       detailCta: "View case",
       openSiteCta: "Open site",
@@ -811,7 +811,7 @@ function renderProjects() {
             <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
               <img
                 src="${withBase(item.previewImage)}"
-                alt="${projectCopy.imageAlt}"
+                alt="${projectCopy.imageAlt}: ${item.title}"
                 loading="lazy"
                 class="project-preview-image"
               />
@@ -830,17 +830,17 @@ function renderProjects() {
                 <span class="h-1 w-1 rounded-full bg-outline"></span>
                 <span>${item.year}</span>
               </div>
-              <div class="mt-3 flex flex-col gap-2 sm:flex-row">
+              <div class="project-card-actions mt-3">
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-primary transition hover:-translate-y-0.5"
+                  class="project-card-action bg-primary text-on-primary transition hover:-translate-y-0.5"
                   data-project-modal-open="${item.liveUrl}"
                   data-project-title="${item.title}"
                 >
                   ${projectCopy.interactCta}
                 </button>
                 <a
-                  class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-secondary transition hover:border-secondary hover:bg-secondary/5"
+                  class="project-card-action border border-secondary/25 text-secondary transition hover:border-secondary hover:bg-secondary/5"
                   href="${item.liveUrl}"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -848,7 +848,7 @@ function renderProjects() {
                   ${projectCopy.openSiteCta}
                 </a>
                 <a
-                  class="inline-flex items-center justify-center rounded-2xl border border-outline-variant/22 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-surface transition hover:border-primary/45 hover:text-primary"
+                  class="project-card-action border border-outline-variant/22 text-on-surface transition hover:border-primary/45 hover:text-primary"
                   href="${detailHref}"
                 >
                   ${projectCopy.detailCta}

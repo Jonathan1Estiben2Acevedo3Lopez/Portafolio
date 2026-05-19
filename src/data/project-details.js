@@ -49,101 +49,31 @@ export const projectDetails = [
     deliverables: ["Hero de lanzamiento", "Bloques de propuesta", "CTA principal", "Secciones modulares"],
   },
   {
-    slug: "pulse-identity",
-    title: "Pulse Identity",
-    accent: "Branding",
-    tag: "Brand System",
+    slug: "portafolio-web",
+    title: "Portafolio Web",
+    accent: "Personal Web",
+    tag: "Marca personal",
     year: "2026",
-    category: "Marca",
+    category: "Web",
+    previewImage: "/portafolio-web.png",
     visualClass: "visual-brand",
     summary:
-      "Sistema de identidad para unificar tono, piezas digitales y presencia visual en diferentes canales.",
+      "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
     overview:
-      "Pulse Identity se planteo como un sistema base para marcas que necesitan coherencia sin perder flexibilidad. El foco estuvo en crear un lenguaje adaptable para web, redes, presentaciones y activos de producto.",
+      "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
     challenge:
-      "La marca tenia piezas con estilos muy diferentes entre si, lo que hacia dificil construir reconocimiento. El reto era proponer reglas suficientes para ordenar la identidad, sin volverla rigida o repetitiva.",
+      "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
     solution:
-      "Se definieron principios de color, ritmo tipografico, usos de composicion y patrones de aplicacion que permiten mantener una voz clara. El sistema se penso para convivir con distintos formatos sin sentirse partido.",
+      "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
     results: [
-      "Direccion visual consistente en piezas digitales y de comunicacion.",
-      "Reglas claras para escalar la marca sin improvisacion.",
-      "Base lista para evolucionar a un sistema de marca mas amplio.",
+      "Presentacion profesional centralizada en una sola experiencia web.",
+      "Secciones organizadas para proyectos, certificados, perfil e intereses.",
+      "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio.",
     ],
-    stack: ["Brand Strategy", "Visual System", "Typography", "UI Direction", "Documentation"],
-    deliverables: ["Paleta y contraste", "Jerarquia tipografica", "Composiciones base", "Guia de uso"],
-  },
-  {
-    slug: "notes-engine",
-    title: "Notes Engine",
-    accent: "Contenido",
-    tag: "Workflow",
-    year: "2026",
-    category: "Automatizacion",
-    visualClass: "visual-notes",
-    summary:
-      "Flujo para organizar ideas, convertirlas en piezas utilizables y mantener un archivo vivo del proceso.",
-    overview:
-      "Notes Engine organiza el paso entre idea, borrador y salida publicada. El objetivo fue simplificar un proceso que normalmente se dispersa entre notas, tareas sueltas y herramientas que no conversan bien entre si.",
-    challenge:
-      "El problema principal era la perdida de continuidad. Muchas ideas quedaban a mitad de camino o se repetian porque no habia un sistema claro para capturarlas, clasificarlas y convertirlas en contenido accionable.",
-    solution:
-      "Se penso un flujo ligero con estados claros, plantillas reutilizables y puntos de automatizacion utiles. En vez de agregar complejidad, el sistema busca que las decisiones se tomen mas rapido y con mejor visibilidad.",
-    results: [
-      "Proceso mas claro desde captura hasta publicacion.",
-      "Menos repeticion y menos perdida de ideas valiosas.",
-      "Archivo consultable para alimentar nuevas piezas o proyectos.",
-    ],
-    stack: ["Automation Design", "JavaScript", "Content Systems", "Templates", "Process Mapping"],
-    deliverables: ["Mapa del flujo", "Estados y etiquetas", "Plantillas de nota", "Criterios de publicacion"],
-  },
-  {
-    slug: "system-atlas",
-    title: "System Atlas",
-    accent: "Escalabilidad",
-    tag: "Design System",
-    year: "2026",
-    category: "Marca",
-    visualClass: "visual-system",
-    summary:
-      "Biblioteca visual y tecnica para construir interfaces consistentes sin perder personalidad.",
-    overview:
-      "System Atlas funciona como una base compartida para acelerar construccion y mantener coherencia. Mas que una coleccion de componentes, el proyecto se enfoco en documentar criterio: cuando usar algo, por que existe y como debe evolucionar.",
-    challenge:
-      "El equipo necesitaba velocidad, pero cada nueva pantalla tendia a resolver patrones desde cero. Eso afectaba calidad, tiempos y consistencia visual. El reto fue ordenar sin apagar la expresividad del producto.",
-    solution:
-      "Se construyo una biblioteca con piezas reutilizables, variables visuales y lineamientos de composicion. Tambien se documentaron estados, espaciados y principios de adaptacion para que el sistema sirviera de verdad en producto.",
-    results: [
-      "Menos tiempo de construccion para nuevas vistas.",
-      "Consistencia visual mas fuerte entre flujos y equipos.",
-      "Base clara para escalar decisiones de interfaz.",
-    ],
-    stack: ["Design System", "Tokens", "UI Documentation", "Component Strategy", "Front-end Thinking"],
-    deliverables: ["Componentes base", "Variables y tokens", "Lineamientos de layout", "Documentacion de uso"],
-  },
-  {
-    slug: "agent-flow",
-    title: "Agent Flow",
-    accent: "Productividad",
-    tag: "AI Ops",
-    year: "2026",
-    category: "Automatizacion",
-    visualClass: "visual-ai",
-    summary:
-      "Sistema de asistentes y automatizaciones utiles para reducir tareas repetitivas y acelerar entregas.",
-    overview:
-      "Agent Flow explora como usar automatizacion e IA de forma pragmatica en procesos reales. La meta no fue reemplazar criterio humano, sino recortar trabajo operativo para dejar mas tiempo a las decisiones de valor.",
-    challenge:
-      "Muchas tareas pequenas consumian demasiado tiempo: organizacion, seguimiento, preparacion de entregables y documentacion. El reto era automatizar sin romper el tono del trabajo ni generar dependencia de flujos fragiles.",
-    solution:
-      "Se definieron tareas repetibles, reglas simples y puntos de revision humana. El sistema combina automatizacion liviana con asistentes que ayudan a estructurar, resumir y mantener visibilidad del avance.",
-    results: [
-      "Menos tiempo invertido en tareas operativas repetitivas.",
-      "Procesos mas consistentes y faciles de seguir.",
-      "Automatizaciones pensadas para ayudar, no para estorbar.",
-    ],
-    stack: ["AI Workflows", "Automation", "Process Design", "Prompting", "Operational Systems"],
-    deliverables: ["Mapa de tareas", "Automatizaciones base", "Asistentes de apoyo", "Reglas de revision"],
-  },
+    stack: ["Astro", "JavaScript", "Tailwind CSS", "Responsive UI", "Netlify"],
+    deliverables: ["Home del portafolio", "Ficha de proyecto", "Secciones de contenido", "Deploy en Netlify"],
+    liveUrl: "https://jonathanacevedo.netlify.app/",
+  }
 ];
 
 export function getProjectDetailBySlug(slug) {

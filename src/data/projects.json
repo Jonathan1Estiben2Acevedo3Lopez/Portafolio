@@ -11,119 +11,37 @@
       "es": {
         "title": "Docqee",
         "tag": "Proyecto de grado",
-        "description": "Plataforma para conectar pacientes con atención odontológica universitaria organizada y supervisada.",
+        "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontología para prácticas clínicas supervisadas.",
         "accent": "HealthTech"
       },
       "en": {
         "title": "Docqee",
         "tag": "Degree project",
-        "description": "A platform that connects patients with supervised university dental care through a clearer digital experience.",
+        "description": "A platform to connect patients with university dental students for supervised clinical practice.",
         "accent": "HealthTech"
       }
     }
   },
   {
-    "slug": "launch-canvas",
+    "slug": "portafolio-web",
     "category": "web",
     "year": "2026",
-    "href": "/proyectos/launch-canvas",
-    "visualClass": "visual-launch",
-    "copy": {
-      "es": {
-        "title": "Launch Canvas",
-        "tag": "Landing Page",
-        "description": "Landing editorial para presentar una marca personal con ritmo visual y conversión clara.",
-        "accent": "Marketing"
-      },
-      "en": {
-        "title": "Launch Canvas",
-        "tag": "Landing Page",
-        "description": "An editorial landing page for a personal brand with visual rhythm and clear conversion.",
-        "accent": "Marketing"
-      }
-    }
-  },
-  {
-    "slug": "pulse-identity",
-    "category": "branding",
-    "year": "2026",
-    "href": "/proyectos/pulse-identity",
+    "href": "/proyectos/portafolio-web",
+    "liveUrl": "https://jonathanacevedo.netlify.app/",
+    "previewImage": "/portafolio-web.png",
     "visualClass": "visual-brand",
     "copy": {
       "es": {
-        "title": "Pulse Identity",
-        "tag": "Brand System",
-        "description": "Sistema visual modular para alinear tono, piezas digitales y presencia de marca.",
-        "accent": "Branding"
+        "title": "Portafolio Web",
+        "tag": "Marca personal",
+        "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formación, certificados y contenido técnico.",
+        "accent": "Personal Web"
       },
       "en": {
-        "title": "Pulse Identity",
-        "tag": "Brand System",
-        "description": "A modular visual system to align tone, digital pieces and brand presence.",
-        "accent": "Branding"
-      }
-    }
-  },
-  {
-    "slug": "notes-engine",
-    "category": "automation",
-    "year": "2026",
-    "href": "/proyectos/notes-engine",
-    "visualClass": "visual-notes",
-    "copy": {
-      "es": {
-        "title": "Notes Engine",
-        "tag": "Workflow",
-        "description": "Flujo para organizar ideas, publicar actualizaciones y mantener un archivo vivo del proceso.",
-        "accent": "Contenido"
-      },
-      "en": {
-        "title": "Notes Engine",
-        "tag": "Workflow",
-        "description": "A lightweight workflow to organize ideas, publish updates and keep a living archive.",
-        "accent": "Content"
-      }
-    }
-  },
-  {
-    "slug": "system-atlas",
-    "category": "branding",
-    "year": "2026",
-    "href": "/proyectos/system-atlas",
-    "visualClass": "visual-system",
-    "copy": {
-      "es": {
-        "title": "System Atlas",
-        "tag": "Design System",
-        "description": "Biblioteca visual y tecnica para construir interfaces consistentes sin perder personalidad.",
-        "accent": "Escalabilidad"
-      },
-      "en": {
-        "title": "System Atlas",
-        "tag": "Design System",
-        "description": "A visual and technical library to build consistent interfaces without losing character.",
-        "accent": "Scalability"
-      }
-    }
-  },
-  {
-    "slug": "agent-flow",
-    "category": "automation",
-    "year": "2026",
-    "href": "/proyectos/agent-flow",
-    "visualClass": "visual-ai",
-    "copy": {
-      "es": {
-        "title": "Agent Flow",
-        "tag": "AI Ops",
-        "description": "Asistentes y automatizaciones utiles para reducir tareas repetitivas y acelerar entregas.",
-        "accent": "Productividad"
-      },
-      "en": {
-        "title": "Agent Flow",
-        "tag": "AI Ops",
-        "description": "Useful assistants and automations that reduce repetitive work and speed up delivery.",
-        "accent": "Productivity"
+        "title": "Web Portfolio",
+        "tag": "Personal brand",
+        "description": "A personal website created to present my professional profile, projects, experience, education, certificates, and technical content.",
+        "accent": "Personal Web"
       }
     }
   }
