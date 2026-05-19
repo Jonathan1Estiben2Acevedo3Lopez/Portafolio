@@ -1,0 +1,6 @@
+Dog sprite assets from VS Code Pets.
+
+Source: https://github.com/tonybaloney/vscode-pets
+Dog asset credit in VS Code Pets README: NVPH Studio
+Asset license: Creative Commons Attribution-NoDerivatives 4.0 International
+License text copied in dog/license.txt.

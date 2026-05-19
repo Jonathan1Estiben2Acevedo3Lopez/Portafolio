@@ -1,0 +1,299 @@
+[
+  {
+    "slug": "interfaces-que-ayudan-a-decidir",
+    "filter": "web",
+    "visualClass": "visual-control",
+    "copy": {
+      "es": {
+        "category": "Producto digital",
+        "date": "Abril 2026",
+        "readTime": "4 min de lectura",
+        "title": "Interfaces que ayudan a decidir más rápido",
+        "excerpt": "Menos ruido visual, mejor lectura de prioridades y estados.",
+        "body": "Una interfaz útil no solo muestra información: ayuda a tomar decisiones. Cuando los estados, alertas y jerarquías están bien resueltos, el usuario entiende qué mirar primero, qué puede ignorar y qué requiere acción inmediata. Ese criterio vuelve un panel más claro y mucho más valioso.",
+        "introduction": "Una interfaz útil no solo muestra información: ayuda a tomar decisiones. Cuando los estados, alertas y jerarquías están bien resueltos, el usuario entiende qué mirar primero, qué puede ignorar y qué requiere acción inmediata.",
+        "paragraphs": [
+          "En productos con muchas variables, el reto no suele ser la falta de datos sino la falta de claridad. Si todo se ve igual de importante, el usuario gasta energía interpretando la pantalla antes de poder actuar. Ese costo cognitivo se acumula muy rápido.",
+          "Por eso conviene construir capas de lectura: un primer nivel para detectar salud general, un segundo para entender el contexto y un tercero para entrar en detalle. La interfaz se vuelve más útil cuando el orden visual ya sugiere una ruta de decisión.",
+          "Diseñar para decidir significa elegir qué resaltar, qué retrasar y qué esconder hasta que realmente haga falta. Ese criterio hace que un dashboard deje de ser solo informativo y se convierta en una herramienta de trabajo."
+        ],
+        "highlights": [
+          "Prioridades visibles desde el primer vistazo.",
+          "Jerarquía pensada para actuar, no solo observar.",
+          "Estados y alertas con significado real."
+        ]
+      },
+      "en": {
+        "category": "Digital product",
+        "date": "April 2026",
+        "title": "Interfaces that help people decide faster",
+        "excerpt": "Less visual noise, better priority reading and clearer states.",
+        "body": "A useful interface does more than display information: it helps people make decisions. When states, alerts and hierarchy are resolved well, users instantly understand what to check first, what can wait and what needs immediate action. That judgment makes a dashboard far more valuable."
+      }
+    }
+  },
+  {
+    "slug": "sistemas-visuales-que-no-se-sienten-rigidos",
+    "filter": "design",
+    "visualClass": "visual-system",
+    "copy": {
+      "es": {
+        "category": "Diseño de sistemas",
+        "date": "Marzo 2026",
+        "readTime": "5 min de lectura",
+        "title": "Sistemas visuales que no se sienten rígidos",
+        "excerpt": "Cómo crear consistencia sin que la interfaz pierda sorpresa y carácter.",
+        "body": "Cuando un sistema de diseño está bien construido, no limita. Al contrario: permite que cada pantalla tenga una voz propia sin romper la coherencia. La clave está en decidir qué reglas deben ser duras, cuáles pueden ser flexibles y dónde conviene dejar espacio para el gesto visual.",
+        "introduction": "Cuando un sistema de diseño está bien construido, no limita. Al contrario: permite que cada pantalla tenga una voz propia sin romper la coherencia.",
+        "paragraphs": [
+          "El error común es pensar el sistema como una lista de restricciones. Eso suele producir productos consistentes, sí, pero también previsibles y sin respiración. Un sistema sano define estructura, pero también deja márgenes para que el producto tenga momentos memorables.",
+          "No todo debe estar completamente normalizado. Hay reglas que conviene mantener duras, como espaciado, contraste o accesibilidad, y otras que pueden ser más flexibles, como composición, énfasis o ciertos ritmos tipográficos.",
+          "El verdadero trabajo está en decidir dónde hace falta orden absoluto y dónde se puede permitir una variación intencional. Esa mezcla es la que hace que un sistema no se sienta como una plantilla."
+        ],
+        "highlights": [
+          "Consistencia sin perder identidad visual.",
+          "Reglas duras para lo esencial y flexibilidad para el gesto.",
+          "El sistema como soporte, no como jaula."
+        ]
+      },
+      "en": {
+        "category": "Design systems",
+        "date": "March 2026",
+        "title": "Visual systems that do not feel rigid",
+        "excerpt": "How to build consistency without losing surprise and character.",
+        "body": "A strong design system should not flatten the product. It should create enough structure for teams to move faster while leaving room for intentional moments that make the experience feel memorable. The real work is deciding what must stay fixed and what deserves freedom."
+      }
+    }
+  },
+  {
+    "slug": "menos-efectos-mas-direccion",
+    "filter": "web",
+    "visualClass": "visual-launch",
+    "copy": {
+      "es": {
+        "category": "Proceso web",
+        "date": "Febrero 2026",
+        "readTime": "4 min de lectura",
+        "title": "Menos efectos, más dirección",
+        "excerpt": "Animación con criterio: movimiento que explica, no que distrae.",
+        "body": "Las transiciones más potentes no son necesariamente las más complejas. Un portfolio funciona mejor cuando cada animación refuerza jerarquía, contexto o continuidad. Si el movimiento no ayuda a entender, sobra.",
+        "introduction": "Las transiciones más potentes no son necesariamente las más complejas. Un portfolio funciona mejor cuando cada animación refuerza jerarquía, contexto o continuidad.",
+        "paragraphs": [
+          "Mover por mover desgasta. Cuando una pantalla anima demasiadas cosas al mismo tiempo, la experiencia pierde foco y el usuario deja de entender qué importa realmente. El movimiento debería tener un objetivo legible.",
+          "Una buena transición puede conectar dos estados, explicar una relación entre bloques o suavizar un cambio abrupto. Pero para que funcione, necesita entrar en el momento justo y con la intensidad correcta.",
+          "Diseñar animación con criterio es también saber cuándo no usarla. En muchos casos, una entrada limpia, una variación de opacidad o un desplazamiento corto bastan para guiar mejor la lectura."
+        ],
+        "highlights": [
+          "Movimiento como apoyo de la jerarquía.",
+          "Menos adornos, más continuidad visual.",
+          "Cada transición debe justificar su presencia."
+        ]
+      },
+      "en": {
+        "category": "Web process",
+        "date": "February 2026",
+        "title": "Less effects, more direction",
+        "excerpt": "Animation with purpose: motion that explains instead of distracting.",
+        "body": "The best transitions are rarely the loudest ones. A portfolio becomes stronger when motion reinforces hierarchy, context and continuity. If movement does not help people understand the page, it is probably decoration instead of design."
+      }
+    }
+  },
+  {
+    "slug": "no-todo-portfolio-necesita-decirlo-todo",
+    "filter": "design",
+    "visualClass": "visual-brand",
+    "copy": {
+      "es": {
+        "category": "Marca personal",
+        "date": "Enero 2026",
+        "readTime": "4 min de lectura",
+        "title": "No todo portfolio necesita decirlo todo",
+        "excerpt": "Seleccionar mejor comunica más que acumular capturas y textos.",
+        "body": "Un buen portfolio no intenta demostrarlo todo a la vez. Funciona mejor cuando prioriza casos, deja respirar el contenido y ordena la información para que la lectura avance con naturalidad. Curar también es diseñar: implica decidir qué mostrar, en qué orden y con qué profundidad.",
+        "introduction": "Un buen portfolio no intenta demostrarlo todo a la vez. Funciona mejor cuando prioriza casos, deja respirar el contenido y ordena la información para que la lectura avance con naturalidad.",
+        "paragraphs": [
+          "Muchos portafolios fallan por exceso. Quieren mostrar todas las herramientas, todos los proyectos y todas las habilidades al mismo tiempo. El resultado suele ser una presentación extensa, densa y difícil de recordar.",
+          "Curar es diseñar. Elegir pocos casos, ordenar bien la narrativa y dejar que cada proyecto tenga aire suele producir una impresión mucho más fuerte que una colección larga de bloques similares.",
+          "Mostrar menos no significa esconder capacidad. Significa organizar mejor la evidencia para que el lector pueda entender rápido dónde está el valor del trabajo."
+        ],
+        "highlights": [
+          "La selección también comunica criterio.",
+          "Menos proyectos, mejor lectura.",
+          "Un portfolio fuerte prioriza antes de explicar."
+        ]
+      },
+      "en": {
+        "category": "Personal branding",
+        "date": "January 2026",
+        "title": "Not every portfolio needs to say everything",
+        "excerpt": "Selection often communicates better than a pile of screenshots and copy.",
+        "body": "A strong portfolio does not try to prove everything at once. It works better when it prioritizes a few cases, gives content room to breathe and orders information so the reading flow feels natural. Curation is also design: it is the act of choosing what to show, in what order and at what depth."
+      }
+    }
+  },
+  {
+    "slug": "automatizar-sin-perder-el-tono-humano",
+    "filter": "automation",
+    "visualClass": "visual-ai",
+    "copy": {
+      "es": {
+        "category": "Automatización",
+        "date": "Diciembre 2025",
+        "readTime": "5 min de lectura",
+        "title": "Automatizar sin perder el tono humano",
+        "excerpt": "La productividad importa, pero el resultado final sigue necesitando criterio.",
+        "body": "Automatizar no es delegar el gusto. Las mejores herramientas repiten procesos, no decisiones sensibles. Por eso conviene usar IA para acelerar documentación, estructura y soporte, mientras el criterio final se mantiene cerca del producto y de la persona que lo usa.",
+        "introduction": "Automatizar no es delegar el gusto. Las mejores herramientas repiten procesos, no decisiones sensibles.",
+        "paragraphs": [
+          "La automatización funciona mejor cuando reduce trabajo mecánico: ordenar información, acelerar borradores, preparar estructuras o detectar patrones repetitivos. Ahorrar tiempo ahí libera energía para pensar mejor.",
+          "El problema aparece cuando se intenta automatizar lo que todavía necesita juicio humano: tono, narrativa, prioridad o contexto sensible. En esos puntos, una salida rápida no siempre es una buena salida.",
+          "Por eso conviene diseñar flujos donde la herramienta acelera, pero la decisión final sigue cerca de la persona responsable del producto. Esa combinación es mucho más útil que delegar por completo."
+        ],
+        "highlights": [
+          "Automatizar procesos, no criterio.",
+          "IA como apoyo operativo, no reemplazo de juicio.",
+          "Más velocidad con control humano intacto."
+        ]
+      },
+      "en": {
+        "category": "Automation",
+        "date": "December 2025",
+        "title": "Automate without losing the human tone",
+        "excerpt": "Productivity matters, but the final output still needs judgment.",
+        "body": "Automation should repeat process, not replace taste. The best workflows use AI to accelerate documentation, structure and support while keeping sensitive decisions close to the product and the person using it. That balance is what makes automation genuinely useful."
+      }
+    }
+  },
+  {
+    "slug": "escribir-tambien-es-disenar-producto",
+    "filter": "content",
+    "visualClass": "visual-notes",
+    "copy": {
+      "es": {
+        "category": "Contenido",
+        "date": "Noviembre 2025",
+        "readTime": "4 min de lectura",
+        "title": "Escribir también es diseñar producto",
+        "excerpt": "Títulos, labels y microcopy pueden mejorar o romper una pantalla.",
+        "body": "La claridad no depende solo del layout. Muchas veces una interfaz se vuelve pesada porque el texto no tiene ritmo, precisión o tono. Ajustar un título, una descripción o una acción puede tener más impacto que cambiar una paleta completa. El lenguaje también construye experiencia.",
+        "introduction": "La claridad no depende solo del layout. Muchas veces una interfaz se vuelve pesada porque el texto no tiene ritmo, precisión o tono.",
+        "paragraphs": [
+          "Un botón, un título o una descripción pequeña pueden condicionar completamente la forma en que alguien entiende una pantalla. Cuando el texto es ambiguo o demasiado largo, la interfaz pierde velocidad.",
+          "Escribir para producto implica decidir con cuidado: qué debe ser directo, qué puede ser más humano y qué necesita contexto adicional. No se trata solo de sonar bien, sino de orientar bien.",
+          "Ajustar el lenguaje es muchas veces la mejora más rentable en una interfaz. No requiere rehacer el sistema visual, pero sí puede transformar la comprensión de todo el flujo."
+        ],
+        "highlights": [
+          "El texto también construye experiencia.",
+          "Microcopy claro reduce fricción.",
+          "Lenguaje y diseño deberían trabajar juntos."
+        ]
+      },
+      "en": {
+        "category": "Content",
+        "date": "November 2025",
+        "title": "Writing is also product design",
+        "excerpt": "Titles, labels and microcopy can strengthen or break a screen.",
+        "body": "Clarity is not only a layout problem. Many interfaces feel heavy because the text lacks rhythm, precision or tone. Adjusting a heading, a description or an action label can have more impact than changing an entire palette. Language is part of the experience."
+      }
+    }
+  },
+  {
+    "slug": "contraste-profundidad-y-capas",
+    "filter": "design",
+    "visualClass": "visual-cinema",
+    "copy": {
+      "es": {
+        "category": "Diseño visual",
+        "date": "Octubre 2025",
+        "readTime": "5 min de lectura",
+        "title": "Contraste, profundidad y capas que guían la mirada",
+        "excerpt": "No todo debe resaltar: la clave está en crear niveles de lectura.",
+        "body": "Cuando toda la interfaz compite por atención, nada destaca de verdad. El contraste funciona mejor como sistema: fondos que sostienen, superficies que separan, acentos que orientan y puntos de mayor brillo reservados para lo realmente importante. Esa graduación hace que la experiencia respire.",
+        "introduction": "Cuando toda la interfaz compite por atención, nada destaca de verdad. El contraste funciona mejor como sistema.",
+        "paragraphs": [
+          "Guiar la mirada no depende solo del color. También intervienen la escala, el peso tipográfico, la distancia entre bloques y la profundidad entre fondos y superficies. Todo eso produce una lectura más o menos clara.",
+          "Una buena interfaz reserva sus acentos más fuertes para lo importante. Si cada módulo quiere ser protagonista, la experiencia se vuelve plana a pesar de tener muchos recursos visuales.",
+          "Las capas ayudan a construir ritmo. Fondos que sostienen, superficies que separan y elementos de alto contraste que orientan: esa gradación es la que hace que un sistema se sienta ordenado y vivo al mismo tiempo."
+        ],
+        "highlights": [
+          "Contraste como sistema, no como efecto aislado.",
+          "La profundidad mejora la orientación visual.",
+          "Resaltar menos ayuda a leer mejor."
+        ]
+      },
+      "en": {
+        "category": "Visual design",
+        "date": "October 2025",
+        "title": "Contrast, depth and layers that guide the eye",
+        "excerpt": "Not everything should stand out. The key is creating reading levels.",
+        "body": "When every area fights for attention, nothing truly leads. Contrast works best as a system: backgrounds that support, surfaces that separate, accents that orient and brighter points reserved for what really matters. That graduation gives the interface rhythm and breathing room."
+      }
+    }
+  },
+  {
+    "slug": "responsive-no-es-solo-reducir-tamanos",
+    "filter": "web",
+    "visualClass": "visual-system",
+    "copy": {
+      "es": {
+        "category": "Front-end",
+        "date": "Septiembre 2025",
+        "readTime": "5 min de lectura",
+        "title": "Responsive no es solo reducir tamaños",
+        "excerpt": "Cambiar el orden, la prioridad y el ritmo también hace parte del trabajo.",
+        "body": "Adaptar una interfaz a móvil exige decidir otra vez qué debe aparecer primero, qué puede resumirse y qué merece cambiar de posición. La mejor versión responsive no es una copia pequeña del escritorio: es una composición distinta que conserva la intención y mejora la lectura según el contexto.",
+        "introduction": "Adaptar una interfaz a móvil exige decidir otra vez qué debe aparecer primero, qué puede resumirse y qué merece cambiar de posición.",
+        "paragraphs": [
+          "La versión móvil no debería ser una copia pequeña del escritorio. Tiene otro ritmo, otra forma de exploración y otra tolerancia al exceso. Por eso muchas decisiones deben replantearse por completo.",
+          "En pantallas pequeñas, el orden importa todavía más. Lo primero que aparece define el tono del flujo y determina si la persona entiende rápido lo esencial o si empieza a perderse desde el inicio.",
+          "Pensar responsive de verdad implica reorganizar contenido, ajustar jerarquía y simplificar interacciones. No es solo una tarea de escala: es una tarea de composición."
+        ],
+        "highlights": [
+          "Responsive también es narrativa visual.",
+          "El orden cambia según el contexto.",
+          "Móvil necesita decisiones propias, no solo reducción."
+        ]
+      },
+      "en": {
+        "category": "Front-end",
+        "date": "September 2025",
+        "title": "Responsive is not just shrinking things down",
+        "excerpt": "Order, priority and pacing also need to change across screens.",
+        "body": "Adapting an interface for mobile means rethinking what should appear first, what can be summarized and what deserves a different position. The best responsive version is not a smaller desktop copy. It is a new composition that keeps the intention while improving readability in context."
+      }
+    }
+  },
+  {
+    "slug": "prototipar-para-conversar-mejor",
+    "filter": "content",
+    "visualClass": "visual-gaming",
+    "copy": {
+      "es": {
+        "category": "Proceso",
+        "date": "Agosto 2025",
+        "readTime": "4 min de lectura",
+        "title": "Prototipar para conversar mejor con el cliente",
+        "excerpt": "Un buen prototipo no solo vende una idea: aclara decisiones.",
+        "body": "Los prototipos ayudan cuando aterrizan conversaciones abstractas. Permiten hablar de orden, tono, densidad, animación y jerarquía con algo visible sobre la mesa. Eso ahorra ambigüedad, acelera validaciones y hace mucho más fácil alinear expectativas desde temprano.",
+        "introduction": "Los prototipos ayudan cuando aterrizan conversaciones abstractas. Permiten hablar de orden, tono, densidad, animación y jerarquía con algo visible sobre la mesa.",
+        "paragraphs": [
+          "Antes de ver una propuesta concreta, muchas conversaciones de diseño se quedan en términos ambiguos: moderno, limpio, potente, serio. Un prototipo ayuda a traducir esas palabras en decisiones observables.",
+          "Cuando el cliente puede mirar un flujo, una composición o una interacción aunque todavía no esté final, la conversación cambia de nivel. Ya no se discuten imaginarios; se discuten elecciones.",
+          "Eso hace que los comentarios sean más útiles y que la dirección del proyecto se alinee antes. Prototipar bien no es solo presentar, es construir mejor el proceso."
+        ],
+        "highlights": [
+          "El prototipo reduce ambigüedad.",
+          "Ayuda a discutir decisiones reales.",
+          "Mejora la alineación antes del desarrollo."
+        ]
+      },
+      "en": {
+        "category": "Process",
+        "date": "August 2025",
+        "title": "Prototype to have better conversations with clients",
+        "excerpt": "A good prototype does not only sell an idea. It clarifies decisions.",
+        "body": "Prototypes are most useful when they ground abstract conversations. They let teams discuss order, tone, density, motion and hierarchy with something visible on the table. That reduces ambiguity, speeds up validation and makes expectation-setting much easier from the start."
+      }
+    }
+  }
+]

@@ -1,3 +1,20 @@
+import aboutContent from "../data/about.json";
+import blogPosts from "../data/blog.json";
+import certificateCards from "../data/certificates.json";
+import interestCards from "../data/interests.json";
+import projectCards from "../data/projects.json";
+
+const getLocalizedItems = (items, language) =>
+  items.map(({ copy, ...item }) => ({
+    ...item,
+    ...(copy?.[language] ?? copy?.es ?? {}),
+  }));
+
+const getLocalizedSection = ({ copy, ...section }, language) => ({
+  ...section,
+  ...(copy?.[language] ?? copy?.es ?? {}),
+});
+
 const profile = {
   name: "JONATHAN ACEVEDO",
   fullName: "Jonathan Estiben Acevedo López",
@@ -5,6 +22,7 @@ const profile = {
   email: "jonalopezacevedo@gmail.com",
   linkedin: "https://www.linkedin.com/in/jonathan-estiben-acevedo-l%C3%B3pez-066b3226a",
   github: "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
+  gitlab: "https://gitlab.com/JonathanAcevedo",
   cvPath: "/CV_Ejemplo.pdf",
 };
 
@@ -16,8 +34,10 @@ const content = {
     nav: {
       home: "Inicio",
       projects: "Proyectos",
+      certificates: "Certificados",
       insights: "Blog",
       about: "Sobre mí",
+      interests: "Intereses",
       contact: "Contacto",
     },
     controls: {
@@ -35,6 +55,7 @@ const content = {
       viewCv: "Visualizar CV",
       linkedinButton: "LinkedIn",
       githubButton: "GitHub",
+      gitlabButton: "GitLab",
       focusLabel: "Enfoque",
       focus: '"Lo profesional empieza por lo humano."',
     },
@@ -53,82 +74,18 @@ const content = {
         branding: "Marca",
         automation: "Automatizacion",
       },
-      items: [
-        {
-          slug: "docqee",
-          title: "Docqee",
-          category: "web",
-          year: "2026",
-          tag: "Proyecto de grado",
-          description:
-            "Plataforma para conectar pacientes con atencion odontologica universitaria organizada y supervisada.",
-          accent: "HealthTech",
-          href: "/proyectos/docqee",
-          liveUrl: "https://docqee.vercel.app/",
-          previewImage: "/docqee-preview.png",
-          visualClass: "visual-control",
-        },
-        {
-          slug: "launch-canvas",
-          title: "Launch Canvas",
-          category: "web",
-          year: "2026",
-          tag: "Landing Page",
-          description:
-            "Landing editorial para presentar una marca personal con ritmo visual y conversion clara.",
-          accent: "Marketing",
-          href: "/proyectos/launch-canvas",
-          visualClass: "visual-launch",
-        },
-        {
-          slug: "pulse-identity",
-          title: "Pulse Identity",
-          category: "branding",
-          year: "2026",
-          tag: "Brand System",
-          description:
-            "Sistema visual modular para alinear tono, piezas digitales y presencia de marca.",
-          accent: "Branding",
-          href: "/proyectos/pulse-identity",
-          visualClass: "visual-brand",
-        },
-        {
-          slug: "notes-engine",
-          title: "Notes Engine",
-          category: "automation",
-          year: "2026",
-          tag: "Workflow",
-          description:
-            "Flujo para organizar ideas, publicar actualizaciones y mantener un archivo vivo del proceso.",
-          accent: "Contenido",
-          href: "/proyectos/notes-engine",
-          visualClass: "visual-notes",
-        },
-        {
-          slug: "system-atlas",
-          title: "System Atlas",
-          category: "branding",
-          year: "2026",
-          tag: "Design System",
-          description:
-            "Biblioteca visual y tecnica para construir interfaces consistentes sin perder personalidad.",
-          accent: "Escalabilidad",
-          href: "/proyectos/system-atlas",
-          visualClass: "visual-system",
-        },
-        {
-          slug: "agent-flow",
-          title: "Agent Flow",
-          category: "automation",
-          year: "2026",
-          tag: "AI Ops",
-          description:
-            "Asistentes y automatizaciones utiles para reducir tareas repetitivas y acelerar entregas.",
-          accent: "Productividad",
-          href: "/proyectos/agent-flow",
-          visualClass: "visual-ai",
-        },
-      ],
+      items: getLocalizedItems(projectCards, "es"),
+    },
+    certificates: {
+      title: "Certificados",
+      subtitle: "Formacion continua, cursos y logros academicos reunidos en un visor dedicado.",
+      privacyBadge: "Verificados",
+      emptyTitle: "Certificados en preparacion",
+      emptyDescription: "Pronto publicare aqui mis certificados y constancias mas relevantes.",
+      viewCta: "Ver certificado",
+      unavailableCta: "Por cargar",
+      fileUnavailable: "Archivo pendiente",
+      items: getLocalizedItems(certificateCards, "es"),
     },
     insights: {
       title: "Blog",
@@ -143,115 +100,13 @@ const content = {
       },
       cta: "Leer blog completo",
     },
-    articles: [
-      {
-        slug: "interfaces-que-ayudan-a-decidir",
-        filter: "web",
-        category: "Producto digital",
-        date: "Abril 2026",
-        title: "Interfaces que ayudan a decidir mas rapido",
-        excerpt: "Menos ruido visual, mejor lectura de prioridades y estados.",
-        body:
-          "Una interfaz util no solo muestra informacion: ayuda a tomar decisiones. Cuando los estados, alertas y jerarquias estan bien resueltos, el usuario entiende que mirar primero, que puede ignorar y que requiere accion inmediata. Ese criterio vuelve un panel mas claro y mucho mas valioso.",
-        visualClass: "visual-control",
-      },
-      {
-        slug: "sistemas-visuales-que-no-se-sienten-rigidos",
-        filter: "design",
-        category: "Diseno de sistemas",
-        date: "Marzo 2026",
-        title: "Sistemas visuales que no se sienten rigidos",
-        excerpt: "Como crear consistencia sin que la interfaz pierda sorpresa y caracter.",
-        body:
-          "Cuando un sistema de diseno esta bien construido, no limita. Al contrario: permite que cada pantalla tenga una voz propia sin romper la coherencia. La clave esta en decidir que reglas deben ser duras, cuales pueden ser flexibles y donde conviene dejar espacio para el gesto visual.",
-        visualClass: "visual-system",
-      },
-      {
-        slug: "menos-efectos-mas-direccion",
-        filter: "web",
-        category: "Proceso web",
-        date: "Febrero 2026",
-        title: "Menos efectos, mas direccion",
-        excerpt: "Animacion con criterio: movimiento que explica, no que distrae.",
-        body:
-          "Las transiciones mas potentes no son necesariamente las mas complejas. Un portfolio funciona mejor cuando cada animacion refuerza jerarquia, contexto o continuidad. Si el movimiento no ayuda a entender, sobra.",
-        visualClass: "visual-launch",
-      },
-      {
-        slug: "no-todo-portfolio-necesita-decirlo-todo",
-        filter: "design",
-        category: "Marca personal",
-        date: "Enero 2026",
-        title: "No todo portfolio necesita decirlo todo",
-        excerpt: "Seleccionar mejor comunica mas que acumular capturas y textos.",
-        body:
-          "Un buen portfolio no intenta demostrarlo todo a la vez. Funciona mejor cuando prioriza casos, deja respirar el contenido y ordena la informacion para que la lectura avance con naturalidad. Curar tambien es disenar: implica decidir que mostrar, en que orden y con que profundidad.",
-        visualClass: "visual-brand",
-      },
-      {
-        slug: "automatizar-sin-perder-el-tono-humano",
-        filter: "automation",
-        category: "Automatizacion",
-        date: "Diciembre 2025",
-        title: "Automatizar sin perder el tono humano",
-        excerpt: "La productividad importa, pero el resultado final sigue necesitando criterio.",
-        body:
-          "Automatizar no es delegar el gusto. Las mejores herramientas repiten procesos, no decisiones sensibles. Por eso conviene usar IA para acelerar documentacion, estructura y soporte, mientras el criterio final se mantiene cerca del producto y de la persona que lo usa.",
-        visualClass: "visual-ai",
-      },
-      {
-        slug: "escribir-tambien-es-disenar-producto",
-        filter: "content",
-        category: "Contenido",
-        date: "Noviembre 2025",
-        title: "Escribir tambien es disenar producto",
-        excerpt: "Titulos, labels y microcopy pueden mejorar o romper una pantalla.",
-        body:
-          "La claridad no depende solo del layout. Muchas veces una interfaz se vuelve pesada porque el texto no tiene ritmo, precision o tono. Ajustar un titulo, una descripcion o una accion puede tener mas impacto que cambiar una paleta completa. El lenguaje tambien construye experiencia.",
-        visualClass: "visual-notes",
-      },
-      {
-        slug: "contraste-profundidad-y-capas",
-        filter: "design",
-        category: "Diseno visual",
-        date: "Octubre 2025",
-        title: "Contraste, profundidad y capas que guian la mirada",
-        excerpt: "No todo debe resaltar: la clave esta en crear niveles de lectura.",
-        body:
-          "Cuando toda la interfaz compite por atencion, nada destaca de verdad. El contraste funciona mejor como sistema: fondos que sostienen, superficies que separan, acentos que orientan y puntos de mayor brillo reservados para lo realmente importante. Esa graduacion hace que la experiencia respire.",
-        visualClass: "visual-cinema",
-      },
-      {
-        slug: "responsive-no-es-solo-reducir-tamanos",
-        filter: "web",
-        category: "Front-end",
-        date: "Septiembre 2025",
-        title: "Responsive no es solo reducir tamaños",
-        excerpt: "Cambiar el orden, la prioridad y el ritmo tambien hace parte del trabajo.",
-        body:
-          "Adaptar una interfaz a movil exige decidir otra vez que debe aparecer primero, que puede resumirse y que merece cambiar de posicion. La mejor version responsive no es una copia pequeña del escritorio: es una composicion distinta que conserva la intencion y mejora la lectura segun el contexto.",
-        visualClass: "visual-system",
-      },
-      {
-        slug: "prototipar-para-conversar-mejor",
-        filter: "content",
-        category: "Proceso",
-        date: "Agosto 2025",
-        title: "Prototipar para conversar mejor con el cliente",
-        excerpt: "Un buen prototipo no solo vende una idea: aclara decisiones.",
-        body:
-          "Los prototipos ayudan cuando aterrizan conversaciones abstractas. Permiten hablar de orden, tono, densidad, animacion y jerarquia con algo visible sobre la mesa. Eso ahorra ambiguedad, acelera validaciones y hace mucho mas facil alinear expectativas desde temprano.",
-        visualClass: "visual-gaming",
-      },
-    ],
-    about: {
-      title: "Sobre mí",
-      subtitle: "Esta seccion presenta mis intereses y gustos personales.",
-      paragraphs: [
-        "Fuera del trabajo, me interesa mucho todo lo que alimenta sensibilidad e imaginacion: peliculas, series, animes, libros y videojuegos.",
-        "Esas referencias no estan separadas de lo profesional. Muchas veces moldean como pienso el ritmo, la atmosfera y la narrativa dentro de una interfaz.",
-        "Esta parte del portafolio funciona como un mapa mas personal: cosas que disfruto, revisito y que de una u otra forma terminan influyendo en como diseno.",
-      ],
+    articles: getLocalizedItems(blogPosts, "es"),
+    about: getLocalizedSection(aboutContent, "es"),
+    interests: {
+      title: "Intereses",
+      subtitle: "Gustos personales, referencias e ideas que alimentan mi forma de crear.",
+      cardLabel: "Seleccionado",
+      cardAction: "Abrir",
       filters: {
         all: "Todo",
         movies: "Peliculas",
@@ -260,141 +115,9 @@ const content = {
         books: "Libros",
         games: "Videojuegos",
       },
-      mediaItems: [
-        {
-          filter: "movies",
-          category: "Peliculas",
-          title: "Dune: Part Two",
-          meta: "Sci-fi / escala visual",
-          description: "Me atrae por la manera en que combina silencio, tension y composicion monumental.",
-          body: "Es una referencia clara cuando pienso en atmosfera, contraste y escenas que se sienten grandes sin saturarse. Me gusta como construye impacto desde la contencion.",
-          tags: ["Direccion", "Escala", "Atmosfera"],
-          visualClass: "visual-cinema",
-        },
-        {
-          filter: "movies",
-          category: "Peliculas",
-          title: "Blade Runner 2049",
-          meta: "Ciencia ficcion / ritmo",
-          description: "Una pelicula que me sigue pareciendo ejemplar en color, profundidad y ritmo contemplativo.",
-          body: "La tomo como referencia por su manejo de la luz, la arquitectura visual y la forma en que cada plano sostiene identidad sin perder claridad.",
-          tags: ["Color", "Profundidad", "Ritmo"],
-          visualClass: "visual-cinema",
-        },
-        {
-          filter: "series",
-          category: "Series",
-          title: "Dark",
-          meta: "Serie / estructura narrativa",
-          description: "Me interesa por su construccion de tension y por la forma en que ordena sistemas complejos sin perder misterio.",
-          body: "Cuando una historia tiene muchas capas, Dark demuestra que se puede sostener complejidad con una identidad muy coherente. Eso conecta mucho con como pienso sistemas y flujos.",
-          tags: ["Sistema", "Tension", "Coherencia"],
-          visualClass: "visual-series",
-        },
-        {
-          filter: "series",
-          category: "Series",
-          title: "Mr. Robot",
-          meta: "Serie / lenguaje visual",
-          description: "Me gusta su encuadre raro, su incomodidad visual y la forma en que usa composicion para contar el estado interno.",
-          body: "Es una referencia fuerte cuando pienso en interfaces con personalidad. No busca verse neutra: busca transmitir tension y punto de vista.",
-          tags: ["Encuadre", "Tono", "Personalidad"],
-          visualClass: "visual-series",
-        },
-        {
-          filter: "anime",
-          category: "Animes",
-          title: "Vinland Saga",
-          meta: "Anime / evolucion de personaje",
-          description: "Me interesa por su evolucion emocional, el peso de sus decisiones y su mirada sobre conflicto y sentido.",
-          body: "Mas que la accion, me marca la manera en que trabaja crecimiento, identidad y consecuencia. Ese tipo de progresion tambien me interesa al construir experiencias.",
-          tags: ["Narrativa", "Evolucion", "Intensidad"],
-          visualClass: "visual-anime",
-        },
-        {
-          filter: "anime",
-          category: "Animes",
-          title: "Monster",
-          meta: "Anime / suspenso psicologico",
-          description: "Lo valoro por su paciencia narrativa y por como hace que pequeños detalles carguen peso.",
-          body: "Es una referencia de ritmo y tension sostenida. Me recuerda que no todo impacto tiene que venir de algo ruidoso; muchas veces viene de una buena construccion.",
-          tags: ["Suspenso", "Ritmo", "Detalle"],
-          visualClass: "visual-anime",
-        },
-        {
-          filter: "books",
-          category: "Libros",
-          title: "Meditaciones",
-          meta: "Libro / claridad mental",
-          description: "Me gusta por su tono directo y por la forma en que vuelve simples ideas que siguen siendo profundas.",
-          body: "Lo relaciono con la importancia de quitar ruido. Tanto en lectura como en interfaz, la claridad suele nacer de una estructura sobria y bien pensada.",
-          tags: ["Claridad", "Criterio", "Enfoque"],
-          visualClass: "visual-library",
-        },
-        {
-          filter: "books",
-          category: "Libros",
-          title: "1984",
-          meta: "Libro / atmosfera",
-          description: "Sigue siendo una referencia fuerte por el peso del entorno y por como la atmosfera condiciona toda la experiencia.",
-          body: "Me interesa porque demuestra que el contexto cambia completamente la lectura de un sistema. El ambiente no es decoracion; afecta como se interpreta todo.",
-          tags: ["Contexto", "Atmosfera", "Lectura"],
-          visualClass: "visual-library",
-        },
-        {
-          filter: "games",
-          category: "Videojuegos",
-          title: "Elden Ring",
-          meta: "Videojuego / exploracion",
-          description: "Lo disfruto por su libertad, por el sentido de descubrimiento y por como recompensa curiosidad real.",
-          body: "Es una referencia de mundo, misterio y densidad bien medida. Me gusta como hace que explorar sea parte central de la experiencia, no un extra.",
-          tags: ["Exploracion", "Mundo", "Curiosidad"],
-          visualClass: "visual-gaming",
-        },
-        {
-          filter: "games",
-          category: "Videojuegos",
-          title: "The Last of Us",
-          meta: "Videojuego / narrativa",
-          description: "Me marca por el nivel de detalle emocional y por como integra historia, tension y recorrido.",
-          body: "Lo tomo como referencia por su capacidad de hacer que cada espacio, silencio o decision sume a la narrativa general. Todo tiene intencion.",
-          tags: ["Narrativa", "Detalle", "Tension"],
-          visualClass: "visual-gaming",
-        },
-      ],
+      mediaItems: getLocalizedItems(interestCards, "es"),
     },
-    artifacts: [
-      {
-        icon: "sports_esports",
-        title: "Exploracion interactiva",
-        description: "Narrativas, feedback y ritmo visual para productos que se sienten vivos.",
-        tags: ["Narrativa", "Prototipos"],
-        visualClass: "visual-gaming",
-        accentClass: "text-secondary",
-      },
-      {
-        icon: "movie_filter",
-        title: "Mirada cinematica",
-        description: "Composicion, contraste y encuadre aplicados a interfaces de alto impacto.",
-        tags: ["Direccion", "Visual"],
-        visualClass: "visual-cinema",
-        accentClass: "text-primary",
-      },
-      {
-        icon: "auto_awesome",
-        title: "Laboratorio digital",
-        description: "Pruebas con IA, automatizacion y sistemas para acelerar procesos utiles.",
-        tags: ["IA", "Experimentacion"],
-        visualClass: "visual-lab",
-        accentClass: "text-tertiary",
-      },
-    ],
     footer: {
-      title: 'Construyamos algo <span class="text-gradient-primary">diferente</span>.',
-      description:
-        "Disponible para proyectos web, redisenos, landing pages y productos digitales con criterio visual.",
-      cta: "Iniciar conversacion",
-      legal: "Portafolio personal. Edita el contenido en src/scripts/portfolio.js.",
       legalLine: "© 2026 Jonathan Estiben Acevedo López • Todos los derechos reservados",
     },
     contact: {
@@ -405,6 +128,7 @@ const content = {
       emailBody: "Hola Jonathan,\n\nQuiero hablar contigo sobre:\n\n\nGracias.",
       linkedin: "LinkedIn",
       github: "GitHub",
+      gitlab: "GitLab",
     },
   },
   en: {
@@ -414,8 +138,10 @@ const content = {
     nav: {
       home: "Home",
       projects: "Projects",
+      certificates: "Certificates",
       insights: "Blog",
       about: "About",
+      interests: "Interests",
       contact: "Contact",
     },
     controls: {
@@ -433,6 +159,7 @@ const content = {
       viewCv: "View CV",
       linkedinButton: "LinkedIn",
       githubButton: "GitHub",
+      gitlabButton: "GitLab",
       focusLabel: "Focus",
       focus: '"Professional work starts with the human side."',
     },
@@ -451,82 +178,18 @@ const content = {
         branding: "Branding",
         automation: "Automation",
       },
-      items: [
-        {
-          slug: "docqee",
-          title: "Docqee",
-          category: "web",
-          year: "2026",
-          tag: "Degree project",
-          description:
-            "A platform that connects patients with supervised university dental care through a clearer digital experience.",
-          accent: "HealthTech",
-          href: "/proyectos/docqee",
-          liveUrl: "https://docqee.vercel.app/",
-          previewImage: "/docqee-preview.png",
-          visualClass: "visual-control",
-        },
-        {
-          slug: "launch-canvas",
-          title: "Launch Canvas",
-          category: "web",
-          year: "2026",
-          tag: "Landing Page",
-          description:
-            "An editorial landing page for a personal brand with visual rhythm and clear conversion.",
-          accent: "Marketing",
-          href: "/proyectos/launch-canvas",
-          visualClass: "visual-launch",
-        },
-        {
-          slug: "pulse-identity",
-          title: "Pulse Identity",
-          category: "branding",
-          year: "2026",
-          tag: "Brand System",
-          description:
-            "A modular visual system to align tone, digital pieces and brand presence.",
-          accent: "Branding",
-          href: "/proyectos/pulse-identity",
-          visualClass: "visual-brand",
-        },
-        {
-          slug: "notes-engine",
-          title: "Notes Engine",
-          category: "automation",
-          year: "2026",
-          tag: "Workflow",
-          description:
-            "A lightweight workflow to organize ideas, publish updates and keep a living archive.",
-          accent: "Content",
-          href: "/proyectos/notes-engine",
-          visualClass: "visual-notes",
-        },
-        {
-          slug: "system-atlas",
-          title: "System Atlas",
-          category: "branding",
-          year: "2026",
-          tag: "Design System",
-          description:
-            "A visual and technical library to build consistent interfaces without losing character.",
-          accent: "Scalability",
-          href: "/proyectos/system-atlas",
-          visualClass: "visual-system",
-        },
-        {
-          slug: "agent-flow",
-          title: "Agent Flow",
-          category: "automation",
-          year: "2026",
-          tag: "AI Ops",
-          description:
-            "Useful assistants and automations that reduce repetitive work and speed up delivery.",
-          accent: "Productivity",
-          href: "/proyectos/agent-flow",
-          visualClass: "visual-ai",
-        },
-      ],
+      items: getLocalizedItems(projectCards, "en"),
+    },
+    certificates: {
+      title: "Certificates",
+      subtitle: "Continuous learning, courses and academic achievements gathered in a dedicated viewer.",
+      privacyBadge: "Verified",
+      emptyTitle: "Certificates in progress",
+      emptyDescription: "I will publish my most relevant certificates and course records here soon.",
+      viewCta: "View certificate",
+      unavailableCta: "Pending file",
+      fileUnavailable: "Pending file",
+      items: getLocalizedItems(certificateCards, "en"),
     },
     insights: {
       title: "Blog",
@@ -541,115 +204,13 @@ const content = {
       },
       cta: "Read full post",
     },
-    articles: [
-      {
-        slug: "interfaces-que-ayudan-a-decidir",
-        filter: "web",
-        category: "Digital product",
-        date: "April 2026",
-        title: "Interfaces that help people decide faster",
-        excerpt: "Less visual noise, better priority reading and clearer states.",
-        body:
-          "A useful interface does more than display information: it helps people make decisions. When states, alerts and hierarchy are resolved well, users instantly understand what to check first, what can wait and what needs immediate action. That judgment makes a dashboard far more valuable.",
-        visualClass: "visual-control",
-      },
-      {
-        slug: "sistemas-visuales-que-no-se-sienten-rigidos",
-        filter: "design",
-        category: "Design systems",
-        date: "March 2026",
-        title: "Visual systems that do not feel rigid",
-        excerpt: "How to build consistency without losing surprise and character.",
-        body:
-          "A strong design system should not flatten the product. It should create enough structure for teams to move faster while leaving room for intentional moments that make the experience feel memorable. The real work is deciding what must stay fixed and what deserves freedom.",
-        visualClass: "visual-system",
-      },
-      {
-        slug: "menos-efectos-mas-direccion",
-        filter: "web",
-        category: "Web process",
-        date: "February 2026",
-        title: "Less effects, more direction",
-        excerpt: "Animation with purpose: motion that explains instead of distracting.",
-        body:
-          "The best transitions are rarely the loudest ones. A portfolio becomes stronger when motion reinforces hierarchy, context and continuity. If movement does not help people understand the page, it is probably decoration instead of design.",
-        visualClass: "visual-launch",
-      },
-      {
-        slug: "no-todo-portfolio-necesita-decirlo-todo",
-        filter: "design",
-        category: "Personal branding",
-        date: "January 2026",
-        title: "Not every portfolio needs to say everything",
-        excerpt: "Selection often communicates better than a pile of screenshots and copy.",
-        body:
-          "A strong portfolio does not try to prove everything at once. It works better when it prioritizes a few cases, gives content room to breathe and orders information so the reading flow feels natural. Curation is also design: it is the act of choosing what to show, in what order and at what depth.",
-        visualClass: "visual-brand",
-      },
-      {
-        slug: "automatizar-sin-perder-el-tono-humano",
-        filter: "automation",
-        category: "Automation",
-        date: "December 2025",
-        title: "Automate without losing the human tone",
-        excerpt: "Productivity matters, but the final output still needs judgment.",
-        body:
-          "Automation should repeat process, not replace taste. The best workflows use AI to accelerate documentation, structure and support while keeping sensitive decisions close to the product and the person using it. That balance is what makes automation genuinely useful.",
-        visualClass: "visual-ai",
-      },
-      {
-        slug: "escribir-tambien-es-disenar-producto",
-        filter: "content",
-        category: "Content",
-        date: "November 2025",
-        title: "Writing is also product design",
-        excerpt: "Titles, labels and microcopy can strengthen or break a screen.",
-        body:
-          "Clarity is not only a layout problem. Many interfaces feel heavy because the text lacks rhythm, precision or tone. Adjusting a heading, a description or an action label can have more impact than changing an entire palette. Language is part of the experience.",
-        visualClass: "visual-notes",
-      },
-      {
-        slug: "contraste-profundidad-y-capas",
-        filter: "design",
-        category: "Visual design",
-        date: "October 2025",
-        title: "Contrast, depth and layers that guide the eye",
-        excerpt: "Not everything should stand out. The key is creating reading levels.",
-        body:
-          "When every area fights for attention, nothing truly leads. Contrast works best as a system: backgrounds that support, surfaces that separate, accents that orient and brighter points reserved for what really matters. That graduation gives the interface rhythm and breathing room.",
-        visualClass: "visual-cinema",
-      },
-      {
-        slug: "responsive-no-es-solo-reducir-tamanos",
-        filter: "web",
-        category: "Front-end",
-        date: "September 2025",
-        title: "Responsive is not just shrinking things down",
-        excerpt: "Order, priority and pacing also need to change across screens.",
-        body:
-          "Adapting an interface for mobile means rethinking what should appear first, what can be summarized and what deserves a different position. The best responsive version is not a smaller desktop copy. It is a new composition that keeps the intention while improving readability in context.",
-        visualClass: "visual-system",
-      },
-      {
-        slug: "prototipar-para-conversar-mejor",
-        filter: "content",
-        category: "Process",
-        date: "August 2025",
-        title: "Prototype to have better conversations with clients",
-        excerpt: "A good prototype does not only sell an idea. It clarifies decisions.",
-        body:
-          "Prototypes are most useful when they ground abstract conversations. They let teams discuss order, tone, density, motion and hierarchy with something visible on the table. That reduces ambiguity, speeds up validation and makes expectation-setting much easier from the start.",
-        visualClass: "visual-gaming",
-      },
-    ],
-    about: {
-      title: "About me",
-      subtitle: "This section presents my personal interests and tastes.",
-      paragraphs: [
-        "Outside work, I care a lot about the things that feed imagination and sensitivity: movies, series, anime, books and video games.",
-        "Those references are not separate from professional work. They often shape how I think about rhythm, atmosphere and narrative inside an interface.",
-        "This part of the portfolio works as a more personal map: things I enjoy, revisit and that somehow end up influencing how I design.",
-      ],
+    articles: getLocalizedItems(blogPosts, "en"),
+    about: getLocalizedSection(aboutContent, "en"),
+    interests: {
+      title: "Interests",
+      subtitle: "Personal tastes, references and ideas that shape how I create.",
+      cardLabel: "Selected",
+      cardAction: "Open",
       filters: {
         all: "All",
         movies: "Movies",
@@ -658,141 +219,9 @@ const content = {
         books: "Books",
         games: "Games",
       },
-      mediaItems: [
-        {
-          filter: "movies",
-          category: "Movies",
-          title: "Dune: Part Two",
-          meta: "Sci-fi / visual scale",
-          description: "I like how it combines silence, tension and monumental composition.",
-          body: "It is a clear reference when I think about atmosphere, contrast and scenes that feel huge without becoming noisy. A lot of its impact comes from restraint.",
-          tags: ["Direction", "Scale", "Atmosphere"],
-          visualClass: "visual-cinema",
-        },
-        {
-          filter: "movies",
-          category: "Movies",
-          title: "Blade Runner 2049",
-          meta: "Science fiction / pacing",
-          description: "It still feels exemplary to me in color, depth and contemplative rhythm.",
-          body: "I keep it as a reference because of its lighting, architectural framing and the way every shot carries identity without losing clarity.",
-          tags: ["Color", "Depth", "Pacing"],
-          visualClass: "visual-cinema",
-        },
-        {
-          filter: "series",
-          category: "Series",
-          title: "Dark",
-          meta: "Series / narrative structure",
-          description: "I am drawn to how it organizes complex systems without losing mystery.",
-          body: "When a story has many layers, Dark shows that complexity can still feel coherent. That connects a lot with how I think about systems and flows.",
-          tags: ["System", "Tension", "Coherence"],
-          visualClass: "visual-series",
-        },
-        {
-          filter: "series",
-          category: "Series",
-          title: "Mr. Robot",
-          meta: "Series / visual language",
-          description: "I like its awkward framing and the way composition communicates internal state.",
-          body: "It is a strong reference when I think about interfaces with personality. It does not try to feel neutral. It tries to convey tension and point of view.",
-          tags: ["Framing", "Tone", "Personality"],
-          visualClass: "visual-series",
-        },
-        {
-          filter: "anime",
-          category: "Anime",
-          title: "Vinland Saga",
-          meta: "Anime / character growth",
-          description: "It stands out to me because of its emotional evolution and the weight of decisions.",
-          body: "More than the action, what stays with me is how it works through growth, identity and consequence. That kind of progression matters to me in design too.",
-          tags: ["Narrative", "Growth", "Intensity"],
-          visualClass: "visual-anime",
-        },
-        {
-          filter: "anime",
-          category: "Anime",
-          title: "Monster",
-          meta: "Anime / psychological suspense",
-          description: "I value its patience and the way small details carry real weight.",
-          body: "It is a reference for pacing and sustained tension. It reminds me that impact does not always need noise. Sometimes it comes from strong construction.",
-          tags: ["Suspense", "Pacing", "Detail"],
-          visualClass: "visual-anime",
-        },
-        {
-          filter: "books",
-          category: "Books",
-          title: "Meditations",
-          meta: "Book / mental clarity",
-          description: "I like its direct tone and the way it keeps deep ideas simple.",
-          body: "I connect it with the value of removing noise. In reading and in interface work, clarity usually comes from a restrained and thoughtful structure.",
-          tags: ["Clarity", "Judgment", "Focus"],
-          visualClass: "visual-library",
-        },
-        {
-          filter: "books",
-          category: "Books",
-          title: "1984",
-          meta: "Book / atmosphere",
-          description: "It remains a strong reference because of how much the environment shapes the whole experience.",
-          body: "It interests me because it proves that context changes how an entire system is interpreted. Atmosphere is not decoration. It changes meaning.",
-          tags: ["Context", "Atmosphere", "Reading"],
-          visualClass: "visual-library",
-        },
-        {
-          filter: "games",
-          category: "Games",
-          title: "Elden Ring",
-          meta: "Game / exploration",
-          description: "I enjoy it because of its freedom, sense of discovery and how it rewards real curiosity.",
-          body: "It is a reference for world-building, mystery and measured density. I like how exploration feels central to the experience rather than optional.",
-          tags: ["Exploration", "World", "Curiosity"],
-          visualClass: "visual-gaming",
-        },
-        {
-          filter: "games",
-          category: "Games",
-          title: "The Last of Us",
-          meta: "Game / storytelling",
-          description: "It stays with me because of its emotional detail and how it merges story, tension and journey.",
-          body: "I keep it as a reference because every space, silence and decision contributes to the larger narrative. Nothing feels casual.",
-          tags: ["Narrative", "Detail", "Tension"],
-          visualClass: "visual-gaming",
-        },
-      ],
+      mediaItems: getLocalizedItems(interestCards, "en"),
     },
-    artifacts: [
-      {
-        icon: "sports_esports",
-        title: "Interactive exploration",
-        description: "Narrative, feedback and visual rhythm for products that feel alive.",
-        tags: ["Narrative", "Prototypes"],
-        visualClass: "visual-gaming",
-        accentClass: "text-secondary",
-      },
-      {
-        icon: "movie_filter",
-        title: "Cinematic eye",
-        description: "Composition, contrast and framing applied to high-impact interfaces.",
-        tags: ["Direction", "Visual"],
-        visualClass: "visual-cinema",
-        accentClass: "text-primary",
-      },
-      {
-        icon: "auto_awesome",
-        title: "Digital lab",
-        description: "Experiments with AI, automation and systems to speed up useful work.",
-        tags: ["AI", "Experimentation"],
-        visualClass: "visual-lab",
-        accentClass: "text-tertiary",
-      },
-    ],
     footer: {
-      title: 'Let\'s build something <span class="text-gradient-primary">different</span>.',
-      description:
-        "Available for web projects, redesigns, landing pages and digital products with strong visual criteria.",
-      cta: "Start a conversation",
-      legal: "Personal portfolio. Edit content in src/scripts/portfolio.js.",
       legalLine: "© 2026 Jonathan Estiben Acevedo López • All rights reserved",
     },
     contact: {
@@ -803,6 +232,7 @@ const content = {
       emailBody: "Hi Jonathan,\n\nI would like to talk with you about:\n\n\nThank you.",
       linkedin: "LinkedIn",
       github: "GitHub",
+      gitlab: "GitLab",
     },
   },
 };
@@ -813,8 +243,8 @@ const state = {
   filter: "all",
   articleFilter: "all",
   activeArticle: 0,
-  aboutFilter: "all",
-  activeMedia: 0,
+  interestFilter: "all",
+  activeInterest: 0,
   menuOpen: false,
   projectPreviewOpen: false,
   activeProjectPreviewTitle: "Docqee",
@@ -827,7 +257,6 @@ const state = {
 
 const elements = {
   brandText: document.getElementById("brand-text"),
-  footerBrand: document.getElementById("footer-brand"),
   heroTitle: document.getElementById("hero-title"),
   heroDescription: document.getElementById("hero-description"),
   heroFocus: document.getElementById("hero-focus"),
@@ -835,16 +264,15 @@ const elements = {
   heroLinkGrid: document.getElementById("hero-link-grid"),
   heroPrimaryButton: document.getElementById("hero-primary-button"),
   heroSecondaryButton: document.getElementById("hero-secondary-button"),
+  heroMascotField: document.getElementById("hero-mascot-field"),
+  heroMascots: document.querySelectorAll("[data-hero-mascot]"),
   projectsGrid: document.getElementById("projects-grid"),
+  certificatesGrid: document.getElementById("certificates-grid"),
   articlesList: document.getElementById("articles-list"),
   articleFeature: document.getElementById("article-feature"),
-  aboutMediaList: document.getElementById("about-media-list"),
-  aboutMediaFeature: document.getElementById("about-media-feature"),
-  toolboxList: document.getElementById("toolbox-list"),
-  artifactsGrid: document.getElementById("artifacts-grid"),
-  footerTitle: document.getElementById("footer-title"),
-  footerDescription: document.getElementById("footer-description"),
-  footerYear: document.getElementById("footer-year"),
+  aboutProfileGrid: document.getElementById("about-profile-grid"),
+  interestsMediaList: document.getElementById("interests-media-list"),
+  interestsMediaFeature: document.getElementById("interests-media-feature"),
   contactGrid: document.getElementById("contact-grid"),
   projectPreviewModal: document.getElementById("project-preview-modal"),
   projectPreviewModalTitle: document.getElementById("project-preview-modal-title"),
@@ -857,7 +285,7 @@ const elements = {
   sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
   projectFilterButtons: document.querySelectorAll("#project-filters [data-filter]"),
   articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
-  aboutFilterButtons: document.querySelectorAll("#about-media-filters [data-about-filter]"),
+  interestFilterButtons: document.querySelectorAll("#interests-media-filters [data-interest-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
   homeLinks: document.querySelectorAll('a[href="#home"]'),
   menuToggle: document.getElementById("menu-toggle"),
@@ -866,7 +294,7 @@ const elements = {
   header: document.querySelector("header"),
 };
 
-const sectionIds = ["home", "projects", "insights", "about", "contact"];
+const sectionIds = ["home", "about", "projects", "certificates", "insights", "interests", "contact"];
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
@@ -914,12 +342,40 @@ function renderIcon(icon, className = "") {
     `;
   }
 
+  if (icon === "gitlab") {
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="icon-symbol ${className}">
+        <path fill="currentColor" d="M23.64 13.05 22.29 8.9l-2.68-8.24a.46.46 0 0 0-.87 0l-2.68 8.24H7.94L5.26.66a.46.46 0 0 0-.87 0L1.71 8.9.36 13.05a.92.92 0 0 0 .33 1.03L12 22.3l11.31-8.22a.92.92 0 0 0 .33-1.03Z"/>
+      </svg>
+    `;
+  }
+
   if (icon === "mail") {
     return strokeIcon('<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path>');
   }
 
+  if (icon === "school") {
+    return strokeIcon('<path d="m3 8.5 9-4 9 4-9 4-9-4Z"></path><path d="M7 10.3v4.2c0 1.2 2.2 2.5 5 2.5s5-1.3 5-2.5v-4.2"></path><path d="M21 8.5v5"></path>');
+  }
+
+  if (icon === "work") {
+    return strokeIcon('<rect x="4" y="7" width="16" height="12" rx="2"></rect><path d="M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7"></path><path d="M4 12h16"></path><path d="M10 12v1.2h4V12"></path>');
+  }
+
   if (icon === "download") {
     return strokeIcon('<path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>');
+  }
+
+  if (icon === "lock") {
+    return strokeIcon('<rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path>');
+  }
+
+  if (icon === "shield_check") {
+    return strokeIcon('<path d="M12 3 5 6v5c0 5 3.5 8.5 7 10 3.5-1.5 7-5 7-10V6l-7-3Z"></path><path d="m9.5 12 1.8 1.8 3.7-4"></path>');
+  }
+
+  if (icon === "workspace_premium") {
+    return strokeIcon('<path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"></path><path d="m9 14.2-1 6 4-2.2 4 2.2-1-6"></path>');
   }
 
   if (icon === "visibility") {
@@ -1035,7 +491,6 @@ function applyStaticCopy() {
   });
 
   elements.brandText.textContent = profile.name;
-  elements.footerBrand.textContent = profile.name;
   elements.heroTitle.innerHTML = getCopy("hero.title");
   elements.heroDescription.textContent = getCopy("hero.description");
   elements.heroFocus.textContent = getCopy("hero.focus");
@@ -1043,19 +498,18 @@ function applyStaticCopy() {
   elements.heroEmail.lastElementChild.textContent = profile.email;
   elements.heroPrimaryButton.textContent = getCopy("hero.primaryButton");
   elements.heroSecondaryButton.textContent = getCopy("hero.secondaryButton");
-  elements.footerTitle.innerHTML = getCopy("footer.title");
-  elements.footerDescription.textContent = getCopy("footer.description");
-  elements.footerYear.textContent = `(c) ${new Date().getFullYear()} `;
-
   renderHeroLinks();
   renderFilters();
+  renderAboutProfile();
+  renderCertificates();
   renderArticleFilters();
-  renderAboutFilters();
+  renderInterestFilters();
 
   if (state.deferredSectionsReady) {
     renderProjects();
+    renderCertificates();
     renderArticles();
-    renderAboutMedia();
+    renderInterestMedia();
     renderContacts();
   } else {
     scheduleDeferredSections();
@@ -1095,6 +549,12 @@ function renderHeroLinks() {
       icon: "github",
       href: profile.github,
       active: hasRealProfileLink(profile.github),
+    },
+    {
+      label: getCopy("hero.gitlabButton"),
+      icon: "gitlab",
+      href: profile.gitlab,
+      active: hasRealProfileLink(profile.gitlab),
     },
   ];
 
@@ -1189,6 +649,130 @@ function closeProjectPreview() {
   elements.projectPreviewModalFrame.src = "about:blank";
 }
 
+function getCertificateSourceId(item) {
+  return item.id || "";
+}
+
+function getCertificateViewerId(item) {
+  return getCertificateSourceId(item);
+}
+
+function buildCertificateViewerUrl(item) {
+  const params = new URLSearchParams({
+    certificate: getCertificateViewerId(item),
+    title: item.title,
+  });
+
+  return `/certificados/ver/?${params.toString()}`;
+}
+
+function renderCertificatePreview(item) {
+  const preview = item.thumbnail || "";
+
+  if (preview) {
+    return `
+      <img
+        src="${preview}"
+        alt="${item.title}"
+        loading="lazy"
+        draggable="false"
+        class="certificate-card-preview"
+      />
+    `;
+  }
+
+  return `
+    <div class="certificate-card-placeholder" aria-hidden="true">
+      <div class="certificate-card-ribbon"></div>
+      <div class="certificate-card-lines">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      ${renderIcon("workspace_premium", "certificate-card-award")}
+    </div>
+  `;
+}
+
+function renderCertificates() {
+  if (!elements.certificatesGrid) {
+    return;
+  }
+
+  const labels = getCopy("certificates");
+  const certificates = labels.items || [];
+
+  if (!certificates.length) {
+    elements.certificatesGrid.innerHTML = `
+      <div class="certificate-empty-state sm:col-span-2 xl:col-span-3">
+        <div class="certificate-empty-icon">
+          ${renderIcon("shield_check", "text-xl")}
+        </div>
+        <h3>${labels.emptyTitle}</h3>
+        <p>${labels.emptyDescription}</p>
+      </div>
+    `;
+    return;
+  }
+
+  elements.certificatesGrid.innerHTML = certificates
+    .map((item, index) => {
+      const hasFile = Boolean(getCertificateSourceId(item));
+      const viewerUrl = hasFile ? buildCertificateViewerUrl(item) : "";
+      const tags = item.tags || [];
+
+      return `
+        <article class="certificate-card overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+          <div class="certificate-card-visual rounded-[1.3rem]">
+            ${renderCertificatePreview(item)}
+            <div class="certificate-card-privacy-layer">
+              ${renderIcon("lock", "certificate-card-lock")}
+            </div>
+          </div>
+          <div class="certificate-card-body px-1.5 pb-1 pt-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.issuer || labels.fileUnavailable}</p>
+                <h3 class="mt-2 font-headline text-[1.32rem] font-bold leading-tight tracking-tight text-on-surface">${item.title}</h3>
+              </div>
+              <span class="certificate-card-status">
+                ${renderIcon("shield_check", "text-base")}
+              </span>
+            </div>
+            <div class="certificate-card-meta mt-3 flex flex-wrap items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+              ${item.issued ? `<span>${item.issued}</span>` : ""}
+              ${tags
+                .map(
+                  (tag) => `
+                    <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                      ${tag}
+                    </span>
+                  `
+                )
+                .join("")}
+            </div>
+            ${
+              hasFile
+                ? `
+                  <a class="certificate-card-action" href="${viewerUrl}" data-certificate-link>
+                    ${renderIcon("visibility", "text-base")}
+                    <span>${labels.viewCta}</span>
+                  </a>
+                `
+                : `
+                  <span class="certificate-card-action is-disabled" aria-disabled="true">
+                    ${renderIcon("lock", "text-base")}
+                    <span>${labels.unavailableCta}</span>
+                  </span>
+                `
+            }
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
 function renderProjects() {
   const projects = getCopy("projects.items").filter((item) => {
     return state.filter === "all" ? true : item.category === state.filter;
@@ -1210,7 +794,7 @@ function renderProjects() {
                 class="project-preview-image"
               />
             </div>
-            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+            <div class="flex flex-col px-1.5 pb-1 pt-4">
               <div class="flex items-start justify-between gap-4">
                 <div>
                   <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
@@ -1218,13 +802,13 @@ function renderProjects() {
                 </div>
                 ${renderIcon("north_east", "text-primary")}
               </div>
-              <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+              <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
               <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
                 <span>${item.tag}</span>
                 <span class="h-1 w-1 rounded-full bg-outline"></span>
                 <span>${item.year}</span>
               </div>
-              <div class="mt-4 flex flex-col gap-2 sm:flex-row">
+              <div class="mt-3 flex flex-col gap-2 sm:flex-row">
                 <button
                   type="button"
                   class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2.5 text-xs font-bold uppercase tracking-[0.16em] text-on-primary transition hover:-translate-y-0.5"
@@ -1259,7 +843,7 @@ function renderProjects() {
           href="${detailHref}"
         >
           <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
-          <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+          <div class="flex flex-col px-1.5 pb-1 pt-4">
             <div class="flex items-start justify-between gap-4">
               <div>
                 <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
@@ -1267,7 +851,7 @@ function renderProjects() {
               </div>
               ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
             </div>
-            <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+            <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
             <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
               <span>${item.tag}</span>
               <span class="h-1 w-1 rounded-full bg-outline"></span>
@@ -1411,33 +995,252 @@ function renderArticles(preserveScroll = false) {
   });
 }
 
-function renderAboutFilters() {
-  const labels = getCopy("about.filters");
+function renderAboutTagPills(tags = []) {
+  return tags
+    .map(
+      (tag) => `
+        <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+          ${tag}
+        </span>
+      `
+    )
+    .join("");
+}
 
-  elements.aboutFilterButtons.forEach((button) => {
-    button.textContent = labels[button.dataset.aboutFilter];
-    button.classList.toggle("is-active", button.dataset.aboutFilter === state.aboutFilter);
+function renderAboutStandardGroup(group) {
+  return `
+    <article class="about-profile-card rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/78 p-5 sm:p-6">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-secondary/20 bg-secondary/10 text-secondary">
+          ${renderIcon(group.icon, "text-[1.15rem]")}
+        </span>
+        <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
+      </div>
+
+      <div class="mt-5 divide-y divide-outline-variant/14">
+        ${group.items
+          .map(
+            (item) => `
+              <div class="py-5 first:pt-0 last:pb-0">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div>
+                    <h4 class="font-headline text-[1.05rem] font-bold leading-6 tracking-tight text-on-surface">${item.title}</h4>
+                    <p class="mt-1 text-sm font-bold text-secondary">${item.institution}</p>
+                  </div>
+                  <span class="text-[0.66rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">${item.period}</span>
+                </div>
+                <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                  ${renderAboutTagPills(item.tags || [])}
+                </div>
+              </div>
+            `
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderAboutAcademicTimeline(group) {
+  return `
+    <article class="about-git-card lg:col-span-2">
+      <div class="about-git-heading">
+        <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-secondary/20 bg-secondary/10 text-secondary">
+          ${renderIcon(group.icon, "text-[1.15rem]")}
+        </span>
+        <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
+      </div>
+
+      <div class="about-git-timeline mt-6" aria-label="${group.title}">
+        ${group.items
+          .map((item) => {
+            const hasDetail = Boolean(item.detail || item.description || item.skills?.length);
+            const title = item.title || item.institution;
+
+            return `
+              <div
+                class="about-git-node ${hasDetail ? "about-git-node--expandable" : ""}"
+                ${hasDetail ? 'role="button" tabindex="0" aria-expanded="false" data-academic-toggle' : ""}
+              >
+                <div class="about-git-lane" aria-hidden="true">
+                  <span class="about-git-dot"></span>
+                </div>
+
+                <div class="about-git-info">
+                  <p class="about-git-date">${item.period}</p>
+                  <p class="about-git-place">${title}</p>
+                </div>
+
+                ${
+                  hasDetail
+                    ? `
+                      <div class="about-git-detail ${item.detail && !item.description && !item.skills?.length ? "about-git-detail--compact" : ""}">
+                        ${item.category ? `<p class="about-git-category">${item.category}</p>` : ""}
+                        ${item.detail ? `<p class="about-git-detail-description">${item.detail}</p>` : ""}
+                        ${item.description ? `<p class="about-git-detail-description">${item.description}</p>` : ""}
+                        ${
+                          item.skills?.length
+                            ? `
+                              <div class="about-git-skill-line">
+                                <p>Habilidades</p>
+                                <span>${item.skills.join(" · ")}</span>
+                              </div>
+                            `
+                            : ""
+                        }
+                      </div>
+                    `
+                    : ""
+                }
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderAboutWorkList(title, items = []) {
+  if (!items.length) {
+    return "";
+  }
+
+  return `
+    <div class="about-work-detail-group">
+      <p class="about-work-detail-label">${title}</p>
+      <p class="about-work-inline-list">${items.join(" · ")}</p>
+    </div>
+  `;
+}
+
+function renderAboutWorkStack(stack = []) {
+  if (!stack.length) {
+    return "";
+  }
+
+  return `
+    <div class="about-work-detail-group">
+      <p class="about-work-detail-label">Stack</p>
+      <div class="about-work-tech-list">
+        ${stack.map((technology) => `<span>${technology}</span>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderAboutWorkTimeline(group) {
+  return `
+    <article class="about-work-card about-profile-card lg:col-span-2">
+      <div class="about-work-heading">
+        <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-secondary/20 bg-secondary/10 text-secondary">
+          ${renderIcon(group.icon, "text-[1.15rem]")}
+        </span>
+        <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
+      </div>
+
+      <div class="about-work-timeline" aria-label="${group.title}">
+        ${group.items
+          .map(
+            (item, index) => `
+              <article
+                class="about-work-item ${index % 2 === 0 ? "about-work-item--top" : "about-work-item--bottom"} ${
+                  item.detailPlacement === "right" ? "about-work-item--detail-right" : ""
+                }"
+              >
+                <span class="about-work-node" aria-hidden="true"></span>
+                <span class="about-work-branch" aria-hidden="true"></span>
+
+                <div class="about-work-summary">
+                  <p class="about-work-date">${item.period}</p>
+                  <h4>${item.title}</h4>
+                  <p class="about-work-category">${item.category}</p>
+                </div>
+
+                <div class="about-work-detail">
+                  <p class="about-work-description">${item.description}</p>
+                  ${renderAboutWorkStack(item.stack)}
+                  ${renderAboutWorkList("Enfoque", item.focus)}
+                  ${renderAboutWorkList("Habilidades", item.skills)}
+                </div>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderAboutProfile() {
+  const about = getCopy("about");
+
+  if (!elements.aboutProfileGrid || !about?.groups) {
+    return;
+  }
+
+  const groupCards = about.groups
+    .map((group) => {
+      if (group.icon === "school") {
+        return renderAboutAcademicTimeline(group);
+      }
+
+      if (group.icon === "work") {
+        return renderAboutWorkTimeline(group);
+      }
+
+      return renderAboutStandardGroup(group);
+    })
+    .join("");
+
+  elements.aboutProfileGrid.innerHTML = groupCards;
+}
+
+function setAboutAcademicItemOpen(item, open) {
+  item.classList.toggle("is-open", open);
+  item.setAttribute("aria-expanded", String(open));
+}
+
+function toggleAboutAcademicItem(item) {
+  const shouldOpen = !item.classList.contains("is-open");
+
+  elements.aboutProfileGrid?.querySelectorAll("[data-academic-toggle].is-open").forEach((openItem) => {
+    if (openItem !== item) {
+      setAboutAcademicItemOpen(openItem, false);
+    }
+  });
+
+  setAboutAcademicItemOpen(item, shouldOpen);
+}
+
+function renderInterestFilters() {
+  const labels = getCopy("interests.filters");
+
+  elements.interestFilterButtons.forEach((button) => {
+    button.textContent = labels[button.dataset.interestFilter];
+    button.classList.toggle("is-active", button.dataset.interestFilter === state.interestFilter);
   });
 }
 
-function renderAboutMedia(preserveScroll = false) {
-  const mediaItems = getCopy("about.mediaItems")
+function renderInterestMedia(preserveScroll = false) {
+  const mediaItems = getCopy("interests.mediaItems")
     .map((item, index) => ({ ...item, index }))
-    .filter((item) => (state.aboutFilter === "all" ? true : item.filter === state.aboutFilter));
-  const active = mediaItems.find((item) => item.index === state.activeMedia) || mediaItems[0];
+    .filter((item) => (state.interestFilter === "all" ? true : item.filter === state.interestFilter));
+  const active = mediaItems.find((item) => item.index === state.activeInterest) || mediaItems[0];
   const mobileLayout = isMobileViewport();
   const listScrollOffset = preserveScroll
     ? mobileLayout
-      ? elements.aboutMediaList.scrollLeft
-      : elements.aboutMediaList.scrollTop
+      ? elements.interestsMediaList.scrollLeft
+      : elements.interestsMediaList.scrollTop
     : 0;
 
   if (active) {
-    state.activeMedia = active.index;
+    state.activeInterest = active.index;
   }
 
   if (mobileLayout) {
-    elements.aboutMediaList.innerHTML = mediaItems
+    elements.interestsMediaList.innerHTML = mediaItems
       .map(
         (item) => `
           <article class="project-card about-mobile-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
@@ -1468,28 +1271,28 @@ function renderAboutMedia(preserveScroll = false) {
       )
       .join("");
 
-    elements.aboutMediaFeature.innerHTML = "";
-    elements.aboutMediaFeature.classList.add("about-feature-mobile-hidden");
+    elements.interestsMediaFeature.innerHTML = "";
+    elements.interestsMediaFeature.classList.add("interests-feature-mobile-hidden");
 
     if (preserveScroll) {
-      elements.aboutMediaList.scrollLeft = listScrollOffset;
+      elements.interestsMediaList.scrollLeft = listScrollOffset;
     }
 
     return;
   }
 
-  elements.aboutMediaFeature.classList.remove("about-feature-mobile-hidden");
+  elements.interestsMediaFeature.classList.remove("interests-feature-mobile-hidden");
 
-  elements.aboutMediaList.innerHTML = mediaItems
+  elements.interestsMediaList.innerHTML = mediaItems
     .map((item) => {
-      const activeClass = item.index === state.activeMedia ? "is-active" : "";
+      const activeClass = item.index === state.activeInterest ? "is-active" : "";
 
       return `
         <button
           type="button"
           class="article-list-card ${activeClass} flex min-h-[9.75rem] flex-col justify-between rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-high/78 p-4 text-left lg:min-h-[10.35rem]"
-          data-about-index="${item.index}"
-          aria-pressed="${item.index === state.activeMedia}"
+          data-interest-index="${item.index}"
+          aria-pressed="${item.index === state.activeInterest}"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
@@ -1499,8 +1302,8 @@ function renderAboutMedia(preserveScroll = false) {
             <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${item.meta}</span>
           </div>
           <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
-          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.index === state.activeMedia ? "text-primary" : "text-on-surface-variant"}">
-            <span>${item.index === state.activeMedia ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
+          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.index === state.activeInterest ? "text-primary" : "text-on-surface-variant"}">
+            <span>${item.index === state.activeInterest ? getCopy("interests.cardLabel") : getCopy("interests.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
           </div>
         </button>
@@ -1509,10 +1312,10 @@ function renderAboutMedia(preserveScroll = false) {
     .join("");
 
   if (preserveScroll) {
-    elements.aboutMediaList.scrollTop = listScrollOffset;
+    elements.interestsMediaList.scrollTop = listScrollOffset;
   }
 
-  elements.aboutMediaFeature.innerHTML = `
+  elements.interestsMediaFeature.innerHTML = `
     <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[23.75rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
       <div class="article-visual ${active.visualClass} min-h-[145px] lg:min-h-full"></div>
       <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-4.5">
@@ -1540,69 +1343,19 @@ function renderAboutMedia(preserveScroll = false) {
     </div>
   `;
 
-  elements.aboutMediaList.querySelectorAll("[data-about-index]").forEach((button) => {
+  elements.interestsMediaList.querySelectorAll("[data-interest-index]").forEach((button) => {
     button.addEventListener("click", () => {
-      state.activeMedia = Number(button.dataset.aboutIndex);
-      renderAboutMedia(true);
+      state.activeInterest = Number(button.dataset.interestIndex);
+      renderInterestMedia(true);
 
       if (window.innerWidth < 1024) {
         window.requestAnimationFrame(() => {
-          const top = elements.aboutMediaFeature.getBoundingClientRect().top + window.scrollY - 116;
+          const top = elements.interestsMediaFeature.getBoundingClientRect().top + window.scrollY - 116;
           window.scrollTo({ top, behavior: "smooth" });
         });
       }
     });
   });
-}
-
-function renderArtifacts() {
-  const artifacts = getCopy("artifacts");
-
-  elements.artifactsGrid.innerHTML = artifacts
-    .map(
-      (item) => `
-        <div class="artifact-card overflow-hidden rounded-[1.8rem] border border-outline-variant/18 bg-surface-container-highest/90">
-          <div class="artifact-visual ${item.visualClass} aspect-[4/5]">
-            <div class="absolute inset-0 bg-gradient-to-t from-background via-background/35 to-transparent"></div>
-            <div class="absolute inset-x-6 bottom-6">
-              <div class="glass-panel rounded-[1.3rem] border border-outline-variant/18 p-5">
-                <div class="flex items-center gap-3">
-                  ${renderIcon(item.icon, `text-2xl ${item.accentClass}`)}
-                  <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface">${item.title}</h3>
-                </div>
-                <p class="mt-4 text-sm leading-7 text-on-surface-variant">${item.description}</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  ${item.tags
-                    .map(
-                      (tag) => `
-                        <span class="rounded-full border border-outline-variant/20 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
-                          ${tag}
-                        </span>
-                      `
-                    )
-                    .join("")}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `
-    )
-    .join("");
-}
-
-function renderToolbox() {
-  const toolbox = getCopy("about.toolbox");
-
-  elements.toolboxList.innerHTML = toolbox
-    .map(
-      (item) => `
-        <span class="rounded-full border border-outline-variant/18 bg-surface-container-highest px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-on-surface-variant">
-          ${item}
-        </span>
-      `
-    )
-    .join("");
 }
 
 function renderContacts() {
@@ -1629,15 +1382,22 @@ function renderContacts() {
       href: profile.github,
       active: hasRealProfileLink(profile.github),
     },
+    {
+      label: labels.gitlab,
+      icon: "gitlab",
+      hint: profile.gitlab.replace("https://", ""),
+      href: profile.gitlab,
+      active: hasRealProfileLink(profile.gitlab),
+    },
   ];
 
   const identityCard = `
-    <div class="contact-card contact-identity-card flex h-fit flex-col justify-start rounded-[1.7rem] border border-outline-variant/18 bg-surface-container-highest/62 p-5 sm:col-span-2 xl:col-span-2 lg:min-h-[11.25rem]">
-      <div>
-        <h3 class="max-w-[13rem] font-headline text-[1.35rem] font-bold leading-tight tracking-tight text-on-surface sm:text-[1.55rem] lg:text-[1.7rem]">
+    <div class="contact-card contact-identity-card flex min-w-0 flex-col justify-center rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/62 px-4 py-3.5 sm:col-span-2 lg:col-span-1 lg:min-h-[6.15rem]">
+      <div class="min-w-0">
+        <h3 class="font-headline text-[1.05rem] font-bold leading-tight tracking-tight text-on-surface sm:text-[1.18rem] lg:text-[1.05rem]">
           ${profile.fullName}
         </h3>
-        <p class="mt-2.5 text-sm leading-6 text-on-surface-variant">
+        <p class="mt-1.5 text-xs leading-5 text-on-surface-variant lg:text-[0.72rem] lg:leading-4">
           ${labels.identityRole}
         </p>
       </div>
@@ -1652,7 +1412,7 @@ function renderContacts() {
 
       if (!item.active) {
         return `
-          <div class="contact-card flex min-h-[5.75rem] items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center opacity-55 lg:min-h-[6.15rem]">
+          <div class="contact-card flex min-h-[5.75rem] min-w-0 items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center opacity-55 lg:min-h-[6.15rem]">
             ${renderIcon(item.icon, "contact-card-icon text-on-surface-variant")}
             <div class="min-w-0">
               <p class="text-sm font-headline font-bold tracking-tight text-on-surface">${item.label}</p>
@@ -1663,7 +1423,7 @@ function renderContacts() {
 
       return `
         <a
-          class="contact-card group flex min-h-[5.75rem] items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center lg:min-h-[6.15rem]"
+          class="contact-card group flex min-h-[5.75rem] min-w-0 items-center justify-center gap-3.5 rounded-[1.55rem] border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-3.5 text-center lg:min-h-[6.15rem]"
           href="${item.href}"
           ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}
         >
@@ -1746,8 +1506,9 @@ let deferredSectionsFrame = null;
 
 function renderDeferredSections() {
   renderProjects();
+  renderCertificates();
   renderArticles();
-  renderAboutMedia();
+  renderInterestMedia();
   renderContacts();
   state.deferredSectionsReady = true;
   queueSectionMetricsRefresh();
@@ -1826,6 +1587,136 @@ function wireScrollButtons() {
   });
 }
 
+function initHeroMascots() {
+  const home = document.getElementById("home");
+
+  if (!home || !elements.heroMascotField || !elements.heroMascots.length) {
+    return;
+  }
+
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let latestPointerEvent = null;
+  let pointerFrame = null;
+
+  const resetMascots = () => {
+    elements.heroMascots.forEach((mascot) => {
+      mascot.style.setProperty("--mascot-dx", "0px");
+      mascot.style.setProperty("--mascot-dy", "0px");
+      mascot.style.setProperty("--mascot-rotate", "0deg");
+    });
+  };
+
+  const syncMascotSprites = (type) => {
+    elements.heroMascots.forEach((mascot) => {
+      const sprite = mascot.querySelector(".hero-mascot-sprite");
+      const nextSource = type ? mascot.dataset[`${type}Src`] : mascot.dataset.walkSrc || mascot.dataset.idleSrc;
+
+      if (sprite && nextSource && !sprite.src.endsWith(nextSource)) {
+        sprite.src = nextSource;
+      }
+    });
+  };
+
+  const syncMascotNameVisibility = (event) => {
+    elements.heroMascots.forEach((mascot) => {
+      const bounds = mascot.getBoundingClientRect();
+      const isInside =
+        event.clientX >= bounds.left &&
+        event.clientX <= bounds.right &&
+        event.clientY >= bounds.top &&
+        event.clientY <= bounds.bottom;
+
+      mascot.classList.toggle("is-name-visible", isInside);
+    });
+  };
+
+  const syncMascotsToPointer = () => {
+    pointerFrame = null;
+
+    if (!latestPointerEvent || motionQuery.matches) {
+      return;
+    }
+
+    const rect = home.getBoundingClientRect();
+
+    if (!rect.width || !rect.height) {
+      return;
+    }
+
+    const relativeX = Math.min(Math.max((latestPointerEvent.clientX - rect.left) / rect.width - 0.5, -0.5), 0.5);
+    const relativeY = Math.min(Math.max((latestPointerEvent.clientY - rect.top) / rect.height - 0.5, -0.5), 0.5);
+
+    elements.heroMascots.forEach((mascot, index) => {
+      const direction = index % 2 === 0 ? 1 : -1;
+      const x = relativeX * 28 * direction;
+      const y = relativeY * 20;
+      const rotate = relativeX * 8 * direction;
+
+      mascot.style.setProperty("--mascot-dx", `${x.toFixed(2)}px`);
+      mascot.style.setProperty("--mascot-dy", `${y.toFixed(2)}px`);
+      mascot.style.setProperty("--mascot-rotate", `${rotate.toFixed(2)}deg`);
+    });
+
+    syncMascotNameVisibility(latestPointerEvent);
+  };
+
+  const queueMascotSync = (event) => {
+    latestPointerEvent = event;
+
+    if (pointerFrame !== null) {
+      return;
+    }
+
+    pointerFrame = window.requestAnimationFrame(syncMascotsToPointer);
+  };
+
+  home.addEventListener("pointermove", queueMascotSync, { passive: true });
+
+  home.addEventListener("pointerleave", () => {
+    latestPointerEvent = null;
+    setHeroMascotReaction("");
+    elements.heroMascots.forEach((mascot) => {
+      mascot.classList.remove("is-name-visible");
+    });
+    resetMascots();
+  });
+
+  const getHeroInteractionType = (target) => {
+    if (!(target instanceof Element)) {
+      return "";
+    }
+
+    if (target.closest("#hero-title .hero-word, #hero-title")) {
+      return "title";
+    }
+
+    if (target.closest("#hero-primary-button, #hero-secondary-button, .hero-action-link, #hero-email, .hero-focus-card")) {
+      return "card";
+    }
+
+    return "";
+  };
+
+  const setHeroMascotReaction = (type) => {
+    elements.heroMascotField.classList.toggle("is-reacting", Boolean(type));
+    elements.heroMascotField.classList.toggle("is-title-reacting", type === "title");
+    elements.heroMascotField.classList.toggle("is-card-reacting", type === "card");
+    syncMascotSprites(type);
+  };
+
+  home.addEventListener("pointerover", (event) => {
+    setHeroMascotReaction(getHeroInteractionType(event.target));
+  });
+
+  home.addEventListener("pointerout", (event) => {
+    if (getHeroInteractionType(event.target) && !getHeroInteractionType(event.relatedTarget)) {
+      setHeroMascotReaction("");
+    }
+  });
+
+  syncMascotSprites("");
+}
+
 function wireEvents() {
   elements.brandText.addEventListener("click", (event) => {
     event.preventDefault();
@@ -1893,11 +1784,11 @@ function wireEvents() {
     });
   });
 
-  elements.aboutFilterButtons.forEach((button) => {
+  elements.interestFilterButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      state.aboutFilter = button.dataset.aboutFilter;
-      renderAboutFilters();
-      renderAboutMedia();
+      state.interestFilter = button.dataset.interestFilter;
+      renderInterestFilters();
+      renderInterestMedia();
       queueSectionMetricsRefresh();
     });
   });
@@ -1911,6 +1802,27 @@ function wireEvents() {
 
     event.preventDefault();
     openProjectPreview(trigger.dataset.projectModalOpen, trigger.dataset.projectTitle || "Docqee");
+  });
+
+  elements.aboutProfileGrid?.addEventListener("click", (event) => {
+    const academicItem = event.target.closest("[data-academic-toggle]");
+
+    if (academicItem) {
+      toggleAboutAcademicItem(academicItem);
+    }
+  });
+
+  elements.aboutProfileGrid?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    const academicItem = event.target.closest("[data-academic-toggle]");
+
+    if (academicItem) {
+      event.preventDefault();
+      toggleAboutAcademicItem(academicItem);
+    }
   });
 
   elements.themeToggle.addEventListener("click", () => {
@@ -1954,7 +1866,7 @@ function wireEvents() {
     if (nextMobileLayout !== state.articleMobileLayout) {
       state.articleMobileLayout = nextMobileLayout;
       renderArticles(true);
-      renderAboutMedia(true);
+      renderInterestMedia(true);
     }
 
     queueSectionMetricsRefresh();
@@ -1967,6 +1879,7 @@ function wireEvents() {
 
   queueSectionMetricsRefresh();
   wireScrollButtons();
+  initHeroMascots();
 }
 
 applyTheme(state.theme, false);

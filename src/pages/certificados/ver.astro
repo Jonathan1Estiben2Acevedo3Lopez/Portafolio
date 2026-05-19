@@ -1,0 +1,219 @@
+---
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import pdfJsModuleUrl from "pdfjs-dist/build/pdf.mjs?url";
+import pdfJsWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+import certificates from "../../data/certificates.json";
+import "../../styles/global.css";
+
+const certificateDirectory = resolve(process.cwd(), "src", "certificados");
+const certificateSources = certificates.map(({ fileName, mime, copy, ...certificate }) => ({
+  ...certificate,
+  source: `data:${mime};base64,${readFileSync(resolve(certificateDirectory, fileName)).toString("base64")}`,
+}));
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visor de certificado | Jonathan Acevedo</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body class="certificate-page bg-background font-body text-on-surface">
+    <main class="certificate-page-shell">
+      <header class="certificate-page-header">
+        <a class="certificate-page-back" href="/#certificates">Volver</a>
+        <h1 id="certificate-page-title">Certificado</h1>
+      </header>
+
+      <section class="certificate-page-viewer" id="certificate-page-viewer">
+        <div id="certificate-page-content" class="certificate-page-content custom-scrollbar"></div>
+        <div id="certificate-page-watermark" class="certificate-page-watermark" aria-hidden="true"></div>
+        <div id="certificate-page-blackout" class="certificate-page-blackout" aria-hidden="true"></div>
+        <div id="certificate-page-warning" class="certificate-page-warning" role="status" aria-live="polite">
+          Accion bloqueada
+        </div>
+      </section>
+    </main>
+
+    <script is:inline define:vars={{ certificateSources, pdfJsModuleUrl, pdfJsWorkerUrl }}>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const escapeAttribute = (value) => {
+          const replacements = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          };
+
+          return String(value).replace(/[&<>"']/g, (character) => replacements[character]);
+        };
+
+        const selectedCertificate = certificateSources.find((item) => {
+          return item.id === params.get("certificate");
+        });
+        const file = selectedCertificate?.source || "";
+        const title = params.get("title") || "Certificado";
+        const safeTitle = escapeAttribute(title);
+        const type = selectedCertificate?.type || "pdf";
+        const content = document.getElementById("certificate-page-content");
+        const titleNode = document.getElementById("certificate-page-title");
+        const watermark = document.getElementById("certificate-page-watermark");
+        const warning = document.getElementById("certificate-page-warning");
+
+        const allowedFile = Boolean(selectedCertificate);
+
+        const showBlackout = (message = "Accion bloqueada") => {
+          document.documentElement.classList.add("certificate-page-is-blackout");
+          warning.textContent = message;
+          warning.classList.add("is-visible");
+          window.clearTimeout(showBlackout.timeout);
+          showBlackout.timeout = window.setTimeout(() => {
+            document.documentElement.classList.remove("certificate-page-is-blackout");
+            warning.classList.remove("is-visible");
+          }, 1600);
+        };
+
+        const dataUrlToBytes = (dataUrl) => {
+          const base64 = dataUrl.split(",")[1] || "";
+          const binary = window.atob(base64);
+          const bytes = new Uint8Array(binary.length);
+
+          for (let index = 0; index < binary.length; index += 1) {
+            bytes[index] = binary.charCodeAt(index);
+          }
+
+          return bytes;
+        };
+
+        const renderPdfCertificate = async () => {
+          content.classList.add("is-pdf");
+          content.innerHTML = '<div class="certificate-page-loading">Cargando certificado...</div>';
+
+          try {
+            const pdfjsLib = await import(pdfJsModuleUrl);
+            pdfjsLib.GlobalWorkerOptions.workerSrc = pdfJsWorkerUrl;
+
+            const loadingTask = pdfjsLib.getDocument({ data: dataUrlToBytes(file) });
+            const pdf = await loadingTask.promise;
+            const pages = document.createElement("div");
+            pages.className = "certificate-pdf-pages";
+
+            content.replaceChildren(pages);
+
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+              const page = await pdf.getPage(pageNumber);
+              const baseViewport = page.getViewport({ scale: 1 });
+              const viewportPadding = window.innerWidth < 768 ? 28 : 64;
+              const availableWidth = Math.max(content.clientWidth - viewportPadding, 260);
+              const availableHeight = Math.max(content.clientHeight - viewportPadding, 260);
+              const widthScale = availableWidth / baseViewport.width;
+              const heightScale = availableHeight / baseViewport.height;
+              const compactFactor = window.innerWidth < 768 ? 0.96 : 0.92;
+              const scale = Math.min(widthScale, heightScale, 1.45) * compactFactor;
+              const viewport = page.getViewport({ scale });
+              const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d", { alpha: false });
+
+              canvas.className = "certificate-pdf-canvas";
+              canvas.width = Math.floor(viewport.width * outputScale);
+              canvas.height = Math.floor(viewport.height * outputScale);
+              canvas.style.width = `${Math.floor(viewport.width)}px`;
+              canvas.style.height = `${Math.floor(viewport.height)}px`;
+              canvas.setAttribute("aria-label", `${title} pagina ${pageNumber}`);
+
+              context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+
+              const pageShell = document.createElement("div");
+              pageShell.className = "certificate-pdf-page";
+              pageShell.append(canvas);
+              pages.append(pageShell);
+
+              await page.render({ canvasContext: context, viewport }).promise;
+            }
+          } catch (error) {
+            content.innerHTML = '<div class="certificate-page-error">No se pudo cargar el certificado.</div>';
+          }
+        };
+
+        if (!allowedFile) {
+          content.innerHTML = '<div class="certificate-page-error">No se encontro el certificado.</div>';
+          return;
+        }
+
+        document.title = `${title} | Visor de certificado`;
+        titleNode.textContent = title;
+        watermark.dataset.watermark = `Jonathan Estiben Acevedo Lopez - ${title}`;
+
+        if (type === "pdf") {
+          renderPdfCertificate();
+        } else {
+          content.classList.remove("is-pdf");
+          content.innerHTML = `<img class="certificate-page-image" src="${file}" alt="${safeTitle}" draggable="false" />`;
+        }
+
+        document.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          showBlackout();
+        }, true);
+
+        document.addEventListener("dragstart", (event) => {
+          event.preventDefault();
+        }, true);
+
+        const blockRestrictedShortcut = (event) => {
+          const key = event.key.toLowerCase();
+          const usesCommandKey = event.ctrlKey || event.metaKey;
+          const usesSystemKey = event.metaKey || event.getModifierState?.("Meta") || event.getModifierState?.("OS");
+          const usesSnippingShortcut = usesSystemKey && event.shiftKey && key === "s";
+          const usesScreenshotKey = key === "printscreen" || usesSnippingShortcut;
+
+          if ((usesCommandKey && ["o", "p", "s", "u"].includes(key)) || usesScreenshotKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            showBlackout(usesScreenshotKey ? "Accion bloqueada" : "La impresion y el guardado estan bloqueados.");
+            const clearClipboard = navigator.clipboard?.writeText?.("");
+            clearClipboard?.catch?.(() => {});
+          }
+        };
+
+        window.addEventListener("keydown", blockRestrictedShortcut, true);
+        document.addEventListener("keydown", blockRestrictedShortcut, true);
+
+        window.addEventListener("keyup", (event) => {
+          if (event.key.toLowerCase() === "printscreen") {
+            showBlackout();
+          }
+        });
+
+        window.addEventListener("beforeprint", (event) => {
+          event.preventDefault();
+          showBlackout("La impresion y el guardado estan bloqueados.");
+        });
+
+        window.addEventListener("blur", () => {
+          window.setTimeout(() => {
+            if (document.activeElement?.matches?.("[data-certificate-frame]")) {
+              return;
+            }
+
+            document.documentElement.classList.add("certificate-page-is-blackout");
+          }, 0);
+        });
+
+        window.addEventListener("focus", () => {
+          document.documentElement.classList.remove("certificate-page-is-blackout");
+        });
+
+        document.addEventListener("visibilitychange", () => {
+          document.documentElement.classList.toggle("certificate-page-is-blackout", document.visibilityState !== "visible");
+        });
+      })();
+    </script>
+  </body>
+</html>
