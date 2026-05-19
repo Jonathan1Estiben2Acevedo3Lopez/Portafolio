@@ -5,8 +5,13 @@
   "type": "module",
   "description": "Portafolio personal en Astro",
   "scripts": {
+    "new:project": "node scripts/new-project.mjs",
+    "sync:projects": "node scripts/sync-projects.mjs",
+    "predev": "npm run sync:projects",
     "dev": "astro dev",
+    "prebuild": "npm run sync:projects",
     "build": "astro build",
+    "prepreview": "npm run sync:projects",
     "preview": "astro preview"
   },
   "dependencies": {

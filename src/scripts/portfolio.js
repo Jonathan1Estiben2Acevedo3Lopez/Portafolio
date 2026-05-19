@@ -2,7 +2,7 @@ import aboutContent from "../data/about.json";
 import blogPosts from "../data/blog.json";
 import certificateCards from "../data/certificates.json";
 import interestCards from "../data/interests.json";
-import projectCards from "../data/projects.json";
+import projectCards from "../data/projects.generated.json";
 
 const baseUrl = document.body?.dataset.baseUrl || "/";
 const basePath = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
@@ -795,8 +795,29 @@ function renderCertificates() {
     .join("");
 }
 
+function renderProjectVisual(item, altText) {
+  if (item.previewImage) {
+    return `
+      <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
+        <img
+          src="${withBase(item.previewImage)}"
+          alt="${altText}"
+          loading="lazy"
+          class="project-preview-image"
+        />
+      </div>
+    `;
+  }
+
+  return `<div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>`;
+}
+
 function renderProjects() {
   const projects = getCopy("projects.items").filter((item) => {
+    if (item.showInHome === false) {
+      return false;
+    }
+
     return state.filter === "all" ? true : item.category === state.filter;
   });
   const projectCopy = getCopy("projects");
@@ -804,18 +825,12 @@ function renderProjects() {
   elements.projectsGrid.innerHTML = projects
     .map((item) => {
       const detailHref = withBase(item.href || `/proyectos/${item.slug}`);
+      const imageAlt = `${projectCopy.imageAlt}: ${item.title}`;
 
       if (item.liveUrl) {
         return `
           <article class="project-card project-live-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
-            <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
-              <img
-                src="${withBase(item.previewImage)}"
-                alt="${projectCopy.imageAlt}: ${item.title}"
-                loading="lazy"
-                class="project-preview-image"
-              />
-            </div>
+            ${renderProjectVisual(item, imageAlt)}
             <div class="flex flex-col px-1.5 pb-1 pt-4">
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -864,7 +879,7 @@ function renderProjects() {
           class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
           href="${detailHref}"
         >
-          <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
+          ${renderProjectVisual(item, imageAlt)}
           <div class="flex flex-col px-1.5 pb-1 pt-4">
             <div class="flex items-start justify-between gap-4">
               <div>

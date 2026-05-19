@@ -1,0 +1,40 @@
+{
+  "slug": "portafolio-web",
+  "order": 20,
+  "category": "web",
+  "year": "2026",
+  "href": "/proyectos/portafolio-web",
+  "liveUrl": "https://jonathanacevedo.netlify.app/",
+  "previewImage": "/portafolio-web.png",
+  "visualClass": "visual-brand",
+  "copy": {
+    "es": {
+      "title": "Portafolio Web",
+      "tag": "Marca personal",
+      "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formación, certificados y contenido técnico.",
+      "accent": "Personal Web"
+    },
+    "en": {
+      "title": "Web Portfolio",
+      "tag": "Personal brand",
+      "description": "A personal website created to present my professional profile, projects, experience, education, certificates, and technical content.",
+      "accent": "Personal Web"
+    }
+  },
+  "detail": {
+    "category": "Web",
+    "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
+    "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
+    "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
+    "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
+    "results": [
+      "Presentacion profesional centralizada en una sola experiencia web.",
+      "Secciones organizadas para proyectos, certificados, perfil e intereses.",
+      "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
+    ],
+    "stack": ["Astro", "JavaScript", "Tailwind CSS", "Responsive UI", "Netlify"],
+    "deliverables": ["Home del portafolio", "Ficha de proyecto", "Secciones de contenido", "Deploy en Netlify"],
+    "interactiveTitle": "Explora Portafolio Web desde el portafolio",
+    "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+  }
+}

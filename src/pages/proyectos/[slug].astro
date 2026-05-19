@@ -14,49 +14,13 @@ const relatedProjects = projectDetails.filter((item) => item.slug !== project.sl
 const isDocqee = project.slug === "docqee";
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
-
-const controlHubMetrics = [
-  { value: "3", label: "roles principales" },
-  { value: "1", label: "ecosistema conectado" },
-  { value: "100%", label: "supervision docente" },
-];
-
-const controlHubModules = [
-  {
-    title: "Acceso para pacientes",
-    description: "Presenta la propuesta, facilita el primer contacto y ordena el inicio del proceso de atencion.",
-  },
-  {
-    title: "Gestion estudiantil",
-    description: "Organiza el seguimiento del caso dentro de una interfaz clara para estudiantes en formacion.",
-  },
-  {
-    title: "Supervision docente",
-    description: "Mantiene visible la revision academica y profesional que respalda cada atencion.",
-  },
-  {
-    title: "Recorrido institucional",
-    description: "Conecta la experiencia completa dentro de una logica universitaria organizada y confiable.",
-  },
-];
-
-const controlHubFlow = [
-  {
-    step: "01",
-    title: "Descubrimiento",
-    description: "La plataforma explica el servicio y ayuda al paciente a entender el entorno universitario.",
-  },
-  {
-    step: "02",
-    title: "Conexion",
-    description: "El flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente.",
-  },
-  {
-    step: "03",
-    title: "Seguimiento",
-    description: "La experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden.",
-  },
-];
+const controlHubMetrics = project.metrics ?? [];
+const controlHubModules = project.modules ?? [];
+const controlHubFlow = project.flow ?? [];
+const interactiveTitle = project.interactiveTitle ?? `Explora ${project.title} desde el portafolio`;
+const interactiveDescription =
+  project.interactiveDescription ??
+  "Esta demo en vivo carga el proyecto publicado para que puedas recorrerlo directamente desde esta ficha.";
 ---
 
 <!DOCTYPE html>
@@ -355,10 +319,10 @@ const controlHubFlow = [
               <div class="max-w-3xl">
                 <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Vista interactiva</p>
                 <h2 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-                  Explora Docqee desde el portafolio
+                  {interactiveTitle}
                 </h2>
                 <p class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
-                  Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha.
+                  {interactiveDescription}
                 </p>
               </div>
 

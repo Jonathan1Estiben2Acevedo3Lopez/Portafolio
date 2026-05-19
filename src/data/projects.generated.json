@@ -1,0 +1,153 @@
+[
+  {
+    "slug": "docqee",
+    "order": 10,
+    "category": "web",
+    "year": "2026",
+    "href": "/proyectos/docqee",
+    "liveUrl": "https://docqee.vercel.app/",
+    "previewImage": "/docqee-preview.png",
+    "visualClass": "visual-control",
+    "copy": {
+      "es": {
+        "title": "Docqee",
+        "tag": "Proyecto de grado",
+        "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontología para prácticas clínicas supervisadas.",
+        "accent": "HealthTech"
+      },
+      "en": {
+        "title": "Docqee",
+        "tag": "Degree project",
+        "description": "A platform to connect patients with university dental students for supervised clinical practice.",
+        "accent": "HealthTech"
+      }
+    },
+    "detail": {
+      "category": "Web",
+      "summary": "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
+      "overview": "Docqee fue desarrollado como mi proyecto de grado con la idea de digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y bien acompanado desde el primer contacto.",
+      "challenge": "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
+      "solution": "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervison profesional.",
+      "results": [
+        "Presentacion clara de la propuesta de atencion odontologica universitaria.",
+        "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
+        "Base digital lista para seguir escalando nuevos modulos y procesos academicos."
+      ],
+      "stack": [
+        "React",
+        "Vite",
+        "Responsive UI",
+        "Arquitectura por roles",
+        "Vercel"
+      ],
+      "deliverables": [
+        "Landing principal",
+        "Flujos por rol",
+        "Vista institucional",
+        "Demo funcional online"
+      ],
+      "metrics": [
+        {
+          "value": "3",
+          "label": "roles principales"
+        },
+        {
+          "value": "1",
+          "label": "ecosistema conectado"
+        },
+        {
+          "value": "100%",
+          "label": "supervision docente"
+        }
+      ],
+      "modules": [
+        {
+          "title": "Acceso para pacientes",
+          "description": "Presenta la propuesta, facilita el primer contacto y ordena el inicio del proceso de atencion."
+        },
+        {
+          "title": "Gestion estudiantil",
+          "description": "Organiza el seguimiento del caso dentro de una interfaz clara para estudiantes en formacion."
+        },
+        {
+          "title": "Supervision docente",
+          "description": "Mantiene visible la revision academica y profesional que respalda cada atencion."
+        },
+        {
+          "title": "Recorrido institucional",
+          "description": "Conecta la experiencia completa dentro de una logica universitaria organizada y confiable."
+        }
+      ],
+      "flow": [
+        {
+          "step": "01",
+          "title": "Descubrimiento",
+          "description": "La plataforma explica el servicio y ayuda al paciente a entender el entorno universitario."
+        },
+        {
+          "step": "02",
+          "title": "Conexion",
+          "description": "El flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente."
+        },
+        {
+          "step": "03",
+          "title": "Seguimiento",
+          "description": "La experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden."
+        }
+      ],
+      "interactiveTitle": "Explora Docqee desde el portafolio",
+      "interactiveDescription": "Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha."
+    }
+  },
+  {
+    "slug": "portafolio-web",
+    "order": 20,
+    "category": "web",
+    "year": "2026",
+    "href": "/proyectos/portafolio-web",
+    "liveUrl": "https://jonathanacevedo.netlify.app/",
+    "previewImage": "/portafolio-web.png",
+    "visualClass": "visual-brand",
+    "copy": {
+      "es": {
+        "title": "Portafolio Web",
+        "tag": "Marca personal",
+        "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formación, certificados y contenido técnico.",
+        "accent": "Personal Web"
+      },
+      "en": {
+        "title": "Web Portfolio",
+        "tag": "Personal brand",
+        "description": "A personal website created to present my professional profile, projects, experience, education, certificates, and technical content.",
+        "accent": "Personal Web"
+      }
+    },
+    "detail": {
+      "category": "Web",
+      "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
+      "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
+      "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
+      "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
+      "results": [
+        "Presentacion profesional centralizada en una sola experiencia web.",
+        "Secciones organizadas para proyectos, certificados, perfil e intereses.",
+        "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
+      ],
+      "stack": [
+        "Astro",
+        "JavaScript",
+        "Tailwind CSS",
+        "Responsive UI",
+        "Netlify"
+      ],
+      "deliverables": [
+        "Home del portafolio",
+        "Ficha de proyecto",
+        "Secciones de contenido",
+        "Deploy en Netlify"
+      ],
+      "interactiveTitle": "Explora Portafolio Web desde el portafolio",
+      "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+    }
+  }
+]

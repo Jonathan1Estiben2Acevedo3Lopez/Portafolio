@@ -2,7 +2,7 @@
 
 Portafolio personal construido con Astro, Tailwind CSS y JavaScript. El sitio muestra perfil profesional, proyectos, certificados, blog, intereses, experiencia, formacion academica y datos de contacto.
 
-El contenido repetible se administra desde archivos JSON en `src/data`, para que agregar nuevos proyectos, certificados, articulos o intereses no requiera tocar la logica de renderizado.
+El contenido repetible se administra desde archivos JSON. Los proyectos viven como archivos separados en `src/content/projects` y se sincronizan automaticamente a un JSON generado para la interfaz.
 
 ## Stack
 
@@ -17,6 +17,8 @@ El contenido repetible se administra desde archivos JSON en `src/data`, para que
 
 ```bash
 npm install
+npm run new:project
+npm run sync:projects
 npm run dev
 npm run build
 npm run preview
@@ -24,6 +26,8 @@ npm run preview
 
 | Comando | Uso |
 | --- | --- |
+| `npm run new:project` | Crea un proyecto nuevo con preguntas y sincroniza los datos. |
+| `npm run sync:projects` | Regenera `src/data/projects.generated.json` desde `src/content/projects`. |
 | `npm run dev` | Inicia el servidor local de desarrollo. |
 | `npm run build` | Genera el sitio estatico en `dist`. |
 | `npm run preview` | Previsualiza el build localmente. |
@@ -40,6 +44,11 @@ npm run preview
 |-- src/
 |   |-- assets/
 |   |-- certificados/
+|   |-- content/
+|   |   `-- projects/
+|   |       |-- docqee.json
+|   |       |-- launch-canvas.json
+|   |       `-- portafolio-web.json
 |   |-- data/
 |   |   |-- about.json
 |   |   |-- blog.json
@@ -47,7 +56,7 @@ npm run preview
 |   |   |-- certificates.json
 |   |   |-- interests.json
 |   |   |-- project-details.js
-|   |   `-- projects.json
+|   |   `-- projects.generated.json
 |   |-- pages/
 |   |   |-- index.astro
 |   |   |-- blog/[slug].astro
@@ -59,6 +68,10 @@ npm run preview
 |       `-- global.css
 |-- astro.config.mjs
 |-- package.json
+|-- scripts/
+|   |-- new-project.mjs
+|   |-- project-utils.mjs
+|   `-- sync-projects.mjs
 |-- tailwind.config.mjs
 `-- README.md
 ```
@@ -71,8 +84,9 @@ npm run preview
 | `src/scripts/portfolio.js` | Render dinamico, filtros, idioma, tema e interacciones. |
 | `src/styles/global.css` | Estilos globales, componentes, responsive y temas. |
 | `src/data/about.json` | Formación académica y experiencia laboral. |
-| `src/data/projects.json` | Cards de proyectos. |
-| `src/data/project-details.js` | Fichas completas de proyectos. |
+| `src/content/projects/*.json` | Fuente editable de proyectos y fichas. |
+| `src/data/projects.generated.json` | Datos generados para la UI. No editar manualmente. |
+| `src/data/project-details.js` | Adaptador que genera fichas desde `projects.generated.json`. |
 | `src/data/certificates.json` | Certificados y archivos asociados. |
 | `src/data/blog.json` | Entradas del blog. |
 | `src/data/blog-details.js` | Adaptador para generar rutas del blog desde `blog.json`. |
@@ -104,11 +118,78 @@ La seccion de formacion y experiencia sale de `src/data/about.json`.
 
 ### Proyectos
 
-Las cards salen de `src/data/projects.json`.
+Cada proyecto vive en un archivo separado dentro de `src/content/projects`. El archivo `src/data/projects.generated.json` se genera automaticamente desde esos proyectos y no se debe editar a mano.
+
+#### Flujo recomendado
+
+1. Guarda la imagen del proyecto en `public`, por ejemplo `public/mi-proyecto-preview.png`.
+2. Crea el proyecto con el asistente:
+
+```bash
+npm run new:project
+```
+
+3. Responde las preguntas del asistente. Al terminar, se crea un archivo como `src/content/projects/mi-proyecto.json`.
+4. Revisa y ajusta ese archivo si quieres mejorar textos, stack, resultados o entregables.
+5. Corre el sitio o compila:
+
+```bash
+npm run dev
+```
+
+o:
+
+```bash
+npm run build
+```
+
+Antes de iniciar o compilar, el proyecto ejecuta `npm run sync:projects` automaticamente. Eso actualiza `src/data/projects.generated.json`.
+
+#### Crear un proyecto nuevo
+
+```bash
+npm run new:project
+```
+
+Ese comando crea el archivo del proyecto y actualiza el JSON generado.
+
+#### Editar un proyecto existente
+
+Edita directamente el archivo correspondiente en `src/content/projects`, por ejemplo:
+
+```text
+src/content/projects/portafolio-web.json
+```
+
+Luego puedes correr manualmente:
+
+```bash
+npm run sync:projects
+```
+
+Tambien puedes saltarte ese paso si despues vas a ejecutar `npm run dev`, `npm run build` o `npm run preview`, porque esos comandos sincronizan antes de arrancar.
+
+#### Que hace cada campo importante
+
+| Campo | Uso |
+| --- | --- |
+| `slug` | Identificador del proyecto y nombre de la ruta. Ejemplo: `/proyectos/mi-proyecto`. |
+| `order` | Orden en que aparece. Un numero menor aparece antes. |
+| `category` | Categoria usada por los filtros de la home. |
+| `href` | Ruta interna de la ficha. Normalmente `/proyectos/slug`. |
+| `liveUrl` | URL externa para `Interactuar` y `Abrir sitio`. |
+| `previewImage` | Imagen ubicada en `public`. Se escribe con `/nombre.png`. |
+| `visualClass` | Visual de respaldo si no hay imagen. |
+| `showInHome` | Si es `false`, oculta la card en la home pero conserva la ficha. |
+| `copy` | Textos cortos de la card en espanol e ingles. |
+| `detail` | Contenido largo de la ficha interna. |
+
+Ejemplo de proyecto con card y ficha:
 
 ```json
 {
   "slug": "mi-proyecto",
+  "order": 40,
   "category": "web",
   "year": "2026",
   "href": "/proyectos/mi-proyecto",
@@ -128,11 +209,21 @@ Las cards salen de `src/data/projects.json`.
       "description": "Short project description.",
       "accent": "Web"
     }
+  },
+  "detail": {
+    "category": "Web",
+    "summary": "Resumen corto para la ficha.",
+    "overview": "Descripcion larga del proyecto.",
+    "challenge": "Reto principal.",
+    "solution": "Solucion aplicada.",
+    "results": ["Resultado 1", "Resultado 2"],
+    "stack": ["Astro", "JavaScript"],
+    "deliverables": ["Landing", "Ficha", "Deploy"]
   }
 }
 ```
 
-Para crear la pagina interna `/proyectos/mi-proyecto`, tambien agrega el mismo `slug` en `src/data/project-details.js`.
+Si agregas `"detail"`, Astro genera automaticamente `/proyectos/mi-proyecto`. Si quieres conservar la ficha pero ocultar la card en la home, agrega `"showInHome": false`.
 
 Categorias actuales: `web`, `branding`, `automation`.
 
