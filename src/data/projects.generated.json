@@ -12,7 +12,7 @@
       "es": {
         "title": "Docqee",
         "tag": "Proyecto de grado",
-        "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontología para prácticas clínicas supervisadas.",
+        "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontologia para practicas clinicas supervisadas.",
         "accent": "HealthTech"
       },
       "en": {
@@ -24,27 +24,12 @@
     },
     "detail": {
       "category": "Web",
-      "summary": "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
-      "overview": "Docqee fue desarrollado como mi proyecto de grado con la idea de digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y bien acompanado desde el primer contacto.",
-      "challenge": "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
-      "solution": "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervison profesional.",
-      "results": [
-        "Presentacion clara de la propuesta de atencion odontologica universitaria.",
-        "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
-        "Base digital lista para seguir escalando nuevos modulos y procesos academicos."
-      ],
       "stack": [
         "React",
         "Vite",
         "Responsive UI",
         "Arquitectura por roles",
         "Vercel"
-      ],
-      "deliverables": [
-        "Landing principal",
-        "Flujos por rol",
-        "Vista institucional",
-        "Demo funcional online"
       ],
       "metrics": [
         {
@@ -60,43 +45,88 @@
           "label": "supervision docente"
         }
       ],
-      "modules": [
+      "media": {
+        "images": [
+          {
+            "src": "/docqee-preview.png",
+            "alt": {
+              "es": "Vista previa de Docqee",
+              "en": "Docqee preview"
+            },
+            "caption": {
+              "es": "Pantalla principal de Docqee publicada como demo funcional.",
+              "en": "Docqee main screen published as a functional demo."
+            }
+          }
+        ]
+      },
+      "links": [
         {
-          "title": "Acceso para pacientes",
-          "description": "Presenta la propuesta, facilita el primer contacto y ordena el inicio del proceso de atencion."
-        },
-        {
-          "title": "Gestion estudiantil",
-          "description": "Organiza el seguimiento del caso dentro de una interfaz clara para estudiantes en formacion."
-        },
-        {
-          "title": "Supervision docente",
-          "description": "Mantiene visible la revision academica y profesional que respalda cada atencion."
-        },
-        {
-          "title": "Recorrido institucional",
-          "description": "Conecta la experiencia completa dentro de una logica universitaria organizada y confiable."
+          "type": "demo",
+          "href": "https://docqee.vercel.app/",
+          "label": {
+            "es": "Abrir demo",
+            "en": "Open demo"
+          }
         }
       ],
-      "flow": [
-        {
-          "step": "01",
-          "title": "Descubrimiento",
-          "description": "La plataforma explica el servicio y ayuda al paciente a entender el entorno universitario."
-        },
-        {
-          "step": "02",
-          "title": "Conexion",
-          "description": "El flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente."
-        },
-        {
-          "step": "03",
-          "title": "Seguimiento",
-          "description": "La experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden."
-        }
-      ],
-      "interactiveTitle": "Explora Docqee desde el portafolio",
-      "interactiveDescription": "Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha."
+      "liveUrl": "https://docqee.vercel.app/",
+      "es": {
+        "summary": "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
+        "overview": "Docqee fue desarrollado como mi proyecto de grado para digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y acompanado desde el primer contacto.",
+        "challenge": "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
+        "solution": "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervision profesional.",
+        "process": [
+          "Descubrimiento: la plataforma explica el servicio y ayuda al paciente a entender el entorno universitario.",
+          "Conexion: el flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente.",
+          "Seguimiento: la experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden."
+        ],
+        "results": [
+          "Presentacion clara de la propuesta de atencion odontologica universitaria.",
+          "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
+          "Base digital lista para seguir escalando nuevos modulos y procesos academicos."
+        ],
+        "deliverables": [
+          "Landing principal",
+          "Flujos por rol",
+          "Vista institucional",
+          "Demo funcional online"
+        ],
+        "learnings": [
+          "Separar la experiencia por rol mejora la claridad cuando hay varios actores en el mismo proceso.",
+          "Una ficha de proyecto necesita explicar el contexto antes de mostrar solo pantallas o enlaces."
+        ],
+        "interactiveTitle": "Explora Docqee desde el portafolio",
+        "interactiveDescription": "Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha."
+      },
+      "en": {
+        "summary": "A web platform to connect patients with dental students supervised by teachers inside a trusted university environment.",
+        "overview": "Docqee was developed as my degree project to organize the relationship between patients, dental students, and teachers in a university setting. The platform makes university dental care feel clear, close, and supported from the first contact.",
+        "challenge": "The main challenge was coordinating different needs in one experience: patients looking for care, students managing academic processes, and teachers requiring clear supervision. The platform needed to feel trustworthy, simple to understand, and ready for multiple devices.",
+        "solution": "The solution was built as a web platform with role-based flows, a responsive experience, and a visual structure that explains the university process with less friction. The interface prioritizes clarity, organized information, and a sense of professional support.",
+        "process": [
+          "Discovery: the platform explains the service and helps patients understand the university environment.",
+          "Connection: the flow connects patient requests with student work and teacher supervision.",
+          "Follow-up: the experience keeps every step clear so the process can scale with order."
+        ],
+        "results": [
+          "Clear presentation of the university dental care proposal.",
+          "An experience designed to connect patients, students, and teachers in one system.",
+          "A digital base ready to scale with new modules and academic processes."
+        ],
+        "deliverables": [
+          "Main landing page",
+          "Role-based flows",
+          "Institutional view",
+          "Functional online demo"
+        ],
+        "learnings": [
+          "Splitting the experience by role improves clarity when several actors share the same process.",
+          "A project case study needs to explain context before showing only screens or links."
+        ],
+        "interactiveTitle": "Explore Docqee from the portfolio",
+        "interactiveDescription": "This live demo loads the platform published on Vercel so you can explore the project directly from this case study."
+      }
     }
   },
   {
@@ -112,7 +142,7 @@
       "es": {
         "title": "Portafolio Web",
         "tag": "Marca personal",
-        "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formación, certificados y contenido técnico.",
+        "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico.",
         "accent": "Personal Web"
       },
       "en": {
@@ -124,15 +154,6 @@
     },
     "detail": {
       "category": "Web",
-      "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
-      "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
-      "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
-      "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
-      "results": [
-        "Presentacion profesional centralizada en una sola experiencia web.",
-        "Secciones organizadas para proyectos, certificados, perfil e intereses.",
-        "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
-      ],
       "stack": [
         "Astro",
         "JavaScript",
@@ -140,14 +161,170 @@
         "Responsive UI",
         "Netlify"
       ],
-      "deliverables": [
-        "Home del portafolio",
-        "Ficha de proyecto",
-        "Secciones de contenido",
-        "Deploy en Netlify"
+      "media": {
+        "images": [
+          {
+            "src": "/portafolio-web.png",
+            "alt": {
+              "es": "Vista previa del portafolio web",
+              "en": "Web portfolio preview"
+            },
+            "caption": {
+              "es": "Captura principal del portafolio publicado en Netlify.",
+              "en": "Main screenshot of the portfolio published on Netlify."
+            }
+          }
+        ]
+      },
+      "links": [
+        {
+          "type": "demo",
+          "href": "https://jonathanacevedo.netlify.app/",
+          "label": {
+            "es": "Abrir sitio",
+            "en": "Open site"
+          }
+        }
       ],
-      "interactiveTitle": "Explora Portafolio Web desde el portafolio",
-      "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+      "liveUrl": "https://jonathanacevedo.netlify.app/",
+      "es": {
+        "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
+        "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
+        "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
+        "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
+        "process": [
+          "Estructurar el contenido por archivos JSON para que cada seccion sea facil de mantener.",
+          "Crear cards y fichas reutilizables para que nuevos proyectos se agreguen sin tocar la interfaz base.",
+          "Publicar una version estatica optimizada para Netlify."
+        ],
+        "results": [
+          "Presentacion profesional centralizada en una sola experiencia web.",
+          "Secciones organizadas para proyectos, certificados, perfil e intereses.",
+          "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
+        ],
+        "deliverables": [
+          "Home del portafolio",
+          "Ficha de proyecto",
+          "Secciones de contenido",
+          "Deploy en Netlify"
+        ],
+        "learnings": [
+          "Separar datos y componentes hace mas rapido sumar nuevos proyectos.",
+          "Una ficha flexible evita crear layouts especiales para cada caso."
+        ],
+        "interactiveTitle": "Explora Portafolio Web desde el portafolio",
+        "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+      },
+      "en": {
+        "summary": "A personal website to present my professional profile, projects, experience, education, certificates, and technical content in a clear modern experience.",
+        "overview": "Web Portfolio organizes my professional presence in a fast and responsive site. Its structure makes it easy to explore my profile, projects, certificates, interests, and technical content through a consistent visual experience.",
+        "challenge": "The challenge was bringing several professional areas together without making navigation feel heavy. The site needed enough information, strong clarity on small screens, and a recognizable personal identity.",
+        "solution": "The experience was built with Astro, section-based data files, reusable cards, responsive support, and individual project case studies. Preview images are served from public to keep loading simple.",
+        "process": [
+          "Structure the content through JSON files so each section is easy to maintain.",
+          "Create reusable cards and case studies so new projects can be added without touching the base interface.",
+          "Publish an optimized static version on Netlify."
+        ],
+        "results": [
+          "A centralized professional presentation in one web experience.",
+          "Organized sections for projects, certificates, profile, and interests.",
+          "A base ready for technical content and new case studies."
+        ],
+        "deliverables": [
+          "Portfolio home",
+          "Project case study",
+          "Content sections",
+          "Netlify deploy"
+        ],
+        "learnings": [
+          "Separating data and components makes it faster to add new projects.",
+          "A flexible case study template avoids one-off layouts for each project."
+        ],
+        "interactiveTitle": "Explore Web Portfolio from the portfolio",
+        "interactiveDescription": "This live demo loads the site published on Netlify so you can review the experience directly from this case study."
+      }
+    }
+  },
+  {
+    "slug": "launch-canvas",
+    "order": 30,
+    "category": "branding",
+    "year": "2026",
+    "href": "/proyectos/launch-canvas",
+    "visualClass": "visual-launch",
+    "showInHome": false,
+    "copy": {
+      "es": {
+        "title": "Launch Canvas",
+        "tag": "Sistema de lanzamiento",
+        "description": "Ficha base para documentar una idea de producto, sus decisiones visuales y el recorrido desde concepto hasta entrega.",
+        "accent": "Product Story"
+      },
+      "en": {
+        "title": "Launch Canvas",
+        "tag": "Launch system",
+        "description": "A base case study to document a product idea, its visual decisions, and the path from concept to delivery.",
+        "accent": "Product Story"
+      }
+    },
+    "detail": {
+      "category": "Branding",
+      "stack": [
+        "Research",
+        "UX Writing",
+        "Visual Design",
+        "Documentation"
+      ],
+      "es": {
+        "summary": "Ficha de ejemplo para mostrar como se ve un proyecto sin capturas, videos ni demo en vivo.",
+        "overview": "Launch Canvas sirve como proyecto de prueba para validar que la plantilla tambien funciona cuando solo hay texto, stack, resultados y enlaces opcionales. Es util para ideas tempranas o proyectos que aun no tienen material visual publico.",
+        "challenge": "La ficha debia sostener una narrativa completa incluso cuando el proyecto no tiene capturas disponibles.",
+        "solution": "La plantilla muestra un visual de respaldo, oculta automaticamente las secciones vacias y conserva una lectura clara para explicar contexto, proceso y aprendizaje.",
+        "process": [
+          "Definir el objetivo del proyecto y su audiencia.",
+          "Ordenar reto, solucion y entregables en una narrativa breve.",
+          "Validar que la ficha no dependa de imagenes obligatorias."
+        ],
+        "results": [
+          "Caso de prueba para proyectos sin medios.",
+          "Validacion de fallback visual y secciones condicionales.",
+          "Base lista para reemplazarse por un proyecto real cuando exista."
+        ],
+        "deliverables": [
+          "Ficha narrativa",
+          "Estructura reutilizable",
+          "Validacion de contenido sin medios"
+        ],
+        "learnings": [
+          "No todos los proyectos necesitan galeria para explicarse bien.",
+          "Las secciones condicionales hacen que el contenido se sienta intencional."
+        ]
+      },
+      "en": {
+        "summary": "A sample case study showing how a project looks without screenshots, videos, or a live demo.",
+        "overview": "Launch Canvas works as a test project to validate that the template also works when there is only text, stack, results, and optional links. It is useful for early ideas or projects that do not yet have public visual material.",
+        "challenge": "The case study needed to support a complete narrative even when the project has no available screenshots.",
+        "solution": "The template shows a fallback visual, automatically hides empty sections, and keeps a clear reading flow for context, process, and learning.",
+        "process": [
+          "Define the project goal and audience.",
+          "Organize challenge, solution, and deliverables into a short narrative.",
+          "Validate that the case study does not depend on mandatory images."
+        ],
+        "results": [
+          "A test case for projects without media.",
+          "Validation of fallback visuals and conditional sections.",
+          "A base that can be replaced by a real project later."
+        ],
+        "deliverables": [
+          "Narrative case study",
+          "Reusable structure",
+          "No-media content validation"
+        ],
+        "learnings": [
+          "Not every project needs a gallery to be explained well.",
+          "Conditional sections make the content feel intentional."
+        ]
+      }
     }
   }
 ]

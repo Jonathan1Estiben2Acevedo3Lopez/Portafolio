@@ -11,7 +11,7 @@
     "es": {
       "title": "Docqee",
       "tag": "Proyecto de grado",
-      "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontología para prácticas clínicas supervisadas.",
+      "description": "Plataforma para conectar pacientes con estudiantes universitarios de odontologia para practicas clinicas supervisadas.",
       "accent": "HealthTech"
     },
     "en": {
@@ -23,17 +23,7 @@
   },
   "detail": {
     "category": "Web",
-    "summary": "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
-    "overview": "Docqee fue desarrollado como mi proyecto de grado con la idea de digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y bien acompanado desde el primer contacto.",
-    "challenge": "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
-    "solution": "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervison profesional.",
-    "results": [
-      "Presentacion clara de la propuesta de atencion odontologica universitaria.",
-      "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
-      "Base digital lista para seguir escalando nuevos modulos y procesos academicos."
-    ],
     "stack": ["React", "Vite", "Responsive UI", "Arquitectura por roles", "Vercel"],
-    "deliverables": ["Landing principal", "Flujos por rol", "Vista institucional", "Demo funcional online"],
     "metrics": [
       {
         "value": "3",
@@ -48,42 +38,77 @@
         "label": "supervision docente"
       }
     ],
-    "modules": [
+    "media": {
+      "images": [
+        {
+          "src": "/docqee-preview.png",
+          "alt": {
+            "es": "Vista previa de Docqee",
+            "en": "Docqee preview"
+          },
+          "caption": {
+            "es": "Pantalla principal de Docqee publicada como demo funcional.",
+            "en": "Docqee main screen published as a functional demo."
+          }
+        }
+      ]
+    },
+    "links": [
       {
-        "title": "Acceso para pacientes",
-        "description": "Presenta la propuesta, facilita el primer contacto y ordena el inicio del proceso de atencion."
-      },
-      {
-        "title": "Gestion estudiantil",
-        "description": "Organiza el seguimiento del caso dentro de una interfaz clara para estudiantes en formacion."
-      },
-      {
-        "title": "Supervision docente",
-        "description": "Mantiene visible la revision academica y profesional que respalda cada atencion."
-      },
-      {
-        "title": "Recorrido institucional",
-        "description": "Conecta la experiencia completa dentro de una logica universitaria organizada y confiable."
+        "type": "demo",
+        "href": "https://docqee.vercel.app/",
+        "label": {
+          "es": "Abrir demo",
+          "en": "Open demo"
+        }
       }
     ],
-    "flow": [
-      {
-        "step": "01",
-        "title": "Descubrimiento",
-        "description": "La plataforma explica el servicio y ayuda al paciente a entender el entorno universitario."
-      },
-      {
-        "step": "02",
-        "title": "Conexion",
-        "description": "El flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente."
-      },
-      {
-        "step": "03",
-        "title": "Seguimiento",
-        "description": "La experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden."
-      }
-    ],
-    "interactiveTitle": "Explora Docqee desde el portafolio",
-    "interactiveDescription": "Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha."
+    "liveUrl": "https://docqee.vercel.app/",
+    "es": {
+      "summary": "Plataforma web para conectar pacientes con estudiantes de odontologia supervisados por docentes, dentro de un entorno universitario confiable.",
+      "overview": "Docqee fue desarrollado como mi proyecto de grado para digitalizar y ordenar la relacion entre pacientes, estudiantes de odontologia y docentes dentro de un entorno universitario. La plataforma busca que el acceso a la atencion odontologica universitaria se sienta claro, cercano y acompanado desde el primer contacto.",
+      "challenge": "El reto principal estaba en coordinar necesidades distintas dentro de una misma experiencia: pacientes que buscan atencion, estudiantes que necesitan gestionar sus procesos academicos y docentes que requieren supervision clara. La plataforma debia sentirse confiable, facil de entender y lista para usarse en multiples dispositivos.",
+      "solution": "La solucion se construyo como una plataforma web con flujos diferenciados por rol, una experiencia responsive y una estructura visual que ayuda a entender el proceso universitario sin friccion. Se priorizo claridad en el recorrido, organizacion de la informacion y una interfaz que transmitiera acompanamiento y supervision profesional.",
+      "process": [
+        "Descubrimiento: la plataforma explica el servicio y ayuda al paciente a entender el entorno universitario.",
+        "Conexion: el flujo une la solicitud del paciente con el trabajo del estudiante y el acompanamiento docente.",
+        "Seguimiento: la experiencia mantiene claridad en cada paso para que el proceso pueda escalar con orden."
+      ],
+      "results": [
+        "Presentacion clara de la propuesta de atencion odontologica universitaria.",
+        "Experiencia pensada para conectar pacientes, estudiantes y docentes en un mismo sistema.",
+        "Base digital lista para seguir escalando nuevos modulos y procesos academicos."
+      ],
+      "deliverables": ["Landing principal", "Flujos por rol", "Vista institucional", "Demo funcional online"],
+      "learnings": [
+        "Separar la experiencia por rol mejora la claridad cuando hay varios actores en el mismo proceso.",
+        "Una ficha de proyecto necesita explicar el contexto antes de mostrar solo pantallas o enlaces."
+      ],
+      "interactiveTitle": "Explora Docqee desde el portafolio",
+      "interactiveDescription": "Esta demo en vivo carga la plataforma publicada en Vercel para que puedas recorrer el proyecto directamente desde esta ficha."
+    },
+    "en": {
+      "summary": "A web platform to connect patients with dental students supervised by teachers inside a trusted university environment.",
+      "overview": "Docqee was developed as my degree project to organize the relationship between patients, dental students, and teachers in a university setting. The platform makes university dental care feel clear, close, and supported from the first contact.",
+      "challenge": "The main challenge was coordinating different needs in one experience: patients looking for care, students managing academic processes, and teachers requiring clear supervision. The platform needed to feel trustworthy, simple to understand, and ready for multiple devices.",
+      "solution": "The solution was built as a web platform with role-based flows, a responsive experience, and a visual structure that explains the university process with less friction. The interface prioritizes clarity, organized information, and a sense of professional support.",
+      "process": [
+        "Discovery: the platform explains the service and helps patients understand the university environment.",
+        "Connection: the flow connects patient requests with student work and teacher supervision.",
+        "Follow-up: the experience keeps every step clear so the process can scale with order."
+      ],
+      "results": [
+        "Clear presentation of the university dental care proposal.",
+        "An experience designed to connect patients, students, and teachers in one system.",
+        "A digital base ready to scale with new modules and academic processes."
+      ],
+      "deliverables": ["Main landing page", "Role-based flows", "Institutional view", "Functional online demo"],
+      "learnings": [
+        "Splitting the experience by role improves clarity when several actors share the same process.",
+        "A project case study needs to explain context before showing only screens or links."
+      ],
+      "interactiveTitle": "Explore Docqee from the portfolio",
+      "interactiveDescription": "This live demo loads the platform published on Vercel so you can explore the project directly from this case study."
+    }
   }
 }

@@ -1,0 +1,16 @@
+[
+  { "id": "video", "label": "Video", "type": "video", "description": "Embed de YouTube o video del proyecto." },
+  { "id": "gallery", "label": "Galería", "type": "gallery", "description": "Capturas ordenables del proyecto." },
+  { "id": "stack", "label": "Stack", "type": "list", "description": "Tecnologías y herramientas usadas." },
+  { "id": "features", "label": "Features", "type": "cards", "description": "Capacidades principales del producto." },
+  { "id": "roles", "label": "Roles", "type": "cards", "description": "Usuarios o actores del sistema." },
+  { "id": "architecture", "label": "Arquitectura", "type": "rich-text", "description": "Estructura técnica y decisiones de sistema." },
+  { "id": "metrics", "label": "Métricas", "type": "metrics", "description": "Resultados numéricos o indicadores clave." },
+  { "id": "timeline", "label": "Timeline", "type": "timeline", "description": "Proceso, fases o hitos." },
+  { "id": "problem-solution", "label": "Problema/Solución", "type": "pair", "description": "Reto central y respuesta aplicada." },
+  { "id": "case-study", "label": "Caso de estudio", "type": "rich-text", "description": "Narrativa larga con contexto y decisiones." },
+  { "id": "links", "label": "Links", "type": "links", "description": "Demo, repositorio, documentación o recursos." },
+  { "id": "custom-rich-text", "label": "Texto enriquecido", "type": "rich-text", "description": "Bloque libre con formato básico." },
+  { "id": "custom-list", "label": "Lista", "type": "list", "description": "Lista simple de puntos o aprendizajes." },
+  { "id": "custom-code", "label": "Código", "type": "code", "description": "Snippet técnico con lenguaje opcional." }
+]

@@ -94,6 +94,15 @@ const content = {
         web: "Web",
         branding: "Marca",
         automation: "Automatizacion",
+        "web-platform": "Plataforma web",
+        "landing-page": "Landing page",
+        portfolio: "Portafolio",
+        "mobile-app": "App movil",
+        simulation: "Simulacion",
+        "backend-api": "Backend/API",
+        game: "Juego",
+        "ui-design": "UI Design",
+        "research-project": "Investigacion",
       },
       items: getLocalizedItems(projectCards, "es"),
     },
@@ -198,6 +207,15 @@ const content = {
         web: "Web",
         branding: "Branding",
         automation: "Automation",
+        "web-platform": "Web platform",
+        "landing-page": "Landing page",
+        portfolio: "Portfolio",
+        "mobile-app": "Mobile app",
+        simulation: "Simulation",
+        "backend-api": "Backend/API",
+        game: "Game",
+        "ui-design": "UI Design",
+        "research-project": "Research project",
       },
       items: getLocalizedItems(projectCards, "en"),
     },
@@ -812,8 +830,61 @@ function renderProjectVisual(item, altText) {
   return `<div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>`;
 }
 
+function getProjectFeaturedRank(project) {
+  if (project.featuredLevel === "main") {
+    return 0;
+  }
+
+  if (project.featuredLevel === "featured") {
+    return 1;
+  }
+
+  return 2;
+}
+
+function sortProjectsForHome(projects) {
+  return [...projects].sort((projectA, projectB) => {
+    const pinnedA = projectA.pinned ? 0 : 1;
+    const pinnedB = projectB.pinned ? 0 : 1;
+
+    if (pinnedA !== pinnedB) {
+      return pinnedA - pinnedB;
+    }
+
+    const featuredA = getProjectFeaturedRank(projectA);
+    const featuredB = getProjectFeaturedRank(projectB);
+
+    if (featuredA !== featuredB) {
+      return featuredA - featuredB;
+    }
+
+    const priorityA = Number.isFinite(projectA.priority) ? projectA.priority : Number.MAX_SAFE_INTEGER;
+    const priorityB = Number.isFinite(projectB.priority) ? projectB.priority : Number.MAX_SAFE_INTEGER;
+
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    const yearA = Number.parseInt(projectA.year, 10) || 0;
+    const yearB = Number.parseInt(projectB.year, 10) || 0;
+
+    if (yearA !== yearB) {
+      return yearB - yearA;
+    }
+
+    const orderA = Number.isFinite(projectA.order) ? projectA.order : Number.MAX_SAFE_INTEGER;
+    const orderB = Number.isFinite(projectB.order) ? projectB.order : Number.MAX_SAFE_INTEGER;
+
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
+    return String(projectA.slug).localeCompare(String(projectB.slug));
+  });
+}
+
 function renderProjects() {
-  const projects = getCopy("projects.items").filter((item) => {
+  const projects = sortProjectsForHome(getCopy("projects.items")).filter((item) => {
     if (item.showInHome === false) {
       return false;
     }

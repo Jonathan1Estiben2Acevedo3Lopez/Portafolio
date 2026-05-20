@@ -22,6 +22,8 @@ npm run sync:projects
 npm run dev
 npm run build
 npm run preview
+npm run studio:dev
+npm run studio:build
 ```
 
 | Comando | Uso |
@@ -31,6 +33,23 @@ npm run preview
 | `npm run dev` | Inicia el servidor local de desarrollo. |
 | `npm run build` | Genera el sitio estatico en `dist`. |
 | `npm run preview` | Previsualiza el build localmente. |
+| `npm run studio:dev` | Abre Project Studio, la app local Tauri + React para administrar proyectos. |
+| `npm run studio:build` | Compila Project Studio como app de escritorio. |
+
+## Project Studio
+
+`project-studio/` es una app local privada hecha con Tauri + React para crear, editar, duplicar y eliminar proyectos sin tocar los JSON manualmente.
+
+La app escribe en `src/content/projects`, copia assets a `public/projects/[slug]`, actualiza `src/data/projects.generated.json` ejecutando `npm run sync:projects` y no ejecuta comandos Git.
+
+Antes de usarla instala sus dependencias:
+
+```bash
+cd project-studio
+npm install
+```
+
+Tauri requiere Rust/Cargo instalado. Si `cargo --version` falla, instala Rust antes de correr `npm run studio:dev`.
 
 ## Estructura
 
@@ -130,8 +149,9 @@ npm run new:project
 ```
 
 3. Responde las preguntas del asistente. Al terminar, se crea un archivo como `src/content/projects/mi-proyecto.json`.
-4. Revisa y ajusta ese archivo si quieres mejorar textos, stack, resultados o entregables.
-5. Corre el sitio o compila:
+4. Cuando el asistente pregunte `Cuantas capturas/imagenes tiene este proyecto?`, responde `0` si aun no tienes imagenes o el numero exacto si ya las tienes listas.
+5. Revisa y ajusta ese archivo si quieres mejorar textos, stack, resultados, entregables, enlaces o medios.
+6. Corre el sitio o compila:
 
 ```bash
 npm run dev
@@ -183,6 +203,12 @@ Tambien puedes saltarte ese paso si despues vas a ejecutar `npm run dev`, `npm r
 | `showInHome` | Si es `false`, oculta la card en la home pero conserva la ficha. |
 | `copy` | Textos cortos de la card en espanol e ingles. |
 | `detail` | Contenido largo de la ficha interna. |
+| `detail.es` | Textos narrativos principales de la ficha en espanol. |
+| `detail.en` | Textos narrativos en ingles. Puedes dejar campos sin poner y se usara fallback al espanol. |
+| `detail.stack` | Tecnologias o herramientas usadas. |
+| `detail.media.images` | Capturas opcionales con `src`, `alt` y `caption`. |
+| `detail.media.videos` | Videos opcionales con `src`, `poster`, `title` y `caption`. |
+| `detail.links` | Enlaces opcionales: demo, repositorio, documentacion, video u otros. |
 
 Ejemplo de proyecto con card y ficha:
 
@@ -212,18 +238,54 @@ Ejemplo de proyecto con card y ficha:
   },
   "detail": {
     "category": "Web",
-    "summary": "Resumen corto para la ficha.",
-    "overview": "Descripcion larga del proyecto.",
-    "challenge": "Reto principal.",
-    "solution": "Solucion aplicada.",
-    "results": ["Resultado 1", "Resultado 2"],
     "stack": ["Astro", "JavaScript"],
-    "deliverables": ["Landing", "Ficha", "Deploy"]
+    "media": {
+      "images": [
+        {
+          "src": "/mi-proyecto-preview.png",
+          "alt": {
+            "es": "Vista previa de Mi Proyecto",
+            "en": "My Project preview"
+          },
+          "caption": {
+            "es": "Pantalla principal del proyecto.",
+            "en": "Project main screen."
+          }
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "demo",
+        "href": "https://example.com/",
+        "label": {
+          "es": "Abrir demo",
+          "en": "Open demo"
+        }
+      }
+    ],
+    "liveUrl": "https://example.com/",
+    "es": {
+      "summary": "Resumen corto para la ficha.",
+      "overview": "Descripcion larga del proyecto.",
+      "challenge": "Reto principal.",
+      "solution": "Solucion aplicada.",
+      "process": ["Paso 1", "Paso 2"],
+      "results": ["Resultado 1", "Resultado 2"],
+      "deliverables": ["Landing", "Ficha", "Deploy"],
+      "learnings": ["Aprendizaje 1"]
+    },
+    "en": {
+      "summary": "Short case study summary.",
+      "overview": "Long project description."
+    }
   }
 }
 ```
 
-Si agregas `"detail"`, Astro genera automaticamente `/proyectos/mi-proyecto`. Si quieres conservar la ficha pero ocultar la card en la home, agrega `"showInHome": false`.
+Si agregas `"detail"`, Astro genera automaticamente `/proyectos/mi-proyecto`. La ficha oculta por si sola las secciones vacias, asi que un proyecto puede tener `0`, `1` o varias capturas, videos opcionales o solo texto. Si quieres conservar la ficha pero ocultar la card en la home, agrega `"showInHome": false`.
+
+Los archivos locales de imagen o video se guardan manualmente en `public` y se referencian con rutas como `/mi-captura.png` o `/demo.mp4`. Tambien puedes usar URLs externas. El comando no copia archivos automaticamente.
 
 Categorias actuales: `web`, `branding`, `automation`.
 

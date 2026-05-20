@@ -1,0 +1,37 @@
+[
+  {
+    "id": "minimal",
+    "name": "Minimal",
+    "description": "Lectura limpia, mucho aire y foco en narrativa.",
+    "bestFor": "APIs, investigación y proyectos con pocos assets.",
+    "visualClass": "visual-brand"
+  },
+  {
+    "id": "dashboard",
+    "name": "Dashboard",
+    "description": "Superficies densas, métricas y módulos de sistema.",
+    "bestFor": "Plataformas, simulaciones y productos con roles.",
+    "visualClass": "visual-control"
+  },
+  {
+    "id": "showcase",
+    "name": "Showcase",
+    "description": "Hero visual, galería amplia y CTA directo.",
+    "bestFor": "Landing pages, juegos y demos públicas.",
+    "visualClass": "visual-launch"
+  },
+  {
+    "id": "editorial",
+    "name": "Editorial",
+    "description": "Composición narrativa con énfasis en contexto y decisiones.",
+    "bestFor": "Portafolios, UI design y casos de estudio.",
+    "visualClass": "visual-system"
+  },
+  {
+    "id": "bento",
+    "name": "Bento",
+    "description": "Bloques modulares, detalles compactos y lectura rápida.",
+    "bestFor": "Automatizaciones, mobile apps y productos híbridos.",
+    "visualClass": "visual-ai"
+  }
+]

@@ -10,17 +10,28 @@ export function getStaticPaths() {
 }
 
 const { project } = Astro.props;
+const defaultCopy = project.locales?.es ?? project;
 const relatedProjects = projectDetails.filter((item) => item.slug !== project.slug).slice(0, 2);
-const isDocqee = project.slug === "docqee";
+const relatedProjectCards = relatedProjects.map((item) => ({
+  slug: item.slug,
+  href: item.href || `/proyectos/${item.slug}`,
+  previewImage: item.previewImage,
+  visualClass: item.visualClass,
+  year: item.year,
+  locales: item.locales,
+}));
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
-const controlHubMetrics = project.metrics ?? [];
-const controlHubModules = project.modules ?? [];
-const controlHubFlow = project.flow ?? [];
-const interactiveTitle = project.interactiveTitle ?? `Explora ${project.title} desde el portafolio`;
-const interactiveDescription =
-  project.interactiveDescription ??
-  "Esta demo en vivo carga el proyecto publicado para que puedas recorrerlo directamente desde esta ficha.";
+const isExternalAsset = (path) => /^(https?:)?\/\//.test(path) || path.startsWith("data:") || path.startsWith("blob:");
+const assetUrl = (path) => (path && isExternalAsset(path) ? path : path ? withBase(path) : "");
+const heroImage = defaultCopy.media?.images?.[0]?.src ?? project.previewImage;
+const heroImageAlt = defaultCopy.media?.images?.[0]?.alt ?? `Vista previa de ${defaultCopy.title}`;
+const dynamicModules = (defaultCopy.modulesOrder || [])
+  .map((id) => ({ id, ...(defaultCopy.modules?.[id] || {}) }))
+  .filter((module) => {
+    return module.body || module.code || module.items?.length || module.links?.length;
+  });
+const youtubeId = defaultCopy.media?.youtube?.youtubeId;
 ---
 
 <!DOCTYPE html>
@@ -28,8 +39,8 @@ const interactiveDescription =
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{project.title} | Jonathan Acevedo</title>
-    <meta name="description" content={project.summary} />
+    <title>{defaultCopy.title} | Jonathan Acevedo</title>
+    <meta name="description" content={defaultCopy.summary} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -78,6 +89,15 @@ const interactiveDescription =
         <div class="flex items-center gap-3">
           <button
             type="button"
+            id="detail-language-toggle"
+            class="inline-flex min-h-10 items-center justify-center rounded-full border border-outline-variant/20 bg-surface-container-highest/50 px-4 text-sm font-black tracking-tight text-on-surface transition hover:border-secondary hover:text-secondary"
+            aria-label="Cambiar a ingles"
+            title="Cambiar a ingles"
+          >
+            English
+          </button>
+          <button
+            type="button"
             id="detail-theme-toggle"
             class="theme-toggle border border-outline-variant/20 bg-surface-container-highest/50 text-on-surface transition hover:border-secondary hover:text-secondary"
             aria-label="Cambiar a modo claro"
@@ -90,252 +110,175 @@ const interactiveDescription =
     </header>
 
     <main class="detail-page-main px-6 pb-20 pt-10 lg:px-8 lg:pt-12">
-      {isDocqee ? (
-        <>
-          <section class="site-shell site-shell--main mx-auto max-w-5xl">
-            <div>
-              <p class="text-[0.72rem] font-black uppercase tracking-[0.22em] text-secondary">
-                {project.accent} - {project.year}
-              </p>
-              <h1 class="detail-display mt-4 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
-                {project.title}
-              </h1>
-              <p class="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
-                {project.summary}
-              </p>
+      <section class="site-shell site-shell--main mx-auto grid max-w-7xl gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
+        <div class="lg:col-span-7">
+          <p id="detail-kicker" class="text-[0.72rem] font-black uppercase tracking-[0.22em] text-secondary">
+            {defaultCopy.accent} - {project.year}
+          </p>
+          <h1 id="detail-title" class="detail-display mt-4 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
+            {defaultCopy.title}
+          </h1>
+          <p id="detail-summary" class="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
+            {defaultCopy.summary}
+          </p>
 
-              <div class="mt-8 grid gap-4 sm:grid-cols-3">
-                {controlHubMetrics.map((item) => (
-                  <div class="glass-panel rounded-[1.5rem] border border-outline-variant/15 p-5">
-                    <p class="text-3xl font-headline font-bold tracking-tight text-on-surface">{item.value}</p>
-                    <p class="mt-2 text-[0.72rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
-                      {item.label}
-                    </p>
-                  </div>
-                ))}
+          <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
+              <p id="detail-category-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Categoria</p>
+              <p id="detail-category-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.category}</p>
+            </div>
+            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
+              <p id="detail-format-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Formato</p>
+              <p id="detail-format-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.tag}</p>
+            </div>
+            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
+              <p id="detail-focus-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Enfoque</p>
+              <p id="detail-focus-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.accent}</p>
+            </div>
+          </div>
+
+          <div id="detail-metrics" class="mt-6 grid gap-4 sm:grid-cols-3"></div>
+
+          <div id="detail-links" class="mt-8 flex flex-wrap gap-3"></div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="glass-panel rounded-[2rem] border border-outline-variant/15 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)]">
+            {heroImage ? (
+              <div class="project-visual project-live-visual relative min-h-[320px] overflow-hidden rounded-[1.6rem] border border-outline-variant/15 bg-white sm:min-h-[380px]">
+                <img
+                  id="detail-hero-image"
+                  src={assetUrl(heroImage)}
+                  alt={heroImageAlt}
+                  loading="eager"
+                  class="project-preview-image"
+                />
               </div>
+            ) : (
+              <div class={`project-visual ${project.visualClass} min-h-[320px] rounded-[1.6rem] sm:min-h-[380px]`}></div>
+            )}
+          </div>
+        </div>
+      </section>
 
-              <div class="mt-8 grid gap-4 sm:grid-cols-2">
-                <article class="glass-panel rounded-[1.8rem] border border-outline-variant/15 p-6">
-                  <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Problema</p>
-                  <p class="mt-4 text-sm leading-7 text-on-surface-variant">{project.challenge}</p>
+      <section class="site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
+        <div class="space-y-8 lg:col-span-7">
+          <article id="detail-overview-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
+            <p id="detail-overview-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resumen</p>
+            <p id="detail-overview" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.overview}</p>
+          </article>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <article id="detail-challenge-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
+              <p id="detail-challenge-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Reto</p>
+              <p id="detail-challenge" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.challenge}</p>
+            </article>
+
+            <article id="detail-solution-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
+              <p id="detail-solution-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Solucion</p>
+              <p id="detail-solution" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.solution}</p>
+            </article>
+          </div>
+
+          <section id="detail-process-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
+            <p id="detail-process-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Proceso</p>
+            <div id="detail-process-list" class="mt-6 grid gap-4"></div>
+          </section>
+
+          <section id="detail-images-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8">
+            <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p id="detail-images-eyebrow" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Capturas</p>
+                <h2 id="detail-images-title" class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Galeria del proyecto</h2>
+              </div>
+            </div>
+            <div id="detail-images-grid" class="grid gap-5 md:grid-cols-2"></div>
+          </section>
+
+          <section id="detail-videos-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8">
+            <p id="detail-videos-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Videos</p>
+            <div id="detail-videos-grid" class="mt-6 grid gap-5"></div>
+          </section>
+
+          <section id="detail-youtube-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8" hidden={!youtubeId}>
+            <p id="detail-youtube-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Video</p>
+            <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-black">
+              <iframe
+                id="detail-youtube-frame"
+                src={youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : ""}
+                title={`Video de ${defaultCopy.title}`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                class="aspect-video w-full"
+              ></iframe>
+            </div>
+          </section>
+
+          <section id="detail-dynamic-modules-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8" hidden={dynamicModules.length === 0}>
+            <p id="detail-dynamic-modules-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Módulos</p>
+            <div id="detail-dynamic-modules-list" class="mt-6 grid gap-4">
+              {dynamicModules.map((module) => (
+                <article class="rounded-[1.35rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
+                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">{module.id}</p>
+                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">{module.title || module.id}</h3>
+                  {module.body ? <p class="mt-3 whitespace-pre-line text-sm leading-7 text-on-surface-variant">{module.body}</p> : null}
+                  {module.code ? <pre class="mt-4 overflow-auto rounded-[1rem] bg-black/55 p-4 text-xs leading-6 text-on-surface"><code>{module.code}</code></pre> : null}
                 </article>
-                <article class="glass-panel rounded-[1.8rem] border border-outline-variant/15 p-6">
-                  <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Direccion</p>
-                  <p class="mt-4 text-sm leading-7 text-on-surface-variant">{project.solution}</p>
-                </article>
-              </div>
+              ))}
             </div>
           </section>
+        </div>
 
-          <section class="site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
-            <div class="space-y-8 lg:col-span-7">
-              <article class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resumen del proyecto</p>
-                <p class="mt-5 text-base leading-8 text-on-surface-variant">{project.overview}</p>
-              </article>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Arquitectura de interfaz</p>
-                    <h2 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Modulos principales</h2>
-                  </div>
-                  <p class="max-w-xl text-sm leading-7 text-on-surface-variant">
-                    La interfaz se penso para hacer visible el recorrido entre paciente, estudiante y supervision docente.
-                  </p>
-                </div>
-
-                <div class="mt-7 grid gap-4 sm:grid-cols-2">
-                  {controlHubModules.map((item) => (
-                    <article class="rounded-[1.4rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
-                      <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface">{item.title}</h3>
-                      <p class="mt-3 text-sm leading-7 text-on-surface-variant">{item.description}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Flujo de uso</p>
-                <div class="mt-7 grid gap-4 lg:grid-cols-3">
-                  {controlHubFlow.map((item) => (
-                    <article class="rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
-                      <p class="text-[0.74rem] font-black uppercase tracking-[0.18em] text-primary">{item.step}</p>
-                      <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">{item.title}</h3>
-                      <p class="mt-3 text-sm leading-7 text-on-surface-variant">{item.description}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <aside class="space-y-8 lg:col-span-5">
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resultados</p>
-                <div class="mt-5 space-y-3">
-                  {project.results.map((item) => (
-                    <div class="rounded-[1.25rem] border border-outline-variant/15 bg-surface-container-highest/55 px-4 py-4 text-sm leading-7 text-on-surface-variant">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Stack</p>
-                <div class="mt-5 flex flex-wrap gap-3">
-                  {project.stack.map((item) => (
-                    <span class="rounded-full border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Entregables</p>
-                <ul class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant">
-                  {project.deliverables.map((item) => (
-                    <li class="flex items-start gap-3">
-                      <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary"></span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </aside>
-          </section>
-        </>
-      ) : (
-        <>
-          <section class="site-shell site-shell--main mx-auto grid max-w-7xl gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
-            <div class="lg:col-span-7">
-              <p class="text-[0.72rem] font-black uppercase tracking-[0.22em] text-secondary">
-                {project.accent} - {project.year}
-              </p>
-              <h1 class="detail-display mt-4 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
-                {project.title}
-              </h1>
-              <p class="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
-                {project.summary}
-              </p>
-
-              <div class="mt-8 grid gap-4 sm:grid-cols-3">
-                <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Categoria</p>
-                  <p class="mt-3 text-sm font-semibold text-on-surface">{project.category}</p>
-                </div>
-                <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Formato</p>
-                  <p class="mt-3 text-sm font-semibold text-on-surface">{project.tag}</p>
-                </div>
-                <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Enfoque</p>
-                  <p class="mt-3 text-sm font-semibold text-on-surface">{project.accent}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="lg:col-span-5">
-              <div class="glass-panel rounded-[2rem] border border-outline-variant/15 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)]">
-                {project.previewImage ? (
-                  <div class="project-visual project-live-visual relative min-h-[320px] overflow-hidden rounded-[1.6rem] border border-outline-variant/15 bg-white sm:min-h-[380px]">
-                    <img
-                      src={withBase(project.previewImage)}
-                      alt={`Vista previa de ${project.title}`}
-                      loading="lazy"
-                      class="project-preview-image"
-                    />
-                  </div>
-                ) : (
-                  <div class={`project-visual ${project.visualClass} min-h-[320px] rounded-[1.6rem] sm:min-h-[380px]`}></div>
-                )}
-              </div>
-            </div>
+        <aside class="space-y-8 lg:col-span-5">
+          <section id="detail-results-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
+            <p id="detail-results-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resultados</p>
+            <div id="detail-results-list" class="mt-5 space-y-3"></div>
           </section>
 
-          <section class="site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
-            <div class="space-y-8 lg:col-span-7">
-              <article class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resumen</p>
-                <p class="mt-5 text-base leading-8 text-on-surface-variant">{project.overview}</p>
-              </article>
-
-              <article class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Reto</p>
-                <p class="mt-5 text-base leading-8 text-on-surface-variant">{project.challenge}</p>
-              </article>
-
-              <article class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Solucion</p>
-                <p class="mt-5 text-base leading-8 text-on-surface-variant">{project.solution}</p>
-              </article>
-            </div>
-
-            <aside class="space-y-8 lg:col-span-5">
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resultados</p>
-                <div class="mt-5 space-y-3">
-                  {project.results.map((item) => (
-                    <div class="rounded-[1.25rem] border border-outline-variant/15 bg-surface-container-highest/55 px-4 py-4 text-sm leading-7 text-on-surface-variant">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Stack</p>
-                <div class="mt-5 flex flex-wrap gap-3">
-                  {project.stack.map((item) => (
-                    <span class="rounded-full border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              <section class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Entregables</p>
-                <ul class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant">
-                  {project.deliverables.map((item) => (
-                    <li class="flex items-start gap-3">
-                      <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary"></span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </aside>
+          <section id="detail-stack-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
+            <p id="detail-stack-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Stack</p>
+            <div id="detail-stack-list" class="mt-5 flex flex-wrap gap-3"></div>
           </section>
-        </>
-      )}
+
+          <section id="detail-deliverables-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
+            <p id="detail-deliverables-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Entregables</p>
+            <ul id="detail-deliverables-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
+          </section>
+
+          <section id="detail-learnings-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
+            <p id="detail-learnings-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Aprendizajes</p>
+            <ul id="detail-learnings-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
+          </section>
+        </aside>
+      </section>
 
       {project.liveUrl ? (
-        <section class="site-shell site-shell--main mx-auto mt-12 max-w-7xl">
+        <section id="detail-live-section" class="site-shell site-shell--main mx-auto mt-12 max-w-7xl">
           <div class="glass-panel overflow-hidden rounded-[2rem] border border-outline-variant/15 p-5 shadow-[0_28px_80px_rgba(0,0,0,0.22)] sm:p-6 lg:p-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div class="max-w-3xl">
-                <p class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Vista interactiva</p>
-                <h2 class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-                  {interactiveTitle}
+                <p id="detail-live-eyebrow" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Vista interactiva</p>
+                <h2 id="detail-live-title" class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
+                  {defaultCopy.interactiveTitle}
                 </h2>
-                <p class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
-                  {interactiveDescription}
+                <p id="detail-live-description" class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
+                  {defaultCopy.interactiveDescription}
                 </p>
               </div>
 
               <div class="flex flex-col gap-3 sm:flex-row">
                 <a
+                  id="detail-open-live"
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5"
                 >
-                  Abrir en pestaña nueva
+                  Abrir en pestana nueva
                 </a>
                 <a
+                  id="detail-contact-cta"
                   href={withBase("/#contact")}
                   class="inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-5 py-3 text-sm font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5"
                 >
@@ -349,14 +292,14 @@ const interactiveDescription =
                 <span class="h-3 w-3 rounded-full bg-rose-400"></span>
                 <span class="h-3 w-3 rounded-full bg-amber-400"></span>
                 <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
-                <span class="ml-3 rounded-full bg-white px-3 py-1 text-xs font-semibold tracking-tight text-slate-500">
+                <span id="detail-iframe-url" class="ml-3 min-w-0 truncate rounded-full bg-white px-3 py-1 text-xs font-semibold tracking-tight text-slate-500">
                   {project.liveUrl}
                 </span>
               </div>
 
               <iframe
                 src={project.liveUrl}
-                title={`Demo interactiva de ${project.title}`}
+                title={`Demo interactiva de ${defaultCopy.title}`}
                 loading="lazy"
                 referrerpolicy="strict-origin-when-cross-origin"
                 sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
@@ -365,8 +308,8 @@ const interactiveDescription =
               ></iframe>
             </div>
 
-            <p class="mt-4 text-xs font-semibold tracking-tight text-on-surface-variant sm:text-sm">
-              Si tu navegador bloquea la vista embebida, puedes abrir Docqee en una pestaña nueva con el boton superior.
+            <p id="detail-live-note" class="mt-4 text-xs font-semibold tracking-tight text-on-surface-variant sm:text-sm">
+              Si tu navegador bloquea la vista embebida, puedes abrir el proyecto en una pestana nueva con el boton superior.
             </p>
           </div>
         </section>
@@ -384,49 +327,78 @@ const interactiveDescription =
           </a>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-2">
-          {relatedProjects.map((item) => (
-            <a
-              href={withBase(`/proyectos/${item.slug}`)}
-              class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
-            >
-              {item.previewImage ? (
-                <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
-                  <img
-                    src={withBase(item.previewImage)}
-                    alt={`Vista previa de ${item.title}`}
-                    loading="lazy"
-                    class="project-preview-image"
-                  />
-                </div>
-              ) : (
-                <div class={`project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]`}></div>
-              )}
-              <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
-                    <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">{item.accent}</p>
-                    <h3 class="mt-2 font-headline text-[1.45rem] font-bold tracking-tight text-on-surface">{item.title}</h3>
-                  </div>
-                  <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
-                </div>
-                <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">{item.summary}</p>
-              </div>
-            </a>
-          ))}
-        </div>
+        <div id="detail-related-grid" class="grid gap-6 lg:grid-cols-2"></div>
       </section>
     </main>
 
-    <script is:inline>
+    <script define:vars={{ projectLocales: project.locales, relatedProjectCards, baseUrl, projectYear: project.year, projectPreviewImage: project.previewImage, projectVisualClass: project.visualClass, projectLiveUrl: project.liveUrl }}>
       (() => {
-        const copy = {
-          themeToDark: "Cambiar a modo oscuro",
-          themeToLight: "Cambiar a modo claro",
+        const labels = {
+          es: {
+            back: "Volver al portafolio",
+            languageToggle: "English",
+            languageTitle: "Cambiar a ingles",
+            themeToDark: "Cambiar a modo oscuro",
+            themeToLight: "Cambiar a modo claro",
+            category: "Categoria",
+            format: "Formato",
+            focus: "Enfoque",
+            overview: "Resumen",
+            challenge: "Reto",
+            solution: "Solucion",
+            process: "Proceso",
+            imagesEyebrow: "Capturas",
+            imagesTitle: "Galeria del proyecto",
+            videos: "Videos",
+            youtube: "Video",
+            dynamicModules: "Modulos",
+            results: "Resultados",
+            stack: "Stack",
+            deliverables: "Entregables",
+            learnings: "Aprendizajes",
+            liveEyebrow: "Vista interactiva",
+            openLive: "Abrir en pestana nueva",
+            contact: "Hablar del proyecto",
+            liveNote: "Si tu navegador bloquea la vista embebida, puedes abrir el proyecto en una pestana nueva con el boton superior.",
+            related: "Otros proyectos",
+            viewAll: "Ver todos",
+            imageFallback: "Captura del proyecto",
+          },
+          en: {
+            back: "Back to portfolio",
+            languageToggle: "Espanol",
+            languageTitle: "Switch to Spanish",
+            themeToDark: "Switch to dark mode",
+            themeToLight: "Switch to light mode",
+            category: "Category",
+            format: "Format",
+            focus: "Focus",
+            overview: "Overview",
+            challenge: "Challenge",
+            solution: "Solution",
+            process: "Process",
+            imagesEyebrow: "Screenshots",
+            imagesTitle: "Project gallery",
+            videos: "Videos",
+            youtube: "Video",
+            dynamicModules: "Modules",
+            results: "Results",
+            stack: "Stack",
+            deliverables: "Deliverables",
+            learnings: "Learnings",
+            liveEyebrow: "Live preview",
+            openLive: "Open in new tab",
+            contact: "Discuss the project",
+            liveNote: "If your browser blocks the embedded view, open the project in a new tab with the button above.",
+            related: "Related projects",
+            viewAll: "View all",
+            imageFallback: "Project screenshot",
+          },
         };
 
         const themeToggle = document.getElementById("detail-theme-toggle");
         const themeToggleIcon = document.getElementById("detail-theme-toggle-icon");
+        const languageToggle = document.getElementById("detail-language-toggle");
 
         const themeIconMarkup = {
           dark: `
@@ -449,12 +421,47 @@ const interactiveDescription =
           `,
         };
 
-        const storedTheme = document.documentElement.dataset.theme || window.localStorage.getItem("portfolio-theme") || "dark";
         const state = {
-          theme: storedTheme,
+          theme: document.documentElement.dataset.theme || window.localStorage.getItem("portfolio-theme") || "dark",
+          lang: window.localStorage.getItem("portfolio-lang") === "en" ? "en" : "es",
         };
 
-        document.documentElement.lang = "es";
+        const escapeHtml = (value = "") =>
+          String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+        const withBase = (path = "") => {
+          if (!path) {
+            return "";
+          }
+
+          if (/^(https?:)?\/\//.test(path) || path.startsWith("data:") || path.startsWith("blob:") || path.startsWith("mailto:")) {
+            return path;
+          }
+
+          const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+          return `${normalizedBase}${path.replace(/^\/+/, "")}`;
+        };
+
+        const setText = (id, value) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.textContent = value || "";
+          }
+        };
+
+        const setSectionVisibility = (id, visible) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.hidden = !visible;
+          }
+        };
+
+        const getCopy = (lang) => projectLocales[lang] || projectLocales.es;
 
         const applyTheme = (theme, persist = true) => {
           state.theme = theme;
@@ -471,17 +478,384 @@ const interactiveDescription =
           }
 
           if (themeToggle) {
-            const label = theme === "dark" ? copy.themeToLight : copy.themeToDark;
+            const label = theme === "dark" ? labels[state.lang].themeToLight : labels[state.lang].themeToDark;
             themeToggle.setAttribute("aria-label", label);
             themeToggle.setAttribute("title", label);
           }
         };
 
+        const renderLinks = (links = []) => {
+          const container = document.getElementById("detail-links");
+          if (!container) {
+            return;
+          }
+
+          container.hidden = links.length === 0;
+          container.innerHTML = links
+            .map((link, index) => {
+              const isPrimary = index === 0 || link.type === "demo";
+              const className = isPrimary
+                ? "inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5"
+                : "inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-5 py-3 text-sm font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5";
+
+              return `
+                <a class="${className}" href="${escapeHtml(withBase(link.href))}" target="_blank" rel="noopener noreferrer">
+                  ${escapeHtml(link.label)}
+                </a>
+              `;
+            })
+            .join("");
+        };
+
+        const renderMetrics = (metrics = []) => {
+          const container = document.getElementById("detail-metrics");
+          if (!container) {
+            return;
+          }
+
+          container.hidden = metrics.length === 0;
+          container.innerHTML = metrics
+            .map(
+              (item) => `
+                <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
+                  <p class="text-3xl font-headline font-bold tracking-tight text-on-surface">${escapeHtml(item.value)}</p>
+                  <p class="mt-2 text-[0.66rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${escapeHtml(item.label)}</p>
+                </div>
+              `,
+            )
+            .join("");
+        };
+
+        const renderProcess = (items = []) => {
+          const container = document.getElementById("detail-process-list");
+          setSectionVisibility("detail-process-section", items.length > 0);
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = items
+            .map(
+              (item, index) => `
+                <div class="rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
+                  <p class="text-[0.72rem] font-black uppercase tracking-[0.18em] text-primary">${String(index + 1).padStart(2, "0")}</p>
+                  <p class="mt-3 text-sm leading-7 text-on-surface-variant">${escapeHtml(item)}</p>
+                </div>
+              `,
+            )
+            .join("");
+        };
+
+        const renderCardList = (sectionId, containerId, items = []) => {
+          const container = document.getElementById(containerId);
+          setSectionVisibility(sectionId, items.length > 0);
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = items
+            .map(
+              (item) => `
+                <div class="rounded-[1.25rem] border border-outline-variant/15 bg-surface-container-highest/55 px-4 py-4 text-sm leading-7 text-on-surface-variant">
+                  ${escapeHtml(item)}
+                </div>
+              `,
+            )
+            .join("");
+        };
+
+        const renderPills = (items = []) => {
+          const container = document.getElementById("detail-stack-list");
+          setSectionVisibility("detail-stack-section", items.length > 0);
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = items
+            .map(
+              (item) => `
+                <span class="rounded-full border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
+                  ${escapeHtml(item)}
+                </span>
+              `,
+            )
+            .join("");
+        };
+
+        const renderBulletList = (sectionId, containerId, items = []) => {
+          const container = document.getElementById(containerId);
+          setSectionVisibility(sectionId, items.length > 0);
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = items
+            .map(
+              (item) => `
+                <li class="flex items-start gap-3">
+                  <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-primary"></span>
+                  <span>${escapeHtml(item)}</span>
+                </li>
+              `,
+            )
+            .join("");
+        };
+
+        const renderImages = (images = [], copy) => {
+          const grid = document.getElementById("detail-images-grid");
+          setSectionVisibility("detail-images-section", images.length > 0);
+          if (!grid) {
+            return;
+          }
+
+          grid.innerHTML = images
+            .map(
+              (image) => `
+                <figure class="overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-surface-container-highest/60">
+                  <div class="project-live-visual aspect-[16/10] bg-white">
+                    <img src="${escapeHtml(withBase(image.src))}" alt="${escapeHtml(image.alt || labels[state.lang].imageFallback)}" loading="lazy" class="project-preview-image" />
+                  </div>
+                  ${
+                    image.caption
+                      ? `<figcaption class="px-5 py-4 text-sm leading-6 text-on-surface-variant">${escapeHtml(image.caption)}</figcaption>`
+                      : ""
+                  }
+                </figure>
+              `,
+            )
+            .join("");
+
+          const heroImage = document.getElementById("detail-hero-image");
+          if (heroImage) {
+            const firstImage = images[0];
+            heroImage.src = withBase(firstImage?.src || projectPreviewImage || "");
+            heroImage.alt = firstImage?.alt || `${copy.title} ${labels[state.lang].imageFallback}`;
+          }
+        };
+
+        const renderVideos = (videos = []) => {
+          const grid = document.getElementById("detail-videos-grid");
+          setSectionVisibility("detail-videos-section", videos.length > 0);
+          if (!grid) {
+            return;
+          }
+
+          grid.innerHTML = videos
+            .map(
+              (video) => `
+                <figure class="overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-surface-container-highest/60">
+                  <video controls preload="metadata" ${video.poster ? `poster="${escapeHtml(withBase(video.poster))}"` : ""} class="aspect-video w-full bg-black">
+                    <source src="${escapeHtml(withBase(video.src))}" />
+                  </video>
+                  <figcaption class="px-5 py-4 text-sm leading-6 text-on-surface-variant">
+                    <strong class="block text-on-surface">${escapeHtml(video.title)}</strong>
+                    ${video.caption ? `<span class="mt-1 block">${escapeHtml(video.caption)}</span>` : ""}
+                  </figcaption>
+                </figure>
+              `,
+            )
+            .join("");
+        };
+
+        const formatRichText = (value = "") =>
+          escapeHtml(value)
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.*?)\*/g, "<em>$1</em>")
+            .replace(/\n/g, "<br />");
+
+        const stringifyModuleItem = (item) => {
+          if (typeof item === "string") {
+            return item;
+          }
+
+          if (!item || typeof item !== "object") {
+            return "";
+          }
+
+          return [item.value, item.label, item.title, item.description].filter(Boolean).join(" - ");
+        };
+
+        const renderYoutube = (media = {}) => {
+          const section = document.getElementById("detail-youtube-section");
+          const frame = document.getElementById("detail-youtube-frame");
+          const youtubeId = media.youtube?.youtubeId;
+
+          setSectionVisibility("detail-youtube-section", Boolean(youtubeId));
+          if (frame && youtubeId) {
+            frame.src = `https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}`;
+          } else if (frame) {
+            frame.src = "";
+          }
+
+          return section;
+        };
+
+        const renderDynamicModules = (copy) => {
+          const container = document.getElementById("detail-dynamic-modules-list");
+          const moduleIds = copy.modulesOrder || [];
+          const modules = copy.modules || {};
+          const renderableModules = moduleIds
+            .map((id) => ({ id, ...(modules[id] || {}) }))
+            .filter((module) => module.body || module.code || module.items?.length || module.links?.length);
+
+          setSectionVisibility("detail-dynamic-modules-section", renderableModules.length > 0);
+
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = renderableModules
+            .map((module) => {
+              const items = Array.isArray(module.items) ? module.items.map(stringifyModuleItem).filter(Boolean) : [];
+              const links = Array.isArray(module.links) ? module.links : [];
+
+              return `
+                <article class="rounded-[1.35rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
+                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">${escapeHtml(module.id)}</p>
+                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">${escapeHtml(module.title || module.id)}</h3>
+                  ${module.body ? `<p class="mt-3 text-sm leading-7 text-on-surface-variant">${formatRichText(module.body)}</p>` : ""}
+                  ${
+                    items.length > 0
+                      ? `<ul class="mt-4 grid gap-2 text-sm leading-7 text-on-surface-variant">${items.map((item) => `<li class="rounded-[1rem] border border-outline-variant/15 bg-background/35 px-4 py-3">${escapeHtml(item)}</li>`).join("")}</ul>`
+                      : ""
+                  }
+                  ${
+                    module.code
+                      ? `<pre class="mt-4 overflow-auto rounded-[1rem] bg-black/55 p-4 text-xs leading-6 text-on-surface"><code>${escapeHtml(module.code)}</code></pre>`
+                      : ""
+                  }
+                  ${
+                    links.length > 0
+                      ? `<div class="mt-4 flex flex-wrap gap-2">${links
+                          .map(
+                            (link) =>
+                              `<a class="inline-flex items-center justify-center rounded-full border border-secondary/25 px-4 py-2 text-xs font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5" href="${escapeHtml(withBase(link.href))}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label || link.href)}</a>`,
+                          )
+                          .join("")}</div>`
+                      : ""
+                  }
+                </article>
+              `;
+            })
+            .join("");
+        };
+
+        const renderRelated = (lang) => {
+          const grid = document.getElementById("detail-related-grid");
+          if (!grid) {
+            return;
+          }
+
+          grid.innerHTML = relatedProjectCards
+            .map((item) => {
+              const copy = item.locales?.[lang] || item.locales?.es || {};
+              const image = copy.media?.images?.[0]?.src || item.previewImage;
+              const visual = image
+                ? `
+                  <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
+                    <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.media?.images?.[0]?.alt || copy.title)}" loading="lazy" class="project-preview-image" />
+                  </div>
+                `
+                : `<div class="project-visual ${escapeHtml(item.visualClass || projectVisualClass)} aspect-[16/10] rounded-[1.3rem]"></div>`;
+
+              return `
+                <a href="${escapeHtml(withBase(item.href || `/proyectos/${item.slug}`))}" class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+                  ${visual}
+                  <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${escapeHtml(copy.accent || "")}</p>
+                        <h3 class="mt-2 font-headline text-[1.45rem] font-bold tracking-tight text-on-surface">${escapeHtml(copy.title || item.slug)}</h3>
+                      </div>
+                      <span class="material-symbols-outlined text-primary transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">north_east</span>
+                    </div>
+                    <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${escapeHtml(copy.summary || copy.description || "")}</p>
+                  </div>
+                </a>
+              `;
+            })
+            .join("");
+        };
+
+        const applyLanguage = (lang, persist = true) => {
+          state.lang = lang;
+          const copy = getCopy(lang);
+          const label = labels[lang];
+
+          if (persist) {
+            window.localStorage.setItem("portfolio-lang", lang);
+          }
+
+          document.documentElement.lang = lang;
+          document.title = `${copy.title} | Jonathan Acevedo`;
+          document.querySelector('meta[name="description"]')?.setAttribute("content", copy.summary || copy.description || "");
+
+          setText("detail-back-label", label.back);
+          setText("detail-kicker", `${copy.accent} - ${projectYear}`);
+          setText("detail-title", copy.title);
+          setText("detail-summary", copy.summary);
+          setText("detail-category-label", label.category);
+          setText("detail-format-label", label.format);
+          setText("detail-focus-label", label.focus);
+          setText("detail-category-value", copy.category);
+          setText("detail-format-value", copy.tag);
+          setText("detail-focus-value", copy.accent);
+          setText("detail-overview-label", label.overview);
+          setText("detail-overview", copy.overview);
+          setText("detail-challenge-label", label.challenge);
+          setText("detail-challenge", copy.challenge);
+          setText("detail-solution-label", label.solution);
+          setText("detail-solution", copy.solution);
+          setText("detail-process-title", label.process);
+          setText("detail-images-eyebrow", label.imagesEyebrow);
+          setText("detail-images-title", label.imagesTitle);
+          setText("detail-videos-title", label.videos);
+          setText("detail-youtube-title", label.youtube);
+          setText("detail-dynamic-modules-title", label.dynamicModules);
+          setText("detail-results-title", label.results);
+          setText("detail-stack-title", label.stack);
+          setText("detail-deliverables-title", label.deliverables);
+          setText("detail-learnings-title", label.learnings);
+          setText("detail-related-title", label.related);
+          setText("detail-related-link", label.viewAll);
+          setText("detail-live-eyebrow", label.liveEyebrow);
+          setText("detail-live-title", copy.interactiveTitle);
+          setText("detail-live-description", copy.interactiveDescription);
+          setText("detail-open-live", label.openLive);
+          setText("detail-contact-cta", label.contact);
+          setText("detail-live-note", label.liveNote);
+          setText("detail-iframe-url", projectLiveUrl || "");
+
+          if (languageToggle) {
+            languageToggle.textContent = label.languageToggle;
+            languageToggle.setAttribute("aria-label", label.languageTitle);
+            languageToggle.setAttribute("title", label.languageTitle);
+          }
+
+          renderMetrics(copy.metrics);
+          renderLinks(copy.links);
+          renderProcess(copy.process);
+          renderCardList("detail-results-section", "detail-results-list", copy.results);
+          renderPills(copy.stack);
+          renderBulletList("detail-deliverables-section", "detail-deliverables-list", copy.deliverables);
+          renderBulletList("detail-learnings-section", "detail-learnings-list", copy.learnings);
+          renderImages(copy.media?.images || [], copy);
+          renderVideos(copy.media?.videos || []);
+          renderYoutube(copy.media || {});
+          renderDynamicModules(copy);
+          renderRelated(lang);
+          applyTheme(state.theme, false);
+        };
+
         applyTheme(state.theme, false);
+        applyLanguage(state.lang, false);
 
         themeToggle?.addEventListener("click", () => {
           state.theme = state.theme === "dark" ? "light" : "dark";
           applyTheme(state.theme);
+        });
+
+        languageToggle?.addEventListener("click", () => {
+          applyLanguage(state.lang === "es" ? "en" : "es");
         });
       })();
     </script>

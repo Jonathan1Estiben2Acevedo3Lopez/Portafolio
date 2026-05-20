@@ -11,7 +11,7 @@
     "es": {
       "title": "Portafolio Web",
       "tag": "Marca personal",
-      "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formación, certificados y contenido técnico.",
+      "description": "Sitio web personal desarrollado para presentar mi perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico.",
       "accent": "Personal Web"
     },
     "en": {
@@ -23,18 +23,78 @@
   },
   "detail": {
     "category": "Web",
-    "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
-    "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
-    "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
-    "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
-    "results": [
-      "Presentacion profesional centralizada en una sola experiencia web.",
-      "Secciones organizadas para proyectos, certificados, perfil e intereses.",
-      "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
-    ],
     "stack": ["Astro", "JavaScript", "Tailwind CSS", "Responsive UI", "Netlify"],
-    "deliverables": ["Home del portafolio", "Ficha de proyecto", "Secciones de contenido", "Deploy en Netlify"],
-    "interactiveTitle": "Explora Portafolio Web desde el portafolio",
-    "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+    "media": {
+      "images": [
+        {
+          "src": "/portafolio-web.png",
+          "alt": {
+            "es": "Vista previa del portafolio web",
+            "en": "Web portfolio preview"
+          },
+          "caption": {
+            "es": "Captura principal del portafolio publicado en Netlify.",
+            "en": "Main screenshot of the portfolio published on Netlify."
+          }
+        }
+      ]
+    },
+    "links": [
+      {
+        "type": "demo",
+        "href": "https://jonathanacevedo.netlify.app/",
+        "label": {
+          "es": "Abrir sitio",
+          "en": "Open site"
+        }
+      }
+    ],
+    "liveUrl": "https://jonathanacevedo.netlify.app/",
+    "es": {
+      "summary": "Sitio web personal para presentar perfil profesional, proyectos, experiencia, formacion, certificados y contenido tecnico en una experiencia clara y moderna.",
+      "overview": "Portafolio Web organiza mi presencia profesional en un sitio rapido y responsive. La estructura permite recorrer mi perfil, proyectos, certificados, intereses y contenido tecnico desde una experiencia visual consistente.",
+      "challenge": "El reto era reunir varias facetas profesionales sin que la navegacion se sintiera pesada. El sitio debia mostrar informacion suficiente, mantener claridad en dispositivos pequenos y conservar una identidad personal reconocible.",
+      "solution": "Se construyo una experiencia en Astro con datos separados por seccion, tarjetas reutilizables, soporte responsive y una ficha individual para profundizar en cada proyecto. La imagen de vista previa se sirve desde public para mantener una carga simple.",
+      "process": [
+        "Estructurar el contenido por archivos JSON para que cada seccion sea facil de mantener.",
+        "Crear cards y fichas reutilizables para que nuevos proyectos se agreguen sin tocar la interfaz base.",
+        "Publicar una version estatica optimizada para Netlify."
+      ],
+      "results": [
+        "Presentacion profesional centralizada en una sola experiencia web.",
+        "Secciones organizadas para proyectos, certificados, perfil e intereses.",
+        "Base lista para seguir agregando contenido tecnico y nuevos casos de estudio."
+      ],
+      "deliverables": ["Home del portafolio", "Ficha de proyecto", "Secciones de contenido", "Deploy en Netlify"],
+      "learnings": [
+        "Separar datos y componentes hace mas rapido sumar nuevos proyectos.",
+        "Una ficha flexible evita crear layouts especiales para cada caso."
+      ],
+      "interactiveTitle": "Explora Portafolio Web desde el portafolio",
+      "interactiveDescription": "Esta demo en vivo carga el sitio publicado en Netlify para que puedas revisar la experiencia directamente desde esta ficha."
+    },
+    "en": {
+      "summary": "A personal website to present my professional profile, projects, experience, education, certificates, and technical content in a clear modern experience.",
+      "overview": "Web Portfolio organizes my professional presence in a fast and responsive site. Its structure makes it easy to explore my profile, projects, certificates, interests, and technical content through a consistent visual experience.",
+      "challenge": "The challenge was bringing several professional areas together without making navigation feel heavy. The site needed enough information, strong clarity on small screens, and a recognizable personal identity.",
+      "solution": "The experience was built with Astro, section-based data files, reusable cards, responsive support, and individual project case studies. Preview images are served from public to keep loading simple.",
+      "process": [
+        "Structure the content through JSON files so each section is easy to maintain.",
+        "Create reusable cards and case studies so new projects can be added without touching the base interface.",
+        "Publish an optimized static version on Netlify."
+      ],
+      "results": [
+        "A centralized professional presentation in one web experience.",
+        "Organized sections for projects, certificates, profile, and interests.",
+        "A base ready for technical content and new case studies."
+      ],
+      "deliverables": ["Portfolio home", "Project case study", "Content sections", "Netlify deploy"],
+      "learnings": [
+        "Separating data and components makes it faster to add new projects.",
+        "A flexible case study template avoids one-off layouts for each project."
+      ],
+      "interactiveTitle": "Explore Web Portfolio from the portfolio",
+      "interactiveDescription": "This live demo loads the site published on Netlify so you can review the experience directly from this case study."
+    }
   }
 }
