@@ -122,6 +122,84 @@ function asString(value: unknown, fallback = "") {
   return typeof value === "string" ? value : fallback;
 }
 
+function cleanOptionalUrl(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isValidHttpUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function localizedValue(value: unknown, lang: "es" | "en", fallback = "") {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (value && typeof value === "object") {
+    const localized = value as Record<string, unknown>;
+    return asString(localized[lang], asString(localized.es, fallback));
+  }
+
+  return fallback;
+}
+
+function moduleItemText(item: unknown, lang: "es" | "en") {
+  if (typeof item === "string") {
+    return item;
+  }
+
+  if (!item || typeof item !== "object") {
+    return "";
+  }
+
+  const record = item as Record<string, unknown>;
+  return (
+    localizedValue(record.description, lang) ||
+    localizedValue(record.title, lang) ||
+    localizedValue(record.label, lang) ||
+    asString(record.value)
+  );
+}
+
+function moduleItems(project: ProjectDraft, moduleId: string, lang: "es" | "en") {
+  const items = project.modules[moduleId]?.items;
+
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items.map((item) => moduleItemText(item, lang)).filter(Boolean);
+}
+
+function moduleMetrics(project: ProjectDraft, lang: "es" | "en") {
+  const items = project.modules.metrics?.items;
+
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  return items.reduce<Array<{ value: string; label: string }>>((metrics, item) => {
+    if (!item || typeof item !== "object") {
+      return metrics;
+    }
+
+    const record = item as Record<string, unknown>;
+    const value = asString(record.value);
+    const label = localizedValue(record.label, lang) || localizedValue(record.title, lang) || localizedValue(record.description, lang);
+
+    if (value && label) {
+      metrics.push({ value, label });
+    }
+
+    return metrics;
+  }, []);
+}
+
 function normalizeGallery(value: unknown): ProjectImage[] {
   if (!Array.isArray(value)) {
     return [];
@@ -226,20 +304,29 @@ export function normalizeProject(
 export function buildCompatibleProject(project: ProjectDraft, categories: CategoryDefinition[], templates: VisualTemplateDefinition[]) {
   const category = categories.find((item) => item.id === project.category) || categories[0];
   const template = templates.find((item) => item.id === project.visualTemplate) || templates[0];
+  const liveUrl = cleanOptionalUrl(project.liveUrl);
+  const githubUrl = cleanOptionalUrl(project.githubUrl);
   const previewImage = project.previewImage || project.media.cover || project.media.gallery[0]?.src || "";
   const galleryImages = project.media.gallery.length > 0 ? project.media.gallery : previewImage ? [{ src: previewImage }] : [];
+  const detailMetrics = Array.isArray((project.detail as any)?.metrics) && (project.detail as any).metrics.length > 0 ? (project.detail as any).metrics : moduleMetrics(project, "es");
+  const problemItemsEs = moduleItems(project, "problem-solution", "es");
+  const problemItemsEn = moduleItems(project, "problem-solution", "en");
+  const timelineItemsEs = moduleItems(project, "timeline", "es");
+  const timelineItemsEn = moduleItems(project, "timeline", "en");
+  const metricResultsEs = moduleMetrics(project, "es").map((item) => `${item.value} ${item.label}`);
+  const metricResultsEn = moduleMetrics(project, "en").map((item) => `${item.value} ${item.label}`);
   const links = [
-    project.liveUrl
+    liveUrl
       ? {
           type: "demo",
-          href: project.liveUrl,
+          href: liveUrl,
           label: { es: "Abrir demo", en: "Open demo" },
         }
       : null,
-    project.githubUrl
+    githubUrl
       ? {
           type: "repo",
-          href: project.githubUrl,
+          href: githubUrl,
           label: { es: "Repositorio", en: "Repository" },
         }
       : null,
@@ -248,8 +335,8 @@ export function buildCompatibleProject(project: ProjectDraft, categories: Catego
   return {
     ...project,
     href: `/proyectos/${project.slug}`,
-    liveUrl: project.liveUrl || undefined,
-    githubUrl: project.githubUrl || undefined,
+    liveUrl: liveUrl || undefined,
+    githubUrl: githubUrl || undefined,
     previewImage,
     media: {
       cover: project.media.cover || "",
@@ -278,6 +365,7 @@ export function buildCompatibleProject(project: ProjectDraft, categories: Catego
       ...(project.detail || {}),
       category: category.label.es,
       stack: project.stack,
+      metrics: detailMetrics,
       media: {
         images: galleryImages.map((image, index) => {
           const normalizedImage: Record<string, unknown> = {
@@ -300,50 +388,73 @@ export function buildCompatibleProject(project: ProjectDraft, categories: Catego
         videos: [],
       },
       links,
-      liveUrl: project.liveUrl || undefined,
+      liveUrl: liveUrl || undefined,
       es: {
         summary: project.copy.es.description || project.copy.es.title,
         overview: project.copy.es.longDescription || project.copy.es.description || project.copy.es.title,
         challenge:
-          (project.modules["problem-solution"]?.items?.[0] as any)?.description ||
+          problemItemsEs[0] ||
           (project.detail as any)?.es?.challenge ||
           project.copy.es.description ||
           project.copy.es.title,
         solution:
-          (project.modules["problem-solution"]?.items?.[1] as any)?.description ||
+          problemItemsEs[1] ||
           (project.detail as any)?.es?.solution ||
           project.copy.es.longDescription ||
           project.copy.es.description ||
           project.copy.es.title,
-        process: Array.isArray(project.modules.timeline?.items)
-          ? project.modules.timeline.items.map((item: any) => item.description || item.title || item)
-          : (project.detail as any)?.es?.process || [],
-        results: Array.isArray(project.modules.metrics?.items)
-          ? project.modules.metrics.items.map((item: any) => `${item.value || ""} ${item.label || ""}`.trim())
-          : (project.detail as any)?.es?.results || [],
+        process: timelineItemsEs.length > 0 ? timelineItemsEs : (project.detail as any)?.es?.process || [],
+        results: metricResultsEs.length > 0 ? metricResultsEs : (project.detail as any)?.es?.results || [],
         deliverables: (project.detail as any)?.es?.deliverables || [],
         learnings: (project.detail as any)?.es?.learnings || [],
-        interactiveTitle: project.liveUrl ? `Explora ${project.copy.es.title} desde el portafolio` : undefined,
-        interactiveDescription: project.liveUrl
+        interactiveTitle: liveUrl ? `Explora ${project.copy.es.title} desde el portafolio` : undefined,
+        interactiveDescription: liveUrl
           ? "Esta demo en vivo carga el proyecto publicado para que puedas recorrerlo directamente desde esta ficha."
           : undefined,
       },
       en: {
         summary: project.copy.en.description || project.copy.es.description || project.copy.es.title,
         overview: project.copy.en.longDescription || project.copy.es.longDescription || project.copy.en.description || project.copy.es.title,
-        challenge: (project.detail as any)?.en?.challenge || project.copy.en.description || project.copy.es.description || project.copy.es.title,
-        solution: (project.detail as any)?.en?.solution || project.copy.en.longDescription || project.copy.en.description || project.copy.es.title,
-        process: (project.detail as any)?.en?.process || [],
-        results: (project.detail as any)?.en?.results || [],
+        challenge: problemItemsEn[0] || (project.detail as any)?.en?.challenge || project.copy.en.description || project.copy.es.description || project.copy.es.title,
+        solution: problemItemsEn[1] || (project.detail as any)?.en?.solution || project.copy.en.longDescription || project.copy.en.description || project.copy.es.title,
+        process: timelineItemsEn.length > 0 ? timelineItemsEn : (project.detail as any)?.en?.process || [],
+        results: metricResultsEn.length > 0 ? metricResultsEn : (project.detail as any)?.en?.results || [],
         deliverables: (project.detail as any)?.en?.deliverables || [],
         learnings: (project.detail as any)?.en?.learnings || [],
-        interactiveTitle: project.liveUrl ? `Explore ${project.copy.en.title || project.copy.es.title} from the portfolio` : undefined,
-        interactiveDescription: project.liveUrl
+        interactiveTitle: liveUrl ? `Explore ${project.copy.en.title || project.copy.es.title} from the portfolio` : undefined,
+        interactiveDescription: liveUrl
           ? "This live demo loads the published project so you can explore it directly from this case study."
           : undefined,
       },
     },
   };
+}
+
+export function retargetProjectAssetPaths<T>(project: T, originalSlug?: string, nextSlug?: string): T {
+  if (!originalSlug || !nextSlug || originalSlug === nextSlug) {
+    return project;
+  }
+
+  const oldPrefix = `/projects/${originalSlug}/`;
+  const newPrefix = `/projects/${nextSlug}/`;
+
+  const rewrite = (value: unknown): unknown => {
+    if (typeof value === "string") {
+      return value.startsWith(oldPrefix) ? `${newPrefix}${value.slice(oldPrefix.length)}` : value;
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(rewrite);
+    }
+
+    if (value && typeof value === "object") {
+      return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, rewrite(entry)]));
+    }
+
+    return value;
+  };
+
+  return rewrite(project) as T;
 }
 
 export function validateProject(project: ProjectDraft, existingSlugs: string[], originalSlug?: string): ValidationMessage[] {
@@ -363,6 +474,11 @@ export function validateProject(project: ProjectDraft, existingSlugs: string[], 
 
   if (!project.copy.en.title.trim() || !project.copy.en.description.trim()) {
     messages.push({ level: "warning", message: "Falta contenido en inglés. Puedes guardar, pero se verá incompleto." });
+  }
+
+  const liveUrl = cleanOptionalUrl(project.liveUrl);
+  if (liveUrl && !isValidHttpUrl(liveUrl)) {
+    messages.push({ level: "error", message: "La URL demo debe ser http/https valida o quedar vacia." });
   }
 
   if (!project.previewImage && !project.media.cover && project.media.gallery.length === 0) {
@@ -392,11 +508,8 @@ export function buildAssetInputs(project: ProjectDraft): AssetInput[] {
   const localGallery = project.media.gallery.filter((image) => image.sourcePath && !image.isExternal);
 
   localGallery.forEach((image, index) => {
-    const targetName = image.src.includes("preview.webp")
-      ? "preview.webp"
-      : image.src.includes("cover.webp")
-        ? "cover.webp"
-        : `gallery-${String(index + 1).padStart(2, "0")}.webp`;
+    const projectAssetMatch = image.src.match(/^\/projects\/[^/]+\/([^/]+)$/);
+    const targetName = projectAssetMatch?.[1] || `gallery-${String(index + 1).padStart(2, "0")}.webp`;
 
     inputs.push({
       sourcePath: image.sourcePath || "",

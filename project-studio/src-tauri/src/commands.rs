@@ -1,10 +1,14 @@
+use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
 use image::ImageFormat;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
     env, fs,
+    io::{Read, Write},
+    net::TcpStream,
     path::{Path, PathBuf},
     process::Command,
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use walkdir::WalkDir;
 
@@ -78,6 +82,10 @@ fn projects_dir() -> Result<PathBuf, String> {
 
 fn public_projects_dir() -> Result<PathBuf, String> {
     Ok(repo_root()?.join("public").join("projects"))
+}
+
+fn public_dir() -> Result<PathBuf, String> {
+    Ok(repo_root()?.join("public"))
 }
 
 fn technologies_file() -> Result<PathBuf, String> {
@@ -211,6 +219,144 @@ fn copy_asset_inputs(slug: &str, assets: &[AssetInput]) -> Result<Vec<String>, S
     Ok(copied)
 }
 
+fn collect_project_asset_references(value: &Value, slug: &str, references: &mut Vec<String>) {
+    match value {
+        Value::String(text) => {
+            let prefix = format!("/projects/{slug}/");
+            if text.starts_with(&prefix) {
+                references.push(text.to_string());
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                collect_project_asset_references(item, slug, references);
+            }
+        }
+        Value::Object(entries) => {
+            for item in entries.values() {
+                collect_project_asset_references(item, slug, references);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn validate_project_asset_references(slug: &str, project: &Value) -> Result<(), String> {
+    let mut references = Vec::new();
+    collect_project_asset_references(project, slug, &mut references);
+    references.sort();
+    references.dedup();
+
+    let public = public_dir()?;
+    let missing = references
+        .into_iter()
+        .filter(|reference| {
+            let public_relative = reference.trim_start_matches('/');
+            !public.join(public_relative).is_file()
+        })
+        .collect::<Vec<_>>();
+
+    if missing.is_empty() {
+        return Ok(());
+    }
+
+    Err(format!(
+        "Hay imagenes referenciadas que no existen en public: {}. Vuelve a agregarlas desde el gestor para copiarlas correctamente.",
+        missing.join(", ")
+    ))
+}
+
+fn copy_dir_contents(source: &Path, target: &Path) -> Result<(), String> {
+    fs::create_dir_all(target).map_err(|error| format!("No se pudo crear carpeta destino: {error}"))?;
+
+    for entry in WalkDir::new(source).into_iter().filter_map(Result::ok) {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+
+        let relative = entry
+            .path()
+            .strip_prefix(source)
+            .map_err(|error| format!("No se pudo calcular ruta relativa: {error}"))?;
+        let target_file = target.join(relative);
+        if let Some(parent) = target_file.parent() {
+            fs::create_dir_all(parent).map_err(|error| format!("No se pudo crear carpeta: {error}"))?;
+        }
+        fs::copy(entry.path(), target_file).map_err(|error| format!("No se pudo copiar asset existente: {error}"))?;
+    }
+
+    Ok(())
+}
+
+fn asset_mime_type(path: &Path) -> Result<&'static str, String> {
+    match path
+        .extension()
+        .and_then(|extension| extension.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "avif" => Ok("image/avif"),
+        "bmp" => Ok("image/bmp"),
+        "gif" => Ok("image/gif"),
+        "ico" => Ok("image/x-icon"),
+        "jpg" | "jpeg" => Ok("image/jpeg"),
+        "png" => Ok("image/png"),
+        "svg" => Ok("image/svg+xml"),
+        "webp" => Ok("image/webp"),
+        _ => Err("Formato de imagen no soportado para preview.".to_string()),
+    }
+}
+
+fn resolve_asset_reference(reference: &str) -> Result<PathBuf, String> {
+    let reference = reference.trim();
+    if reference.is_empty() {
+        return Err("Referencia de imagen vacia.".to_string());
+    }
+
+    let public = public_dir()?;
+    let repo = repo_root()?;
+    let public_relative = reference.trim_start_matches(|character| character == '/' || character == '\\');
+    let public_candidate = public.join(public_relative);
+    if public_candidate.exists() && public_candidate.is_file() {
+        ensure_inside(&public_candidate, &public)?;
+        return Ok(public_candidate);
+    }
+
+    let direct_path = PathBuf::from(reference);
+    if direct_path.is_absolute() {
+        if direct_path.exists() && direct_path.is_file() {
+            return Ok(direct_path);
+        }
+
+        return Err(format!("Imagen no encontrada: {reference}"));
+    }
+
+    let repo_candidate = repo.join(reference);
+    if repo_candidate.exists() && repo_candidate.is_file() {
+        ensure_inside(&repo_candidate, &repo)?;
+        return Ok(repo_candidate);
+    }
+
+    Err(format!("Imagen no encontrada: {reference}"))
+}
+
+#[tauri::command]
+pub fn read_asset_data_url(reference: String) -> Result<String, String> {
+    let trimmed = reference.trim();
+    if trimmed.starts_with("http://") || trimmed.starts_with("https://") || trimmed.starts_with("data:") {
+        return Ok(trimmed.to_string());
+    }
+
+    let path = resolve_asset_reference(trimmed)?;
+    let mime_type = asset_mime_type(&path)?;
+    let bytes = fs::read(&path).map_err(|error| format!("No se pudo leer imagen: {error}"))?;
+    Ok(format!(
+        "data:{mime_type};base64,{}",
+        BASE64_STANDARD.encode(bytes)
+    ))
+}
+
 #[tauri::command]
 pub fn list_projects() -> Result<Vec<ProjectSummary>, String> {
     let dir = projects_dir()?;
@@ -256,29 +402,47 @@ pub fn read_project(slug: String) -> Result<Value, String> {
 pub fn save_project(payload: SaveProjectPayload) -> Result<SaveProjectResult, String> {
     let slug = slug_from_value(&payload.project)?;
     let target = project_file(&slug)?;
-    fs::create_dir_all(projects_dir()?).map_err(|error| format!("No se pudo crear carpeta: {error}"))?;
+    let project_dir = projects_dir()?;
+    fs::create_dir_all(&project_dir).map_err(|error| format!("No se pudo crear carpeta: {error}"))?;
     ensure_inside(&target, &repo_root()?)?;
 
-    if let Some(original_slug) = payload.original_slug.as_deref() {
-        if original_slug != slug {
-            let original = project_file(original_slug)?;
-            if original.exists() {
-                ensure_inside(&original, &repo_root()?)?;
-                fs::remove_file(original).map_err(|error| format!("No se pudo eliminar JSON anterior: {error}"))?;
-            }
+    let original_slug = payload.original_slug.as_deref();
+    if let Some(original_slug) = original_slug {
+        if original_slug != slug && target.exists() {
+            return Err("Ya existe un proyecto con el nuevo slug.".to_string());
+        }
 
+        if original_slug != slug {
             let original_assets = asset_dir(original_slug)?;
             let next_assets = asset_dir(&slug)?;
             if original_assets.exists() && !next_assets.exists() {
                 ensure_inside(&original_assets, &repo_root()?)?;
-                fs::rename(original_assets, next_assets)
-                    .map_err(|error| format!("No se pudo renombrar carpeta de assets: {error}"))?;
+                ensure_inside(&next_assets, &repo_root()?)?;
+                copy_dir_contents(&original_assets, &next_assets)?;
             }
         }
     }
 
     let asset_paths = copy_asset_inputs(&slug, &payload.assets)?;
+    validate_project_asset_references(&slug, &payload.project)?;
     write_json_file(&target, &payload.project)?;
+
+    if let Some(original_slug) = original_slug {
+        if original_slug != slug {
+            let original = project_file(original_slug)?;
+            if original.exists() {
+                ensure_inside(&original, &project_dir)?;
+                fs::remove_file(original).map_err(|error| format!("No se pudo eliminar JSON anterior: {error}"))?;
+            }
+
+            let original_assets = asset_dir(original_slug)?;
+            let next_assets = asset_dir(&slug)?;
+            if original_assets.exists() && next_assets.exists() {
+                ensure_inside(&original_assets, &repo_root()?)?;
+                let _ = fs::remove_dir_all(original_assets);
+            }
+        }
+    }
 
     Ok(SaveProjectResult {
         slug,
@@ -424,12 +588,60 @@ pub fn run_sync_projects() -> Result<String, String> {
     }
 }
 
+fn preview_port_is_live(port: u16) -> bool {
+    let address = match format!("127.0.0.1:{port}").parse() {
+        Ok(address) => address,
+        Err(_) => return false,
+    };
+
+    let mut stream = match TcpStream::connect_timeout(&address, Duration::from_millis(350)) {
+        Ok(stream) => stream,
+        Err(_) => return false,
+    };
+
+    let _ = stream.set_read_timeout(Some(Duration::from_millis(500)));
+    let _ = stream.set_write_timeout(Some(Duration::from_millis(500)));
+    if stream
+        .write_all(b"GET / HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n")
+        .is_err()
+    {
+        return false;
+    }
+
+    let mut buffer = [0; 96];
+    match stream.read(&mut buffer) {
+        Ok(size) if size > 0 => {
+            let response = String::from_utf8_lossy(&buffer[..size]);
+            response.starts_with("HTTP/1.1 2") || response.starts_with("HTTP/1.1 3")
+        }
+        _ => true,
+    }
+}
+
+fn preview_base_url() -> String {
+    if let Ok(url) = env::var("PORTFOLIO_PREVIEW_URL") {
+        let trimmed = url.trim().trim_end_matches('/').to_string();
+        if !trimmed.is_empty() {
+            return trimmed;
+        }
+    }
+
+    for port in 4321..=4330 {
+        if preview_port_is_live(port) {
+            return format!("http://127.0.0.1:{port}");
+        }
+    }
+
+    "http://127.0.0.1:4321".to_string()
+}
+
 #[tauri::command]
 pub fn open_preview(slug: String) -> Result<(), String> {
-    let base_url = env::var("PORTFOLIO_PREVIEW_URL")
-        .unwrap_or_else(|_| "http://localhost:4321".to_string())
-        .trim_end_matches('/')
-        .to_string();
-    let url = format!("{base_url}/proyectos/{slug}");
+    let base_url = preview_base_url();
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_millis())
+        .unwrap_or_default();
+    let url = format!("{base_url}/proyectos/{slug}?studioUpdated={timestamp}");
     open::that(url).map_err(|error| format!("No se pudo abrir preview: {error}"))
 }

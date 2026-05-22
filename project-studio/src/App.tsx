@@ -23,7 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import categoriesSource from "../data/categories.json";
 import modulesSource from "../data/modules.json";
 import technologiesSource from "../data/technologies.json";
@@ -49,6 +49,7 @@ import {
   extractYoutubeId,
   featuredLabels,
   normalizeProject,
+  retargetProjectAssetPaths,
   slugify,
   statusLabels,
   technologyCategories,
@@ -59,6 +60,7 @@ import {
   duplicateProject,
   listProjects,
   openPreview,
+  readAssetDataUrl,
   readProject,
   runSyncProjects,
   saveProject,
@@ -105,8 +107,62 @@ function getModuleDefinition(id: string) {
   return moduleDefinitions.find((module) => module.id === id);
 }
 
+function getDraftImageSource(draft: ProjectDraft, src?: string) {
+  if (!src) {
+    return "";
+  }
+
+  const matchingImage = draft.media.gallery.find((image) => image.src === src || image.sourcePath === src);
+  return matchingImage?.sourcePath || src;
+}
+
+function getDraftPreviewSource(draft: ProjectDraft) {
+  return getDraftImageSource(draft, draft.previewImage || draft.media.cover || draft.media.gallery[0]?.src || "");
+}
+
 function cloneDraft(draft: ProjectDraft): ProjectDraft {
   return JSON.parse(JSON.stringify(draft)) as ProjectDraft;
+}
+
+function AssetImage({ src, alt = "", className, fallback }: { src?: string; alt?: string; className?: string; fallback?: ReactNode }) {
+  const [resolvedSrc, setResolvedSrc] = useState("");
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+    const nextSrc = src?.trim() || "";
+    setHasError(false);
+
+    if (!nextSrc) {
+      setResolvedSrc("");
+      return () => {
+        isActive = false;
+      };
+    }
+
+    readAssetDataUrl(nextSrc)
+      .then((dataUrl) => {
+        if (isActive) {
+          setResolvedSrc(dataUrl);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setResolvedSrc("");
+          setHasError(true);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [src]);
+
+  if (!src || !resolvedSrc || hasError) {
+    return <>{fallback}</>;
+  }
+
+  return <img className={className} src={resolvedSrc} alt={alt} onError={() => setHasError(true)} />;
 }
 
 function App() {
@@ -123,13 +179,14 @@ function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [deleteState, setDeleteState] = useState<DeleteState | null>(null);
   const [previewSize, setPreviewSize] = useState<PreviewSize>("desktop");
+  const [templatePreviewId, setTemplatePreviewId] = useState("minimal");
   const [dragModule, setDragModule] = useState<string | null>(null);
   const [dragImageIndex, setDragImageIndex] = useState<number | null>(null);
   const [hasStoredDraft, setHasStoredDraft] = useState(() => Boolean(window.localStorage.getItem("project-studio-draft")));
 
   const existingSlugs = useMemo(() => projects.map((project) => project.slug), [projects]);
   const selectedCategory = getCategory(draft.category);
-  const selectedTemplate = getTemplate(draft.visualTemplate);
+  const templateInPreview = getTemplate(templatePreviewId || draft.visualTemplate);
   const allowedModules = selectedCategory.allowedModules;
 
   const filteredProjects = projects.filter((project) => {
@@ -181,6 +238,16 @@ function App() {
     });
   }
 
+  function getNextGalleryImageNumber(project: ProjectDraft) {
+    const usedNumbers = project.media.gallery
+      .map((image) => image.src.match(/^\/projects\/[^/]+\/gallery-(\d+)\.webp$/)?.[1])
+      .filter(Boolean)
+      .map((value) => Number(value))
+      .filter(Number.isFinite);
+
+    return usedNumbers.length > 0 ? Math.max(...usedNumbers) + 1 : 1;
+  }
+
   async function loadProjects() {
     try {
       const result = await listProjects();
@@ -195,6 +262,7 @@ function App() {
     setDraft(next);
     setOriginalSlug(undefined);
     setStep(0);
+    setTemplatePreviewId(next.visualTemplate);
     setMessages(validateProject(next, existingSlugs));
     setView("editor");
   }
@@ -226,6 +294,7 @@ function App() {
       setDraft(next);
       setOriginalSlug(project.slug);
       setStep(1);
+      setTemplatePreviewId(next.visualTemplate);
       setMessages(validateProject(next, existingSlugs, project.slug));
       setView("editor");
     } catch (error) {
@@ -248,6 +317,7 @@ function App() {
       setDraft(next);
       setOriginalSlug(normalizedSlug);
       setStep(1);
+      setTemplatePreviewId(next.visualTemplate);
       await loadProjects();
       setView("editor");
       setToast("Proyecto duplicado. Revisa textos y guarda para sincronizar.");
@@ -277,9 +347,9 @@ function App() {
     }
 
     updateDraft((current) => {
-      const start = current.media.gallery.length;
+      const start = getNextGalleryImageNumber(current);
       paths.forEach((path, index) => {
-        const position = start + index + 1;
+        const position = start + index;
         const src = `/projects/${current.slug}/gallery-${String(position).padStart(2, "0")}.webp`;
         current.media.gallery.push({
           src,
@@ -294,6 +364,7 @@ function App() {
       current.media.cover ||= current.media.gallery[0]?.src || "";
       current.previewImage ||= current.media.cover;
     });
+    setToast(paths.length === 1 ? "Imagen agregada a la galeria." : `${paths.length} imagenes agregadas a la galeria.`);
   }
 
   function addExternalImage() {
@@ -391,7 +462,11 @@ function App() {
 
     setIsSaving(true);
     try {
-      const project = buildCompatibleProject(draft, categories, visualTemplates);
+      const project = retargetProjectAssetPaths(
+        buildCompatibleProject(draft, categories, visualTemplates),
+        originalSlug,
+        draft.slug,
+      );
       await saveProject(originalSlug, project, buildAssetInputs(draft));
       const syncOutput = await runSyncProjects();
       await loadProjects();
@@ -481,7 +556,7 @@ function App() {
               {filteredProjects.map((project) => (
                 <article className="project-card" key={project.slug}>
                   <div className="project-card-visual">
-                    {project.previewImage ? <img src={project.previewImage} alt="" /> : <span>{project.visualTemplate}</span>}
+                    <AssetImage src={project.previewImage} fallback={<span>{project.visualTemplate}</span>} />
                   </div>
                   <div className="project-card-body">
                     <div>
@@ -556,15 +631,16 @@ function App() {
                         <button
                           key={category.id}
                           className={draft.category === category.id ? "option-card selected" : "option-card"}
-                          onClick={() =>
+                          onClick={() => {
+                            setTemplatePreviewId(category.recommendedVisualTemplate);
                             updateDraft((current) => {
                               current.category = category.id;
                               current.visualTemplate = category.recommendedVisualTemplate;
                               const template = getTemplate(category.recommendedVisualTemplate);
                               current.visualClass = template.visualClass;
                               current.modulesOrder = [...new Set([...current.modulesOrder, ...category.recommendedModules])];
-                            })
-                          }
+                            });
+                          }}
                         >
                           <span>{category.label.es}</span>
                           <small>{category.description}</small>
@@ -586,7 +662,7 @@ function App() {
                       <Field label="Tag EN" value={draft.copy.en.tag} onChange={(value) => updateDraft((current) => (current.copy.en.tag = value))} />
                       <Field label="Acento ES" value={draft.copy.es.accent || ""} onChange={(value) => updateDraft((current) => (current.copy.es.accent = value))} />
                       <Field label="Acento EN" value={draft.copy.en.accent || ""} onChange={(value) => updateDraft((current) => (current.copy.en.accent = value))} />
-                      <Field label="URL demo" value={draft.liveUrl || ""} onChange={(value) => updateDraft((current) => (current.liveUrl = value))} />
+                      <Field label="URL demo (opcional)" value={draft.liveUrl || ""} onChange={(value) => updateDraft((current) => (current.liveUrl = value))} />
                       <Field label="GitHub URL" value={draft.githubUrl || ""} onChange={(value) => updateDraft((current) => (current.githubUrl = value))} />
                       <SelectField label="Estado" value={draft.status} options={statusOptions} labels={statusLabels} onChange={(value) => updateDraft((current) => (current.status = value as ProjectStatus))} />
                       <SelectField label="Featured" value={draft.featuredLevel} options={featuredOptions} labels={featuredLabels} onChange={(value) => updateDraft((current) => (current.featuredLevel = value as FeaturedLevel))} />
@@ -616,6 +692,11 @@ function App() {
                         Pegar URL externa
                       </button>
                     </div>
+                    <div className="media-summary" role="status">
+                      <strong>{draft.media.gallery.length}</strong>
+                      <span>{draft.media.gallery.length === 1 ? "imagen en galeria" : "imagenes en galeria"}</span>
+                      <small>Puedes agregar todas las que quieras; el portafolio las mostrara completas.</small>
+                    </div>
                     <Field label="Preview principal" value={draft.previewImage || ""} onChange={(value) => updateDraft((current) => (current.previewImage = value))} />
                     <Field label="Cover" value={draft.media.cover} onChange={(value) => updateDraft((current) => (current.media.cover = value))} />
                     <Field label="URL de YouTube" value={draft.media.video.url} onChange={(value) => updateDraft((current) => (current.media.video.url = value))} />
@@ -637,7 +718,9 @@ function App() {
                             setDragImageIndex(null);
                           }}
                         >
-                          <div className="gallery-thumb">{image.src ? <img src={image.src} alt="" /> : <ImagePlus size={28} />}</div>
+                          <div className="gallery-thumb">
+                            <AssetImage src={image.sourcePath || image.src} fallback={<ImagePlus size={28} />} />
+                          </div>
                           <input value={image.src} onChange={(event) => updateDraft((current) => (current.media.gallery[index].src = event.target.value))} />
                           <div className="mini-actions">
                             <button onClick={() => updateDraft((current) => (current.previewImage = image.src))}>Preview</button>
@@ -723,23 +806,49 @@ function App() {
                 {step === 5 && (
                   <div className="panel">
                     <PanelTitle eyebrow="Paso 6" title="Configuración visual" />
-                    <div className="template-grid">
+                    <TemplateShowcasePreview
+                      draft={draft}
+                      template={templateInPreview}
+                      isSelected={draft.visualTemplate === templateInPreview.id}
+                      onUse={() =>
+                        updateDraft((current) => {
+                          current.visualTemplate = templateInPreview.id;
+                        })
+                      }
+                    />
+                    <div className="template-grid professional">
                       {visualTemplates.map((template) => (
-                        <button
+                        <article
                           key={template.id}
                           className={draft.visualTemplate === template.id ? "template-card selected" : "template-card"}
-                          onClick={() => updateDraft((current) => (current.visualTemplate = template.id))}
                         >
-                          <div className={`template-preview ${template.id}`}>
-                            <span />
-                            <span />
-                            <span />
+                          <TemplatePreviewArt templateId={template.id} />
+                          <div className="template-card-title">
+                            <strong>{template.name}</strong>
+                            {draft.visualTemplate === template.id && <Check size={15} />}
                           </div>
-                          <strong>{template.name}</strong>
                           <p>{template.description}</p>
                           <small>{template.bestFor}</small>
                           {selectedCategory.recommendedVisualTemplate === template.id && <em>Recomendada</em>}
-                        </button>
+                          <div className="template-card-actions">
+                            <button type="button" onClick={() => setTemplatePreviewId(template.id)}>
+                              <Eye size={14} />
+                              Ver preview
+                            </button>
+                            <button
+                              type="button"
+                              className="use-template"
+                              onClick={() => {
+                                setTemplatePreviewId(template.id);
+                                updateDraft((current) => {
+                                  current.visualTemplate = template.id;
+                                });
+                              }}
+                            >
+                              Usar
+                            </button>
+                          </div>
+                        </article>
                       ))}
                     </div>
                     <div className="form-grid">
@@ -958,11 +1067,83 @@ function ModuleEditor({
   );
 }
 
+function TemplatePreviewArt({ templateId }: { templateId: string }) {
+  return (
+    <div className={`template-preview ${templateId}`}>
+      <span className="template-preview-hero" />
+      <span className="template-preview-line" />
+      <span className="template-preview-line short" />
+      <span className="template-preview-card one" />
+      <span className="template-preview-card two" />
+      <span className="template-preview-card three" />
+    </div>
+  );
+}
+
+function TemplateShowcasePreview({
+  draft,
+  template,
+  isSelected,
+  onUse,
+}: {
+  draft: ProjectDraft;
+  template: VisualTemplateDefinition;
+  isSelected: boolean;
+  onUse: () => void;
+}) {
+  const previewSource = getDraftPreviewSource(draft);
+  const category = getCategory(draft.category);
+
+  return (
+    <section className={`template-showcase ${template.id}`}>
+      <div className="template-showcase-copy">
+        <p className="eyebrow">Preview visual</p>
+        <h3>{template.name}</h3>
+        <span>{template.description}</span>
+        <small>{template.bestFor}</small>
+        <button type="button" className={isSelected ? "secondary-button selected-template-button" : "primary-button selected-template-button"} onClick={onUse}>
+          {isSelected ? <Check size={17} /> : <Wand2 size={17} />}
+          {isSelected ? "Plantilla activa" : "Usar esta plantilla"}
+        </button>
+      </div>
+
+      <div className="template-showcase-canvas">
+        <div className="template-browser-bar">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="template-showcase-page">
+          <div className="template-showcase-heading">
+            <p>{draft.copy.es.accent || category.label.es}</p>
+            <h4>{draft.copy.es.title || "Nombre del proyecto"}</h4>
+            <span>{draft.copy.es.description || "Narrativa breve, visual claro y módulos adaptados al tipo de proyecto."}</span>
+          </div>
+          <div className="template-showcase-media">
+            <AssetImage src={previewSource} fallback={<TemplatePreviewArt templateId={template.id} />} />
+          </div>
+          <div className="template-showcase-stats">
+            <span>{draft.year || "2026"}</span>
+            <span>{statusLabels[draft.status]}</span>
+            <span>{draft.stack[0] || "Stack"}</span>
+          </div>
+          <div className="template-showcase-blocks">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ProjectPreview({ draft, previewSize }: { draft: ProjectDraft; previewSize: PreviewSize }) {
   const modules = draft.modulesOrder.filter((moduleId) => {
     const module = draft.modules[moduleId];
     return module && (module.body?.es || module.items?.length || module.code || module.links?.length);
   });
+  const previewSource = getDraftPreviewSource(draft);
 
   return (
     <div className={`preview-frame ${previewSize}`}>
@@ -980,7 +1161,9 @@ function ProjectPreview({ draft, previewSize }: { draft: ProjectDraft; previewSi
               ))}
             </div>
           </div>
-          <div className="preview-cover">{draft.previewImage ? <img src={draft.previewImage} alt="" /> : <Wand2 size={44} />}</div>
+          <div className="preview-cover">
+            <AssetImage src={previewSource} fallback={<Wand2 size={44} />} />
+          </div>
         </div>
         <div className="preview-card-row">
           <div>

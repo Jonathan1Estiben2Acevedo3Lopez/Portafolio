@@ -91,6 +91,7 @@ const content = {
       closePreview: "Cerrar",
       filters: {
         all: "Todos",
+        more: "Mas",
         web: "Web",
         branding: "Marca",
         automation: "Automatizacion",
@@ -204,6 +205,7 @@ const content = {
       closePreview: "Close",
       filters: {
         all: "All",
+        more: "More",
         web: "Web",
         branding: "Branding",
         automation: "Automation",
@@ -286,6 +288,7 @@ const state = {
   activeInterest: 0,
   menuOpen: false,
   projectPreviewOpen: false,
+  projectFiltersOpen: false,
   activeProjectPreviewTitle: "Docqee",
   activeProjectPreviewUrl: "https://docqee.vercel.app/",
   articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
@@ -293,6 +296,22 @@ const state = {
   sectionMetrics: [],
   deferredSectionsReady: false,
 };
+
+const projectFilterPriority = [
+  "web",
+  "web-platform",
+  "landing-page",
+  "portfolio",
+  "automation",
+  "branding",
+  "mobile-app",
+  "backend-api",
+  "ui-design",
+  "game",
+  "simulation",
+  "research-project",
+];
+const projectPrimaryFilterLimit = 4;
 
 const elements = {
   brandText: document.getElementById("brand-text"),
@@ -306,6 +325,7 @@ const elements = {
   heroMascotField: document.getElementById("hero-mascot-field"),
   heroMascots: document.querySelectorAll("[data-hero-mascot]"),
   projectsGrid: document.getElementById("projects-grid"),
+  projectFilters: document.getElementById("project-filters"),
   certificatesGrid: document.getElementById("certificates-grid"),
   articlesList: document.getElementById("articles-list"),
   articleFeature: document.getElementById("article-feature"),
@@ -322,7 +342,6 @@ const elements = {
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
   languageToggle: document.getElementById("language-toggle"),
   sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
-  projectFilterButtons: document.querySelectorAll("#project-filters [data-filter]"),
   articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
   interestFilterButtons: document.querySelectorAll("#interests-media-filters [data-interest-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
@@ -626,13 +645,107 @@ function renderHeroLinks() {
     .join("");
 }
 
-function renderFilters() {
-  const labels = getCopy("projects.filters");
+function getProjectFilterLabel(labels, filter) {
+  return labels[filter] || String(filter).replace(/-/g, " ");
+}
 
-  elements.projectFilterButtons.forEach((button) => {
-    button.textContent = labels[button.dataset.filter];
-    button.classList.toggle("is-active", button.dataset.filter === state.filter);
+function getProjectFilterOptions() {
+  const labels = getCopy("projects.filters");
+  const counts = getCopy("projects.items").reduce((accumulator, item) => {
+    if (item.showInHome === false || !item.category) {
+      return accumulator;
+    }
+
+    accumulator.set(item.category, (accumulator.get(item.category) || 0) + 1);
+    return accumulator;
+  }, new Map());
+
+  return [...counts.entries()]
+    .map(([filter, count]) => ({
+      filter,
+      count,
+      label: getProjectFilterLabel(labels, filter),
+    }))
+    .sort((filterA, filterB) => {
+      const priorityA = projectFilterPriority.includes(filterA.filter)
+        ? projectFilterPriority.indexOf(filterA.filter)
+        : Number.MAX_SAFE_INTEGER;
+      const priorityB = projectFilterPriority.includes(filterB.filter)
+        ? projectFilterPriority.indexOf(filterB.filter)
+        : Number.MAX_SAFE_INTEGER;
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      if (filterA.count !== filterB.count) {
+        return filterB.count - filterA.count;
+      }
+
+      return filterA.label.localeCompare(filterB.label);
+    });
+}
+
+function createProjectFilterButton(filter, label, className = "filter-chip") {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = className;
+  button.dataset.filter = filter;
+  button.textContent = label;
+  button.classList.toggle("is-active", filter === state.filter);
+
+  return button;
+}
+
+function renderFilters() {
+  if (!elements.projectFilters) {
+    return;
+  }
+
+  const labels = getCopy("projects.filters");
+  const filters = getProjectFilterOptions();
+  const availableFilters = new Set(filters.map((item) => item.filter));
+
+  if (state.filter !== "all" && !availableFilters.has(state.filter)) {
+    state.filter = "all";
+  }
+
+  const primaryFilters = filters.slice(0, projectPrimaryFilterLimit);
+  const secondaryFilters = filters.slice(projectPrimaryFilterLimit);
+  const activeSecondaryFilter = secondaryFilters.find((item) => item.filter === state.filter);
+
+  elements.projectFilters.innerHTML = "";
+  elements.projectFilters.append(createProjectFilterButton("all", labels.all));
+
+  primaryFilters.forEach((item) => {
+    elements.projectFilters.append(createProjectFilterButton(item.filter, item.label));
   });
+
+  if (secondaryFilters.length > 0) {
+    const moreGroup = document.createElement("div");
+    moreGroup.className = "project-filter-more";
+    moreGroup.classList.toggle("is-open", state.projectFiltersOpen);
+
+    const moreButton = document.createElement("button");
+    moreButton.type = "button";
+    moreButton.className = "filter-chip filter-chip-more";
+    moreButton.dataset.projectFilterToggle = "true";
+    moreButton.textContent = activeSecondaryFilter?.label || labels.more;
+    moreButton.classList.toggle("is-active", Boolean(activeSecondaryFilter));
+    moreButton.setAttribute("aria-haspopup", "true");
+    moreButton.setAttribute("aria-expanded", String(state.projectFiltersOpen));
+
+    const menu = document.createElement("div");
+    menu.className = "project-filter-menu";
+    menu.setAttribute("role", "menu");
+
+    secondaryFilters.forEach((item) => {
+      menu.append(createProjectFilterButton(item.filter, item.label, "project-filter-menu-item"));
+    });
+
+    moreGroup.append(moreButton, menu);
+    elements.projectFilters.append(moreGroup);
+  }
 }
 
 function renderArticleFilters() {
@@ -1873,13 +1986,27 @@ function wireEvents() {
     wireScrollButtons();
   });
 
-  elements.projectFilterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.filter = button.dataset.filter;
+  elements.projectFilters?.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const toggle = target?.closest("[data-project-filter-toggle]");
+
+    if (toggle && elements.projectFilters.contains(toggle)) {
+      state.projectFiltersOpen = !state.projectFiltersOpen;
       renderFilters();
-      renderProjects();
-      queueSectionMetricsRefresh();
-    });
+      return;
+    }
+
+    const button = target?.closest("[data-filter]");
+
+    if (!button || !elements.projectFilters.contains(button)) {
+      return;
+    }
+
+    state.filter = button.dataset.filter;
+    state.projectFiltersOpen = false;
+    renderFilters();
+    renderProjects();
+    queueSectionMetricsRefresh();
   });
 
   elements.articleFilterButtons.forEach((button) => {
@@ -1964,7 +2091,21 @@ function wireEvents() {
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeProjectPreview();
+
+      if (state.projectFiltersOpen) {
+        state.projectFiltersOpen = false;
+        renderFilters();
+      }
     }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!state.projectFiltersOpen || elements.projectFilters?.contains(event.target)) {
+      return;
+    }
+
+    state.projectFiltersOpen = false;
+    renderFilters();
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });

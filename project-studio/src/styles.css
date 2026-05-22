@@ -422,6 +422,11 @@ textarea:focus {
   text-align: left;
 }
 
+.template-card {
+  align-content: start;
+  min-height: 17.5rem;
+}
+
 .option-card.selected,
 .template-card.selected {
   border-color: rgba(158, 233, 213, 0.75);
@@ -478,6 +483,38 @@ textarea:focus {
 }
 
 .inline-help {
+  color: var(--muted);
+}
+
+.media-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.9rem 0 0.4rem;
+  border: 1px solid rgba(158, 233, 213, 0.22);
+  border-radius: 1rem;
+  padding: 0.75rem 0.85rem;
+  background: rgba(158, 233, 213, 0.08);
+  color: #f7f3ff;
+}
+
+.media-summary strong {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(158, 233, 213, 0.16);
+  color: var(--secondary);
+}
+
+.media-summary span {
+  font-weight: 850;
+}
+
+.media-summary small {
   color: var(--muted);
 }
 
@@ -606,19 +643,321 @@ textarea:focus {
   font-size: 0.78rem;
 }
 
-.template-preview {
+.template-card-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.template-card-title svg {
+  color: var(--secondary);
+}
+
+.template-card-actions {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.template-card-actions button {
+  display: inline-flex;
+  min-height: 2.15rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  border-radius: 0.78rem;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.template-card-actions .use-template {
+  border-color: rgba(158, 233, 213, 0.38);
+  color: var(--secondary);
+}
+
+.template-preview {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-rows: 1fr auto auto;
   gap: 0.35rem;
-  min-height: 5rem;
+  min-height: 7.2rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 1rem;
-  padding: 0.7rem;
-  background: rgba(255, 255, 255, 0.08);
+  padding: 0.65rem;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(184, 169, 255, 0.28), transparent 38%),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
 }
 
 .template-preview span {
   display: block;
-  border-radius: 0.55rem;
-  background: linear-gradient(135deg, rgba(184, 169, 255, 0.7), rgba(158, 233, 213, 0.5));
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgba(184, 169, 255, 0.72), rgba(158, 233, 213, 0.5));
+}
+
+.template-preview-hero {
+  grid-row: 1 / 4;
+  min-height: 5.4rem;
+}
+
+.template-preview-line {
+  height: 0.5rem;
+  align-self: end;
+}
+
+.template-preview-line.short {
+  width: 68%;
+}
+
+.template-preview-card {
+  height: 1.25rem;
+  opacity: 0.75;
+}
+
+.template-preview-card.three {
+  display: none;
+}
+
+.template-preview.dashboard {
+  grid-template-columns: 0.9fr 1.1fr;
+  background:
+    linear-gradient(90deg, rgba(158, 233, 213, 0.14), transparent),
+    rgba(255, 255, 255, 0.07);
+}
+
+.template-preview.dashboard .template-preview-hero {
+  grid-row: 1 / 2;
+  grid-column: 1 / 3;
+  min-height: 2.5rem;
+}
+
+.template-preview.dashboard .template-preview-card.three {
+  display: block;
+}
+
+.template-preview.showcase {
+  grid-template-columns: 1fr;
+  background:
+    radial-gradient(circle at 80% 18%, rgba(158, 233, 213, 0.26), transparent 34%),
+    linear-gradient(135deg, rgba(184, 169, 255, 0.2), rgba(255, 255, 255, 0.05));
+}
+
+.template-preview.showcase .template-preview-hero {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 4.2rem;
+}
+
+.template-preview.editorial {
+  grid-template-columns: 0.75fr 1.25fr;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    radial-gradient(circle at 85% 20%, rgba(184, 169, 255, 0.22), transparent 30%);
+}
+
+.template-preview.bento {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 0.7fr 0.7fr;
+}
+
+.template-preview.bento .template-preview-hero {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+}
+
+.template-preview.bento .template-preview-card.three {
+  display: block;
+}
+
+.template-showcase {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.76fr) minmax(0, 1.24fr);
+  gap: 1rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 1.35rem;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 78% 16%, rgba(158, 233, 213, 0.13), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035));
+}
+
+.template-showcase-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.template-showcase-copy h3 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  letter-spacing: -0.055em;
+}
+
+.template-showcase-copy span,
+.template-showcase-copy small {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.selected-template-button {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+}
+
+.template-showcase-canvas {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 1.1rem;
+  background: rgba(8, 8, 12, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.template-browser-bar {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.template-browser-bar span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.template-showcase-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(10rem, 0.98fr);
+  gap: 0.8rem;
+  padding: 0.9rem;
+}
+
+.template-showcase-heading {
+  display: grid;
+  align-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.template-showcase-heading p {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.template-showcase-heading h4 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  letter-spacing: -0.045em;
+}
+
+.template-showcase-heading span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.template-showcase-media {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  place-items: center;
+  border-radius: 0.85rem;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.3), transparent 45%),
+    rgba(255, 255, 255, 0.08);
+}
+
+.template-showcase-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.template-showcase-stats,
+.template-showcase-blocks {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.template-showcase-stats span,
+.template-showcase-blocks span {
+  min-height: 2.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.8rem;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(247, 243, 255, 0.82);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.template-showcase-blocks span {
+  min-height: 3.4rem;
+}
+
+.template-showcase.dashboard .template-showcase-page {
+  grid-template-columns: minmax(0, 0.9fr) minmax(10rem, 1.1fr);
+}
+
+.template-showcase.dashboard .template-showcase-stats {
+  grid-row: 1;
+  grid-column: 1 / -1;
+}
+
+.template-showcase.showcase .template-showcase-page {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.template-showcase.showcase .template-showcase-media {
+  grid-row: 1;
+  aspect-ratio: 21 / 9;
+}
+
+.template-showcase.editorial .template-showcase-page {
+  grid-template-columns: minmax(0, 0.82fr) minmax(10rem, 1.18fr);
+}
+
+.template-showcase.editorial .template-showcase-heading {
+  align-content: start;
+  padding-top: 0.45rem;
+}
+
+.template-showcase.bento .template-showcase-page {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.template-showcase.bento .template-showcase-heading {
+  grid-column: 1 / 4;
+}
+
+.template-showcase.bento .template-showcase-media {
+  grid-column: 4 / 7;
+}
+
+.template-showcase.bento .template-showcase-stats,
+.template-showcase.bento .template-showcase-blocks {
+  grid-column: 1 / -1;
 }
 
 .template-card em {
@@ -692,6 +1031,44 @@ textarea:focus {
   overflow: hidden;
   border-radius: 1.7rem;
   padding: 1rem;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(158, 233, 213, 0.1), transparent 32%),
+    rgba(255, 255, 255, 0.055);
+}
+
+.preview-page.minimal {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    rgba(16, 16, 20, 0.86);
+}
+
+.preview-page.dashboard {
+  background:
+    radial-gradient(circle at 18% 15%, rgba(158, 233, 213, 0.16), transparent 32%),
+    linear-gradient(135deg, rgba(20, 32, 36, 0.92), rgba(16, 16, 24, 0.94));
+}
+
+.preview-page.showcase .preview-hero {
+  grid-template-columns: minmax(0, 0.82fr) minmax(16rem, 1.18fr);
+}
+
+.preview-page.showcase .preview-cover {
+  aspect-ratio: 16 / 9;
+}
+
+.preview-page.editorial {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.09), transparent 42%),
+    rgba(16, 16, 20, 0.88);
+}
+
+.preview-page.editorial .preview-hero {
+  grid-template-columns: minmax(0, 0.86fr) minmax(13rem, 1.14fr);
+}
+
+.preview-page.bento .preview-card-row,
+.preview-page.bento .preview-modules {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .preview-hero {
@@ -834,6 +1211,29 @@ textarea:focus {
   .preview-hero,
   .preview-card-row,
   .preview-modules {
+    grid-template-columns: 1fr;
+  }
+
+  .template-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .template-showcase-page,
+  .template-showcase.dashboard .template-showcase-page,
+  .template-showcase.editorial .template-showcase-page,
+  .template-showcase.bento .template-showcase-page {
+    grid-template-columns: 1fr;
+  }
+
+  .template-showcase.bento .template-showcase-heading,
+  .template-showcase.bento .template-showcase-media,
+  .template-showcase.bento .template-showcase-stats,
+  .template-showcase.bento .template-showcase-blocks {
+    grid-column: 1;
+  }
+
+  .template-showcase-stats,
+  .template-showcase-blocks {
     grid-template-columns: 1fr;
   }
 

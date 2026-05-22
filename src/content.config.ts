@@ -15,6 +15,8 @@ const optionalLocalizedStringSchema = z.object({
   en: z.string().optional(),
 });
 
+const optionalUrlSchema = z.union([z.string().url(), z.literal("")]).optional();
+
 const detailLanguageSchema = z.object({
   title: z.string().optional(),
   accent: z.string().optional(),
@@ -119,7 +121,7 @@ const detailSchema = z.object({
     .default({ images: [], videos: [] }),
   previewImage: z.string().optional(),
   visualClass: z.string().optional(),
-  liveUrl: z.string().url().optional(),
+  liveUrl: optionalUrlSchema,
   es: detailLanguageSchema,
   en: optionalDetailLanguageSchema.optional(),
 });
@@ -133,7 +135,7 @@ const projects = defineCollection({
     visualTemplate: z.string().optional(),
     year: z.string().min(4),
     href: z.string().optional(),
-    liveUrl: z.string().url().optional(),
+    liveUrl: optionalUrlSchema,
     githubUrl: z.string().optional(),
     previewImage: z.string().optional(),
     visualClass: z.string().min(1),

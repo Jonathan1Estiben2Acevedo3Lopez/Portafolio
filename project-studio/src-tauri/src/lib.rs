@@ -13,6 +13,7 @@ pub fn run() {
             commands::duplicate_project,
             commands::delete_project,
             commands::copy_assets,
+            commands::read_asset_data_url,
             commands::save_technology,
             commands::run_sync_projects,
             commands::open_preview

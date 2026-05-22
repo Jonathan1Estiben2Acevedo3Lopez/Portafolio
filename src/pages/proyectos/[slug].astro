@@ -64,6 +64,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
         document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.classList.toggle("light", theme === "light");
         document.documentElement.dataset.theme = theme;
+        document.documentElement.classList.add("supports-detail-reveal");
       })();
     </script>
     <link rel="icon" href={withBase("/favicon.svg")} type="image/svg+xml" />
@@ -109,99 +110,138 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
       </nav>
     </header>
 
-    <main class="detail-page-main px-6 pb-20 pt-10 lg:px-8 lg:pt-12">
-      <section class="site-shell site-shell--main mx-auto grid max-w-7xl gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
-        <div class="lg:col-span-7">
-          <p id="detail-kicker" class="text-[0.72rem] font-black uppercase tracking-[0.22em] text-secondary">
+    <main class={`detail-page-main detail-template-${project.visualTemplate ?? "minimal"} px-6 pb-20 pt-10 lg:px-8 lg:pt-12`}>
+      <section class="detail-hero-grid detail-reveal site-shell site-shell--main mx-auto grid max-w-7xl gap-8 lg:grid-cols-12 lg:items-center lg:gap-10" data-detail-reveal>
+        <div class="detail-hero-copy lg:col-span-7">
+          <p id="detail-kicker" class="detail-kicker">
             {defaultCopy.accent} - {project.year}
           </p>
           <h1 id="detail-title" class="detail-display mt-4 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
             {defaultCopy.title}
           </h1>
-          <p id="detail-summary" class="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
+          <p id="detail-summary" class="detail-summary mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
             {defaultCopy.summary}
           </p>
 
-          <div class="mt-8 grid gap-4 sm:grid-cols-3">
-            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-              <p id="detail-category-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Categoria</p>
+          <div class="detail-brief-grid mt-8 grid gap-4 sm:grid-cols-3">
+            <div class="detail-brief-card glass-panel">
+              <span class="material-symbols-outlined detail-brief-icon" aria-hidden="true">category</span>
+              <p id="detail-category-label" class="detail-label">Categoria</p>
               <p id="detail-category-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.category}</p>
             </div>
-            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-              <p id="detail-format-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Formato</p>
+            <div class="detail-brief-card glass-panel">
+              <span class="material-symbols-outlined detail-brief-icon" aria-hidden="true">view_quilt</span>
+              <p id="detail-format-label" class="detail-label">Formato</p>
               <p id="detail-format-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.tag}</p>
             </div>
-            <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
-              <p id="detail-focus-label" class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">Enfoque</p>
+            <div class="detail-brief-card glass-panel">
+              <span class="material-symbols-outlined detail-brief-icon" aria-hidden="true">neurology</span>
+              <p id="detail-focus-label" class="detail-label">Enfoque</p>
               <p id="detail-focus-value" class="mt-3 text-sm font-semibold text-on-surface">{defaultCopy.accent}</p>
             </div>
           </div>
 
-          <div id="detail-metrics" class="mt-6 grid gap-4 sm:grid-cols-3"></div>
+          <div id="detail-metrics" class="detail-metrics-grid mt-6 grid gap-4 sm:grid-cols-3"></div>
 
           <div id="detail-links" class="mt-8 flex flex-wrap gap-3"></div>
         </div>
 
-        <div class="lg:col-span-5">
-          <div class="glass-panel rounded-[2rem] border border-outline-variant/15 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.28)]">
-            {heroImage ? (
-              <div class="project-visual project-live-visual relative min-h-[320px] overflow-hidden rounded-[1.6rem] border border-outline-variant/15 bg-white sm:min-h-[380px]">
-                <img
-                  id="detail-hero-image"
-                  src={assetUrl(heroImage)}
-                  alt={heroImageAlt}
-                  loading="eager"
-                  class="project-preview-image"
-                />
+        <div class="detail-hero-media lg:col-span-5">
+          <div class="detail-hero-media-panel glass-panel">
+            <div class="detail-device-frame">
+              <div class="detail-device-toolbar" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+                <strong id="detail-device-title">{defaultCopy.title}</strong>
               </div>
-            ) : (
-              <div class={`project-visual ${project.visualClass} min-h-[320px] rounded-[1.6rem] sm:min-h-[380px]`}></div>
-            )}
+              {heroImage ? (
+                <div class="project-visual project-live-visual detail-hero-visual relative min-h-[320px] overflow-hidden rounded-[1.25rem] border border-outline-variant/15 bg-white sm:min-h-[380px]">
+                  <img
+                    id="detail-hero-image"
+                    src={assetUrl(heroImage)}
+                    alt={heroImageAlt}
+                    loading="eager"
+                    class="project-preview-image"
+                  />
+                </div>
+              ) : (
+                <div class={`project-visual ${project.visualClass} detail-hero-visual min-h-[320px] rounded-[1.25rem] sm:min-h-[380px]`}></div>
+              )}
+            </div>
+            <div class="detail-floating-note detail-floating-note--top" aria-hidden="true">
+              <span class="material-symbols-outlined">auto_awesome</span>
+              <span>{project.visualTemplate ?? "minimal"}</span>
+            </div>
+            <div class="detail-floating-note detail-floating-note--bottom" aria-hidden="true">
+              <span class="material-symbols-outlined">timeline</span>
+              <span>{project.year}</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
+      <nav class="detail-story-nav site-shell site-shell--main mx-auto mt-8 max-w-7xl" aria-label="Navegacion de ficha">
+        <a href="#detail-overview-section" data-detail-nav="context">Contexto</a>
+        <a href="#detail-process-section" data-detail-nav="process">Proceso</a>
+        <a href="#detail-results-section" data-detail-nav="impact">Impacto</a>
+        <a href="#detail-images-section" data-detail-nav="visuals">Visuales</a>
+        {project.liveUrl ? <a href="#detail-live-section" data-detail-nav="live">Demo</a> : null}
+      </nav>
+
+      <section class="detail-story-layout site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
         <div class="space-y-8 lg:col-span-7">
-          <article id="detail-overview-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-            <p id="detail-overview-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resumen</p>
+          <article id="detail-overview-section" class="detail-feature-card detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">explore</span>
+              <p id="detail-overview-label" class="detail-section-label">Resumen</p>
+            </div>
             <p id="detail-overview" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.overview}</p>
           </article>
 
           <div class="grid gap-6 md:grid-cols-2">
-            <article id="detail-challenge-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-              <p id="detail-challenge-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Reto</p>
+            <article id="detail-challenge-section" class="detail-duo-card detail-reveal glass-panel" data-detail-reveal>
+              <div class="detail-card-heading">
+                <span class="material-symbols-outlined" aria-hidden="true">flag</span>
+                <p id="detail-challenge-label" class="detail-section-label">Reto</p>
+              </div>
               <p id="detail-challenge" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.challenge}</p>
             </article>
 
-            <article id="detail-solution-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-              <p id="detail-solution-label" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Solucion</p>
+            <article id="detail-solution-section" class="detail-duo-card detail-reveal glass-panel" data-detail-reveal>
+              <div class="detail-card-heading">
+                <span class="material-symbols-outlined" aria-hidden="true">route</span>
+                <p id="detail-solution-label" class="detail-section-label">Solucion</p>
+              </div>
               <p id="detail-solution" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.solution}</p>
             </article>
           </div>
 
-          <section id="detail-process-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7 lg:p-8">
-            <p id="detail-process-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Proceso</p>
-            <div id="detail-process-list" class="mt-6 grid gap-4"></div>
+          <section id="detail-process-section" class="detail-timeline-section detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
+              <p id="detail-process-title" class="detail-section-label">Proceso</p>
+            </div>
+            <div id="detail-process-list" class="detail-timeline-list mt-7 grid gap-4"></div>
           </section>
 
-          <section id="detail-images-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8">
+          <section id="detail-images-section" class="detail-gallery-section detail-reveal glass-panel" data-detail-reveal>
             <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p id="detail-images-eyebrow" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Capturas</p>
+                <p id="detail-images-eyebrow" class="detail-section-label">Capturas</p>
                 <h2 id="detail-images-title" class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Galeria del proyecto</h2>
               </div>
             </div>
-            <div id="detail-images-grid" class="grid gap-5 md:grid-cols-2"></div>
+            <div id="detail-images-grid" class="detail-gallery-grid grid gap-5 md:grid-cols-2"></div>
           </section>
 
-          <section id="detail-videos-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8">
-            <p id="detail-videos-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Videos</p>
+          <section id="detail-videos-section" class="detail-media-section detail-reveal glass-panel" data-detail-reveal>
+            <p id="detail-videos-title" class="detail-section-label">Videos</p>
             <div id="detail-videos-grid" class="mt-6 grid gap-5"></div>
           </section>
 
-          <section id="detail-youtube-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8" hidden={!youtubeId}>
-            <p id="detail-youtube-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Video</p>
+          <section id="detail-youtube-section" class="detail-media-section detail-reveal glass-panel" hidden={!youtubeId} data-detail-reveal>
+            <p id="detail-youtube-title" class="detail-section-label">Video</p>
             <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-black">
               <iframe
                 id="detail-youtube-frame"
@@ -215,12 +255,12 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
             </div>
           </section>
 
-          <section id="detail-dynamic-modules-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-5 sm:p-6 lg:p-8" hidden={dynamicModules.length === 0}>
+          <section id="detail-dynamic-modules-section" class="detail-modules-section detail-reveal glass-panel" hidden={dynamicModules.length === 0} data-detail-reveal>
             <p id="detail-dynamic-modules-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Módulos</p>
-            <div id="detail-dynamic-modules-list" class="mt-6 grid gap-4">
+            <div id="detail-dynamic-modules-list" class="detail-module-grid mt-6 grid gap-4">
               {dynamicModules.map((module) => (
-                <article class="rounded-[1.35rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
-                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">{module.id}</p>
+                <article class="detail-module-card">
+                  <p class="detail-label">{module.id}</p>
                   <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">{module.title || module.id}</h3>
                   {module.body ? <p class="mt-3 whitespace-pre-line text-sm leading-7 text-on-surface-variant">{module.body}</p> : null}
                   {module.code ? <pre class="mt-4 overflow-auto rounded-[1rem] bg-black/55 p-4 text-xs leading-6 text-on-surface"><code>{module.code}</code></pre> : null}
@@ -230,24 +270,36 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           </section>
         </div>
 
-        <aside class="space-y-8 lg:col-span-5">
-          <section id="detail-results-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-            <p id="detail-results-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Resultados</p>
+        <aside class="detail-insight-rail space-y-8 lg:col-span-5">
+          <section id="detail-results-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
+              <p id="detail-results-title" class="detail-section-label">Resultados</p>
+            </div>
             <div id="detail-results-list" class="mt-5 space-y-3"></div>
           </section>
 
-          <section id="detail-stack-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-            <p id="detail-stack-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Stack</p>
+          <section id="detail-stack-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
+              <p id="detail-stack-title" class="detail-section-label">Stack</p>
+            </div>
             <div id="detail-stack-list" class="mt-5 flex flex-wrap gap-3"></div>
           </section>
 
-          <section id="detail-deliverables-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-            <p id="detail-deliverables-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Entregables</p>
+          <section id="detail-deliverables-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+              <p id="detail-deliverables-title" class="detail-section-label">Entregables</p>
+            </div>
             <ul id="detail-deliverables-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
           </section>
 
-          <section id="detail-learnings-section" class="glass-panel rounded-[2rem] border border-outline-variant/15 p-7">
-            <p id="detail-learnings-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Aprendizajes</p>
+          <section id="detail-learnings-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">psychology</span>
+              <p id="detail-learnings-title" class="detail-section-label">Aprendizajes</p>
+            </div>
             <ul id="detail-learnings-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
           </section>
         </aside>
@@ -255,7 +307,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
 
       {project.liveUrl ? (
         <section id="detail-live-section" class="site-shell site-shell--main mx-auto mt-12 max-w-7xl">
-          <div class="glass-panel overflow-hidden rounded-[2rem] border border-outline-variant/15 p-5 shadow-[0_28px_80px_rgba(0,0,0,0.22)] sm:p-6 lg:p-8">
+          <div class="detail-live-panel detail-reveal glass-panel" data-detail-reveal>
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div class="max-w-3xl">
                 <p id="detail-live-eyebrow" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Vista interactiva</p>
@@ -363,6 +415,11 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
             related: "Otros proyectos",
             viewAll: "Ver todos",
             imageFallback: "Captura del proyecto",
+            navContext: "Contexto",
+            navProcess: "Proceso",
+            navImpact: "Impacto",
+            navVisuals: "Visuales",
+            navLive: "Demo",
           },
           en: {
             back: "Back to portfolio",
@@ -393,6 +450,11 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
             related: "Related projects",
             viewAll: "View all",
             imageFallback: "Project screenshot",
+            navContext: "Context",
+            navProcess: "Process",
+            navImpact: "Impact",
+            navVisuals: "Visuals",
+            navLive: "Demo",
           },
         };
 
@@ -425,6 +487,49 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           theme: document.documentElement.dataset.theme || window.localStorage.getItem("portfolio-theme") || "dark",
           lang: window.localStorage.getItem("portfolio-lang") === "en" ? "en" : "es",
         };
+        let revealObserver = null;
+
+        const refreshRevealAnimations = () => {
+          const elements = [...document.querySelectorAll("[data-detail-reveal]")];
+
+          if (!("IntersectionObserver" in window)) {
+            elements.forEach((element) => element.classList.add("is-visible"));
+            return;
+          }
+
+          if (!revealObserver) {
+            revealObserver = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    revealObserver.unobserve(entry.target);
+                  }
+                });
+              },
+              { rootMargin: "0px 0px -12% 0px", threshold: 0.14 },
+            );
+          }
+
+          elements.forEach((element, index) => {
+            if (element.dataset.detailObserved === "true") {
+              return;
+            }
+
+            element.style.setProperty("--reveal-delay", `${Math.min(index, 7) * 55}ms`);
+            element.dataset.detailObserved = "true";
+            revealObserver.observe(element);
+          });
+        };
+
+        const scheduleRevealAnimations = () => {
+          if (typeof window.requestAnimationFrame === "function") {
+            window.requestAnimationFrame(refreshRevealAnimations);
+            return;
+          }
+
+          window.setTimeout(refreshRevealAnimations, 0);
+        };
 
         const escapeHtml = (value = "") =>
           String(value)
@@ -456,6 +561,20 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
 
         const setSectionVisibility = (id, visible) => {
           const element = document.getElementById(id);
+          if (element) {
+            element.hidden = !visible;
+          }
+        };
+
+        const setNavText = (key, value) => {
+          const element = document.querySelector(`[data-detail-nav="${key}"]`);
+          if (element) {
+            element.textContent = value || "";
+          }
+        };
+
+        const setNavVisibility = (key, visible) => {
+          const element = document.querySelector(`[data-detail-nav="${key}"]`);
           if (element) {
             element.hidden = !visible;
           }
@@ -495,8 +614,8 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
             .map((link, index) => {
               const isPrimary = index === 0 || link.type === "demo";
               const className = isPrimary
-                ? "inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-bold tracking-tight text-on-primary transition hover:-translate-y-0.5"
-                : "inline-flex items-center justify-center rounded-2xl border border-secondary/25 px-5 py-3 text-sm font-bold tracking-tight text-secondary transition hover:border-secondary hover:bg-secondary/5";
+                ? "detail-action detail-action-primary"
+                : "detail-action detail-action-secondary";
 
               return `
                 <a class="${className}" href="${escapeHtml(withBase(link.href))}" target="_blank" rel="noopener noreferrer">
@@ -517,7 +636,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           container.innerHTML = metrics
             .map(
               (item) => `
-                <div class="glass-panel rounded-[1.4rem] border border-outline-variant/15 p-5">
+                <div class="detail-metric-card glass-panel" data-detail-reveal>
                   <p class="text-3xl font-headline font-bold tracking-tight text-on-surface">${escapeHtml(item.value)}</p>
                   <p class="mt-2 text-[0.66rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${escapeHtml(item.label)}</p>
                 </div>
@@ -536,10 +655,10 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           container.innerHTML = items
             .map(
               (item, index) => `
-                <div class="rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
-                  <p class="text-[0.72rem] font-black uppercase tracking-[0.18em] text-primary">${String(index + 1).padStart(2, "0")}</p>
+                <article class="detail-timeline-item" data-detail-reveal>
+                  <span class="detail-timeline-marker">${String(index + 1).padStart(2, "0")}</span>
                   <p class="mt-3 text-sm leading-7 text-on-surface-variant">${escapeHtml(item)}</p>
-                </div>
+                </article>
               `,
             )
             .join("");
@@ -555,7 +674,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           container.innerHTML = items
             .map(
               (item) => `
-                <div class="rounded-[1.25rem] border border-outline-variant/15 bg-surface-container-highest/55 px-4 py-4 text-sm leading-7 text-on-surface-variant">
+                <div class="detail-result-card">
                   ${escapeHtml(item)}
                 </div>
               `,
@@ -573,7 +692,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           container.innerHTML = items
             .map(
               (item) => `
-                <span class="rounded-full border border-outline-variant/18 bg-surface-container-highest/55 px-4 py-2 text-[0.7rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
+                <span class="detail-stack-pill">
                   ${escapeHtml(item)}
                 </span>
               `,
@@ -591,8 +710,8 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           container.innerHTML = items
             .map(
               (item) => `
-                <li class="flex items-start gap-3">
-                  <span class="mt-2 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-primary"></span>
+                <li class="detail-check-item">
+                  <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
                   <span>${escapeHtml(item)}</span>
                 </li>
               `,
@@ -610,13 +729,13 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           grid.innerHTML = images
             .map(
               (image) => `
-                <figure class="overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-surface-container-highest/60">
+                <figure class="detail-gallery-card" data-detail-reveal>
                   <div class="project-live-visual aspect-[16/10] bg-white">
                     <img src="${escapeHtml(withBase(image.src))}" alt="${escapeHtml(image.alt || labels[state.lang].imageFallback)}" loading="lazy" class="project-preview-image" />
                   </div>
                   ${
                     image.caption
-                      ? `<figcaption class="px-5 py-4 text-sm leading-6 text-on-surface-variant">${escapeHtml(image.caption)}</figcaption>`
+                      ? `<figcaption class="detail-gallery-caption">${escapeHtml(image.caption)}</figcaption>`
                       : ""
                   }
                 </figure>
@@ -642,11 +761,11 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           grid.innerHTML = videos
             .map(
               (video) => `
-                <figure class="overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-surface-container-highest/60">
+                <figure class="detail-gallery-card" data-detail-reveal>
                   <video controls preload="metadata" ${video.poster ? `poster="${escapeHtml(withBase(video.poster))}"` : ""} class="aspect-video w-full bg-black">
                     <source src="${escapeHtml(withBase(video.src))}" />
                   </video>
-                  <figcaption class="px-5 py-4 text-sm leading-6 text-on-surface-variant">
+                  <figcaption class="detail-gallery-caption">
                     <strong class="block text-on-surface">${escapeHtml(video.title)}</strong>
                     ${video.caption ? `<span class="mt-1 block">${escapeHtml(video.caption)}</span>` : ""}
                   </figcaption>
@@ -672,6 +791,41 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           }
 
           return [item.value, item.label, item.title, item.description].filter(Boolean).join(" - ");
+        };
+
+        const moduleTitles = {
+          es: {
+            "problem-solution": "Problema y solucion",
+            roles: "Roles",
+            features: "Funciones clave",
+            architecture: "Arquitectura",
+            stack: "Stack",
+            metrics: "Metricas",
+            gallery: "Galeria",
+            links: "Enlaces",
+            timeline: "Linea de trabajo",
+            "case-study": "Caso de estudio",
+            video: "Video",
+            "custom-rich-text": "Notas",
+            "custom-list": "Lista",
+            "custom-code": "Codigo",
+          },
+          en: {
+            "problem-solution": "Problem and solution",
+            roles: "Roles",
+            features: "Key features",
+            architecture: "Architecture",
+            stack: "Stack",
+            metrics: "Metrics",
+            gallery: "Gallery",
+            links: "Links",
+            timeline: "Work timeline",
+            "case-study": "Case study",
+            video: "Video",
+            "custom-rich-text": "Notes",
+            "custom-list": "List",
+            "custom-code": "Code",
+          },
         };
 
         const renderYoutube = (media = {}) => {
@@ -709,13 +863,13 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
               const links = Array.isArray(module.links) ? module.links : [];
 
               return `
-                <article class="rounded-[1.35rem] border border-outline-variant/15 bg-surface-container-highest/55 p-5">
-                  <p class="text-[0.66rem] font-black uppercase tracking-[0.18em] text-primary">${escapeHtml(module.id)}</p>
-                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">${escapeHtml(module.title || module.id)}</h3>
+                <article class="detail-module-card" data-detail-reveal>
+                  <p class="detail-label">${escapeHtml(moduleTitles[state.lang]?.[module.id] || module.id)}</p>
+                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">${escapeHtml(module.title || moduleTitles[state.lang]?.[module.id] || module.id)}</h3>
                   ${module.body ? `<p class="mt-3 text-sm leading-7 text-on-surface-variant">${formatRichText(module.body)}</p>` : ""}
                   ${
                     items.length > 0
-                      ? `<ul class="mt-4 grid gap-2 text-sm leading-7 text-on-surface-variant">${items.map((item) => `<li class="rounded-[1rem] border border-outline-variant/15 bg-background/35 px-4 py-3">${escapeHtml(item)}</li>`).join("")}</ul>`
+                      ? `<ul class="detail-module-list mt-4 grid gap-2 text-sm leading-7 text-on-surface-variant">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
                       : ""
                   }
                   ${
@@ -792,6 +946,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           setText("detail-back-label", label.back);
           setText("detail-kicker", `${copy.accent} - ${projectYear}`);
           setText("detail-title", copy.title);
+          setText("detail-device-title", copy.title);
           setText("detail-summary", copy.summary);
           setText("detail-category-label", label.category);
           setText("detail-format-label", label.format);
@@ -824,6 +979,11 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           setText("detail-contact-cta", label.contact);
           setText("detail-live-note", label.liveNote);
           setText("detail-iframe-url", projectLiveUrl || "");
+          setNavText("context", label.navContext);
+          setNavText("process", label.navProcess);
+          setNavText("impact", label.navImpact);
+          setNavText("visuals", label.navVisuals);
+          setNavText("live", label.navLive);
 
           if (languageToggle) {
             languageToggle.textContent = label.languageToggle;
@@ -843,7 +1003,17 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           renderYoutube(copy.media || {});
           renderDynamicModules(copy);
           renderRelated(lang);
+          setNavVisibility("process", Array.isArray(copy.process) && copy.process.length > 0);
+          setNavVisibility("impact", (Array.isArray(copy.results) && copy.results.length > 0) || (Array.isArray(copy.metrics) && copy.metrics.length > 0));
+          setNavVisibility(
+            "visuals",
+            Boolean(copy.media?.youtube?.youtubeId) ||
+              (Array.isArray(copy.media?.images) && copy.media.images.length > 0) ||
+              (Array.isArray(copy.media?.videos) && copy.media.videos.length > 0),
+          );
+          setNavVisibility("live", Boolean(projectLiveUrl));
           applyTheme(state.theme, false);
+          scheduleRevealAnimations();
         };
 
         applyTheme(state.theme, false);

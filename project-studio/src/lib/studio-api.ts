@@ -44,6 +44,10 @@ export async function saveTechnology(technology: Technology) {
   return invoke<Technology[]>("save_technology", { technology });
 }
 
+export async function readAssetDataUrl(reference: string) {
+  return invoke<string>("read_asset_data_url", { reference });
+}
+
 export async function runSyncProjects() {
   return invoke<string>("run_sync_projects");
 }
