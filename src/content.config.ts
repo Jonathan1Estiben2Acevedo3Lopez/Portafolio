@@ -106,6 +106,7 @@ const detailSchema = z.object({
             caption: optionalLocalizedStringSchema.optional(),
             type: z.string().optional(),
             youtubeId: z.string().optional(),
+            playlistId: z.string().optional(),
             url: z.string().optional(),
           }),
         )
@@ -115,6 +116,7 @@ const detailSchema = z.object({
           type: z.string().optional(),
           url: z.string().optional(),
           youtubeId: z.string().optional(),
+          playlistId: z.string().optional(),
         })
         .optional(),
     })
@@ -153,6 +155,7 @@ const projects = defineCollection({
             type: z.string().optional(),
             url: z.string().optional(),
             youtubeId: z.string().optional(),
+            playlistId: z.string().optional(),
           })
           .optional(),
       })

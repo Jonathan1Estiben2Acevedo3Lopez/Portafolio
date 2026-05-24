@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"Permisos locales para Project Studio.","local":true,"windows":["main"],"permissions":["core:default","dialog:default","fs:default","shell:allow-open"]}}

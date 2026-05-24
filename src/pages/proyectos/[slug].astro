@@ -31,7 +31,12 @@ const dynamicModules = (defaultCopy.modulesOrder || [])
   .filter((module) => {
     return module.body || module.code || module.items?.length || module.links?.length;
   });
-const youtubeId = defaultCopy.media?.youtube?.youtubeId;
+const youtube = defaultCopy.media?.youtube;
+const youtubeEmbedUrl = youtube?.youtubeId
+  ? `https://www.youtube.com/embed/${youtube.youtubeId}`
+  : youtube?.playlistId
+    ? `https://www.youtube.com/embed/videoseries?list=${youtube.playlistId}`
+    : "";
 ---
 
 <!DOCTYPE html>
@@ -240,12 +245,12 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
             <div id="detail-videos-grid" class="mt-6 grid gap-5"></div>
           </section>
 
-          <section id="detail-youtube-section" class="detail-media-section detail-reveal glass-panel" hidden={!youtubeId} data-detail-reveal>
+          <section id="detail-youtube-section" class="detail-media-section detail-reveal glass-panel" hidden={!youtubeEmbedUrl} data-detail-reveal>
             <p id="detail-youtube-title" class="detail-section-label">Video</p>
             <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-black">
               <iframe
                 id="detail-youtube-frame"
-                src={youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : ""}
+                src={youtubeEmbedUrl}
                 title={`Video de ${defaultCopy.title}`}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -832,10 +837,16 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           const section = document.getElementById("detail-youtube-section");
           const frame = document.getElementById("detail-youtube-frame");
           const youtubeId = media.youtube?.youtubeId;
+          const playlistId = media.youtube?.playlistId;
+          const embedUrl = youtubeId
+            ? `https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}`
+            : playlistId
+              ? `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(playlistId)}`
+              : "";
 
-          setSectionVisibility("detail-youtube-section", Boolean(youtubeId));
-          if (frame && youtubeId) {
-            frame.src = `https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}`;
+          setSectionVisibility("detail-youtube-section", Boolean(embedUrl));
+          if (frame && embedUrl) {
+            frame.src = embedUrl;
           } else if (frame) {
             frame.src = "";
           }
@@ -1007,7 +1018,7 @@ const youtubeId = defaultCopy.media?.youtube?.youtubeId;
           setNavVisibility("impact", (Array.isArray(copy.results) && copy.results.length > 0) || (Array.isArray(copy.metrics) && copy.metrics.length > 0));
           setNavVisibility(
             "visuals",
-            Boolean(copy.media?.youtube?.youtubeId) ||
+            Boolean(copy.media?.youtube?.youtubeId || copy.media?.youtube?.playlistId) ||
               (Array.isArray(copy.media?.images) && copy.media.images.length > 0) ||
               (Array.isArray(copy.media?.videos) && copy.media.videos.length > 0),
           );

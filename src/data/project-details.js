@@ -122,7 +122,8 @@ function normalizeMedia(project, detail, lang, title) {
   const coverImage = hasText(projectMedia.cover) ? [{ src: projectMedia.cover }] : [];
   const normalizedImages = images.length > 0 ? images : [...coverImage, ...projectImages];
   const videos = Array.isArray(media.videos) ? media.videos : [];
-  const projectVideo = projectMedia.video?.youtubeId || projectMedia.video?.url ? [projectMedia.video] : [];
+  const projectVideo = projectMedia.video?.youtubeId || projectMedia.video?.playlistId || projectMedia.video?.url ? [projectMedia.video] : [];
+  const youtubeSource = projectMedia.video?.youtubeId || projectMedia.video?.playlistId ? projectMedia.video : media.video;
 
   return {
     images: normalizedImages
@@ -140,19 +141,14 @@ function normalizeMedia(project, detail, lang, title) {
         title: pickLocalized(video.title, lang, `${title} video ${index + 1}`),
         caption: pickLocalized(video.caption, lang, ""),
       })),
-    youtube: projectMedia.video?.youtubeId
+    youtube: youtubeSource?.youtubeId || youtubeSource?.playlistId
       ? {
           type: "youtube",
-          url: projectMedia.video.url,
-          youtubeId: projectMedia.video.youtubeId,
+          url: youtubeSource.url,
+          youtubeId: youtubeSource.youtubeId || "",
+          playlistId: youtubeSource.playlistId || "",
         }
-      : media.video?.youtubeId
-        ? {
-            type: "youtube",
-            url: media.video.url,
-            youtubeId: media.video.youtubeId,
-          }
-        : null,
+      : null,
   };
 }
 

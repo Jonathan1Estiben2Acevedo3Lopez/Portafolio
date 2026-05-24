@@ -12,14 +12,7 @@
     "prebuild": "npm run sync:projects",
     "build": "astro build",
     "prepreview": "npm run sync:projects",
-    "preview": "astro preview",
-    "studio": "npm run studio:dev",
-    "studio:install": "npm --prefix project-studio install",
-    "studio:check": "node project-studio/scripts/check-tauri-env.mjs",
-    "studio:dev": "npm run studio:install && npm run studio:check && npm --prefix project-studio run tauri:dev",
-    "studio:build": "npm run studio:install && npm run studio:check && npm --prefix project-studio run tauri:build",
-    "tauri:dev": "npm run studio:dev",
-    "tauri:build": "npm run studio:build"
+    "preview": "astro preview"
   },
   "dependencies": {
     "astro": "^6.0.8",

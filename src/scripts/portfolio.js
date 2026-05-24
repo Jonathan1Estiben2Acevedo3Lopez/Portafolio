@@ -964,18 +964,18 @@ function sortProjectsForHome(projects) {
       return pinnedA - pinnedB;
     }
 
-    const featuredA = getProjectFeaturedRank(projectA);
-    const featuredB = getProjectFeaturedRank(projectB);
-
-    if (featuredA !== featuredB) {
-      return featuredA - featuredB;
-    }
-
     const priorityA = Number.isFinite(projectA.priority) ? projectA.priority : Number.MAX_SAFE_INTEGER;
     const priorityB = Number.isFinite(projectB.priority) ? projectB.priority : Number.MAX_SAFE_INTEGER;
 
     if (priorityA !== priorityB) {
       return priorityA - priorityB;
+    }
+
+    const featuredA = getProjectFeaturedRank(projectA);
+    const featuredB = getProjectFeaturedRank(projectB);
+
+    if (featuredA !== featuredB) {
+      return featuredA - featuredB;
     }
 
     const yearA = Number.parseInt(projectA.year, 10) || 0;

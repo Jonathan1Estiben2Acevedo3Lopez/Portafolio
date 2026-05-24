@@ -22,8 +22,6 @@ npm run sync:projects
 npm run dev
 npm run build
 npm run preview
-npm run studio:dev
-npm run studio:build
 ```
 
 | Comando | Uso |
@@ -33,23 +31,6 @@ npm run studio:build
 | `npm run dev` | Inicia el servidor local de desarrollo. |
 | `npm run build` | Genera el sitio estatico en `dist`. |
 | `npm run preview` | Previsualiza el build localmente. |
-| `npm run studio:dev` | Abre Project Studio, la app local Tauri + React para administrar proyectos. |
-| `npm run studio:build` | Compila Project Studio como app de escritorio. |
-
-## Project Studio
-
-`project-studio/` es una app local privada hecha con Tauri + React para crear, editar, duplicar y eliminar proyectos sin tocar los JSON manualmente.
-
-La app escribe en `src/content/projects`, copia assets a `public/projects/[slug]`, actualiza `src/data/projects.generated.json` ejecutando `npm run sync:projects` y no ejecuta comandos Git.
-
-Antes de usarla instala sus dependencias:
-
-```bash
-cd project-studio
-npm install
-```
-
-Tauri requiere Rust/Cargo instalado. Si `cargo --version` falla, instala Rust antes de correr `npm run studio:dev`.
 
 ## Estructura
 
