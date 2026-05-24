@@ -15,6 +15,8 @@ const optionalLocalizedStringSchema = z.object({
   en: z.string().optional(),
 });
 
+const localizedStringSchema = z.union([z.string().min(1), optionalLocalizedStringSchema]);
+
 const optionalUrlSchema = z.union([z.string().url(), z.literal("")]).optional();
 
 const detailLanguageSchema = z.object({
@@ -50,21 +52,21 @@ const optionalDetailLanguageSchema = z.object({
 });
 
 const detailSchema = z.object({
-  category: z.string().optional(),
+  category: localizedStringSchema.optional(),
   stack: z.array(z.string()).default([]),
   metrics: z
     .array(
       z.object({
         value: z.string().min(1),
-        label: z.string().min(1),
+        label: localizedStringSchema,
       }),
     )
     .default([]),
   modules: z
     .array(
       z.object({
-        title: z.string().min(1),
-        description: z.string().min(1),
+        title: localizedStringSchema,
+        description: localizedStringSchema,
       }),
     )
     .default([]),
@@ -72,8 +74,8 @@ const detailSchema = z.object({
     .array(
       z.object({
         step: z.string().min(1),
-        title: z.string().min(1),
-        description: z.string().min(1),
+        title: localizedStringSchema,
+        description: localizedStringSchema,
       }),
     )
     .default([]),

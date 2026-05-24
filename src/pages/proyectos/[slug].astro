@@ -115,20 +115,20 @@ const youtubeEmbedUrl = youtube?.youtubeId
       </nav>
     </header>
 
-    <main class={`detail-page-main detail-template-${project.visualTemplate ?? "minimal"} px-6 pb-20 pt-10 lg:px-8 lg:pt-12`}>
-      <section class="detail-hero-grid detail-reveal site-shell site-shell--main mx-auto grid max-w-7xl gap-8 lg:grid-cols-12 lg:items-center lg:gap-10" data-detail-reveal>
+    <main class={`detail-page-main ${project.visualTemplate ? `detail-template-${project.visualTemplate}` : ""} px-4 pb-20 pt-5 sm:px-6 lg:px-8 lg:pt-6`}>
+      <section class="detail-hero-grid detail-reveal site-shell site-shell--main mx-auto grid max-w-7xl gap-5 lg:grid-cols-12 lg:items-start lg:gap-8" data-detail-reveal>
         <div class="detail-hero-copy lg:col-span-7">
           <p id="detail-kicker" class="detail-kicker">
             {defaultCopy.accent} - {project.year}
           </p>
-          <h1 id="detail-title" class="detail-display mt-4 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
+          <h1 id="detail-title" class="detail-display mt-3 max-w-4xl font-headline text-4xl font-bold leading-[1.02] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
             {defaultCopy.title}
           </h1>
-          <p id="detail-summary" class="detail-summary mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
+          <p id="detail-summary" class="detail-summary mt-4 max-w-3xl text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-8">
             {defaultCopy.summary}
           </p>
 
-          <div class="detail-brief-grid mt-8 grid gap-4 sm:grid-cols-3">
+          <div class="detail-brief-grid mt-5 grid gap-4 sm:grid-cols-3">
             <div class="detail-brief-card glass-panel">
               <span class="material-symbols-outlined detail-brief-icon" aria-hidden="true">category</span>
               <p id="detail-category-label" class="detail-label">Categoria</p>
@@ -146,9 +146,9 @@ const youtubeEmbedUrl = youtube?.youtubeId
             </div>
           </div>
 
-          <div id="detail-metrics" class="detail-metrics-grid mt-6 grid gap-4 sm:grid-cols-3"></div>
+          <div id="detail-metrics" class="detail-metrics-grid mt-4 grid gap-4 sm:grid-cols-3"></div>
 
-          <div id="detail-links" class="mt-8 flex flex-wrap gap-3"></div>
+          <div id="detail-links" class="mt-5 flex flex-wrap gap-3"></div>
         </div>
 
         <div class="detail-hero-media lg:col-span-5">
@@ -161,7 +161,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
                 <strong id="detail-device-title">{defaultCopy.title}</strong>
               </div>
               {heroImage ? (
-                <div class="project-visual project-live-visual detail-hero-visual relative min-h-[320px] overflow-hidden rounded-[1.25rem] border border-outline-variant/15 bg-white sm:min-h-[380px]">
+                <div id="detail-hero-visual" class="project-visual project-live-visual detail-hero-visual detail-adaptive-image-frame relative overflow-hidden rounded-[1.25rem] border border-outline-variant/15 bg-white">
                   <img
                     id="detail-hero-image"
                     src={assetUrl(heroImage)}
@@ -171,12 +171,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
                   />
                 </div>
               ) : (
-                <div class={`project-visual ${project.visualClass} detail-hero-visual min-h-[320px] rounded-[1.25rem] sm:min-h-[380px]`}></div>
+                <div id="detail-hero-visual" class={`project-visual ${project.visualClass} detail-hero-visual min-h-[320px] rounded-[1.25rem] sm:min-h-[380px]`}></div>
               )}
-            </div>
-            <div class="detail-floating-note detail-floating-note--top" aria-hidden="true">
-              <span class="material-symbols-outlined">auto_awesome</span>
-              <span>{project.visualTemplate ?? "minimal"}</span>
             </div>
             <div class="detail-floating-note detail-floating-note--bottom" aria-hidden="true">
               <span class="material-symbols-outlined">timeline</span>
@@ -202,6 +198,14 @@ const youtubeEmbedUrl = youtube?.youtubeId
               <p id="detail-overview-label" class="detail-section-label">Resumen</p>
             </div>
             <p id="detail-overview" class="mt-5 text-base leading-8 text-on-surface-variant">{defaultCopy.overview}</p>
+          </article>
+
+          <article id="detail-long-description-section" class="detail-feature-card detail-reveal glass-panel" hidden={!defaultCopy.longDescription} data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">article</span>
+              <p id="detail-long-description-label" class="detail-section-label">Descripcion</p>
+            </div>
+            <p id="detail-long-description" class="mt-5 whitespace-pre-line text-base leading-8 text-on-surface-variant">{defaultCopy.longDescription}</p>
           </article>
 
           <div class="grid gap-6 md:grid-cols-2">
@@ -230,49 +234,6 @@ const youtubeEmbedUrl = youtube?.youtubeId
             <div id="detail-process-list" class="detail-timeline-list mt-7 grid gap-4"></div>
           </section>
 
-          <section id="detail-images-section" class="detail-gallery-section detail-reveal glass-panel" data-detail-reveal>
-            <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p id="detail-images-eyebrow" class="detail-section-label">Capturas</p>
-                <h2 id="detail-images-title" class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Galeria del proyecto</h2>
-              </div>
-            </div>
-            <div id="detail-images-grid" class="detail-gallery-grid grid gap-5 md:grid-cols-2"></div>
-          </section>
-
-          <section id="detail-videos-section" class="detail-media-section detail-reveal glass-panel" data-detail-reveal>
-            <p id="detail-videos-title" class="detail-section-label">Videos</p>
-            <div id="detail-videos-grid" class="mt-6 grid gap-5"></div>
-          </section>
-
-          <section id="detail-youtube-section" class="detail-media-section detail-reveal glass-panel" hidden={!youtubeEmbedUrl} data-detail-reveal>
-            <p id="detail-youtube-title" class="detail-section-label">Video</p>
-            <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-black">
-              <iframe
-                id="detail-youtube-frame"
-                src={youtubeEmbedUrl}
-                title={`Video de ${defaultCopy.title}`}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                class="aspect-video w-full"
-              ></iframe>
-            </div>
-          </section>
-
-          <section id="detail-dynamic-modules-section" class="detail-modules-section detail-reveal glass-panel" hidden={dynamicModules.length === 0} data-detail-reveal>
-            <p id="detail-dynamic-modules-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Módulos</p>
-            <div id="detail-dynamic-modules-list" class="detail-module-grid mt-6 grid gap-4">
-              {dynamicModules.map((module) => (
-                <article class="detail-module-card">
-                  <p class="detail-label">{module.id}</p>
-                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">{module.title || module.id}</h3>
-                  {module.body ? <p class="mt-3 whitespace-pre-line text-sm leading-7 text-on-surface-variant">{module.body}</p> : null}
-                  {module.code ? <pre class="mt-4 overflow-auto rounded-[1rem] bg-black/55 p-4 text-xs leading-6 text-on-surface"><code>{module.code}</code></pre> : null}
-                </article>
-              ))}
-            </div>
-          </section>
         </div>
 
         <aside class="detail-insight-rail space-y-8 lg:col-span-5">
@@ -308,6 +269,70 @@ const youtubeEmbedUrl = youtube?.youtubeId
             <ul id="detail-learnings-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
           </section>
         </aside>
+
+        <div id="detail-ordered-sections" class="detail-ordered-sections">
+          <section id="detail-images-section" class="detail-gallery-section detail-carousel-section detail-reveal glass-panel lg:col-span-12" data-detail-reveal>
+            <div class="detail-carousel-heading">
+              <div>
+                <p id="detail-images-eyebrow" class="detail-section-label">Capturas</p>
+                <h2 id="detail-images-title" class="mt-3 font-headline text-2xl font-bold tracking-tight text-on-surface">Galeria del proyecto</h2>
+              </div>
+              <div class="detail-carousel-controls" aria-label="Controles de imagenes">
+                <button type="button" class="detail-carousel-button" data-carousel-target="detail-images-grid" data-carousel-direction="-1" aria-label="Imagen anterior">
+                  <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                </button>
+                <button type="button" class="detail-carousel-button" data-carousel-target="detail-images-grid" data-carousel-direction="1" aria-label="Imagen siguiente">
+                  <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                </button>
+              </div>
+            </div>
+            <div id="detail-images-grid" class="detail-carousel-row custom-scrollbar"></div>
+          </section>
+
+          <section id="detail-videos-section" class="detail-media-section detail-carousel-section detail-reveal glass-panel lg:col-span-12" data-detail-reveal>
+            <div class="detail-carousel-heading">
+              <p id="detail-videos-title" class="detail-section-label">Videos</p>
+              <div class="detail-carousel-controls" aria-label="Controles de videos">
+                <button type="button" class="detail-carousel-button" data-carousel-target="detail-videos-grid" data-carousel-direction="-1" aria-label="Video anterior">
+                  <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+                </button>
+                <button type="button" class="detail-carousel-button" data-carousel-target="detail-videos-grid" data-carousel-direction="1" aria-label="Video siguiente">
+                  <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                </button>
+              </div>
+            </div>
+            <div id="detail-videos-grid" class="detail-carousel-row custom-scrollbar"></div>
+          </section>
+
+          <section id="detail-youtube-section" class="detail-media-section detail-reveal glass-panel lg:col-span-12" hidden={!youtubeEmbedUrl} data-detail-reveal>
+            <p id="detail-youtube-title" class="detail-section-label">Video</p>
+            <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-outline-variant/15 bg-black">
+              <iframe
+                id="detail-youtube-frame"
+                src={youtubeEmbedUrl}
+                title={`Video de ${defaultCopy.title}`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                class="aspect-video w-full"
+              ></iframe>
+            </div>
+          </section>
+
+          <section id="detail-dynamic-modules-section" class="detail-modules-section detail-reveal glass-panel lg:col-span-12" hidden={dynamicModules.length === 0} data-detail-reveal>
+            <p id="detail-dynamic-modules-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Modulos</p>
+            <div id="detail-dynamic-modules-list" class="detail-module-grid mt-6 grid gap-4">
+              {dynamicModules.map((module) => (
+                <article class="detail-module-card">
+                  <p class="detail-label">{module.label || module.id}</p>
+                  <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">{module.title || module.id}</h3>
+                  {module.body ? <p class="mt-3 whitespace-pre-line text-sm leading-7 text-on-surface-variant">{module.body}</p> : null}
+                  {module.code ? <pre class="mt-4 overflow-auto rounded-[1rem] bg-black/55 p-4 text-xs leading-6 text-on-surface"><code>{module.code}</code></pre> : null}
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
       </section>
 
       {project.liveUrl ? (
@@ -388,7 +413,17 @@ const youtubeEmbedUrl = youtube?.youtubeId
       </section>
     </main>
 
-    <script define:vars={{ projectLocales: project.locales, relatedProjectCards, baseUrl, projectYear: project.year, projectPreviewImage: project.previewImage, projectVisualClass: project.visualClass, projectLiveUrl: project.liveUrl }}>
+    <div id="detail-gallery-lightbox" class="detail-gallery-lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" aria-hidden="true" hidden>
+      <figure class="detail-gallery-lightbox-frame">
+        <button id="detail-gallery-lightbox-close" type="button" class="detail-gallery-lightbox-close" data-gallery-close aria-label="Cerrar imagen">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+        <img id="detail-gallery-lightbox-image" src="" alt="" />
+        <figcaption id="detail-gallery-lightbox-caption" class="detail-gallery-lightbox-caption" hidden></figcaption>
+      </figure>
+    </div>
+
+    <script define:vars={{ projectLocales: project.locales, relatedProjectCards, baseUrl, projectYear: project.year, projectPreviewImage: project.previewImage, projectVisualClass: project.visualClass, projectLiveUrl: project.liveUrl, isStudioPreview: project.slug === "studio-preview" }}>
       (() => {
         const labels = {
           es: {
@@ -401,6 +436,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             format: "Formato",
             focus: "Enfoque",
             overview: "Resumen",
+            longDescription: "Descripcion",
             challenge: "Reto",
             solution: "Solucion",
             process: "Proceso",
@@ -436,6 +472,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             format: "Format",
             focus: "Focus",
             overview: "Overview",
+            longDescription: "Description",
             challenge: "Challenge",
             solution: "Solution",
             process: "Process",
@@ -493,6 +530,12 @@ const youtubeEmbedUrl = youtube?.youtubeId
           lang: window.localStorage.getItem("portfolio-lang") === "en" ? "en" : "es",
         };
         let revealObserver = null;
+        let liveProjectLocales = projectLocales;
+        let liveProjectYear = projectYear;
+        let liveProjectPreviewImage = projectPreviewImage;
+        let liveProjectVisualClass = projectVisualClass;
+        let liveProjectLiveUrl = projectLiveUrl;
+        let lastStudioPreviewSignature = "";
 
         const refreshRevealAnimations = () => {
           const elements = [...document.querySelectorAll("[data-detail-reveal]")];
@@ -557,6 +600,279 @@ const youtubeEmbedUrl = youtube?.youtubeId
           return `${normalizedBase}${path.replace(/^\/+/, "")}`;
         };
 
+        const syncAdaptiveImageFrames = (root = document) => {
+          root.querySelectorAll(".detail-adaptive-image-frame .project-preview-image").forEach((image) => {
+            const applyRatio = () => {
+              const frame = image.closest(".detail-adaptive-image-frame");
+              if (!frame || !image.naturalWidth || !image.naturalHeight) {
+                return;
+              }
+
+              frame.style.setProperty("--preview-image-ratio-number", String(image.naturalWidth / image.naturalHeight));
+            };
+
+            if (image.complete) {
+              applyRatio();
+              return;
+            }
+
+            image.addEventListener("load", applyRatio, { once: true });
+          });
+        };
+
+        const hasText = (value) => typeof value === "string" && value.trim().length > 0;
+        const pickText = (primary, fallback = "") => (hasText(primary) ? primary : fallback);
+        const pickLocalized = (value, lang, fallback = "") => {
+          if (typeof value === "string") {
+            return pickText(value, fallback);
+          }
+
+          if (!value) {
+            return fallback;
+          }
+
+          return pickText(value[lang], pickText(value.es, fallback));
+        };
+        const pickField = (current, fallback, key, defaultValue = "") =>
+          pickText(current?.[key], pickText(fallback?.[key], defaultValue));
+        const pickArray = (current, fallback, key) => {
+          const currentValue = current?.[key];
+          const fallbackValue = fallback?.[key];
+
+          if (Array.isArray(currentValue) && currentValue.length > 0) {
+            return currentValue;
+          }
+
+          return Array.isArray(fallbackValue) ? fallbackValue : [];
+        };
+        const defaultSectionOrder = ["images", "videos", "modules"];
+        const normalizeSectionOrder = (value) => {
+          const order = Array.isArray(value) ? value.filter((item) => defaultSectionOrder.includes(item)) : [];
+
+          return [...order, ...defaultSectionOrder.filter((item) => !order.includes(item))];
+        };
+
+        const previewLinkLabels = {
+          es: {
+            demo: "Abrir demo",
+            repo: "Repositorio",
+            docs: "Documentacion",
+            video: "Ver video",
+            custom: "Abrir enlace",
+          },
+          en: {
+            demo: "Open demo",
+            repo: "Repository",
+            docs: "Documentation",
+            video: "Watch video",
+            custom: "Open link",
+          },
+        };
+
+        const normalizePreviewModuleItem = (item, lang) => {
+          if (typeof item === "string") {
+            return item;
+          }
+
+          if (!item || typeof item !== "object") {
+            return "";
+          }
+
+          return {
+            ...item,
+            title: pickLocalized(item.title, lang, typeof item.title === "string" ? item.title : ""),
+            label: pickLocalized(item.label, lang, typeof item.label === "string" ? item.label : ""),
+            description: pickLocalized(item.description, lang, typeof item.description === "string" ? item.description : ""),
+            value: item.value || "",
+          };
+        };
+
+        const fallbackPreviewModules = (detail = {}) => {
+          const modules = {};
+          const modulesOrder = [];
+
+          if (Array.isArray(detail.modules)) {
+            detail.modules.forEach((module, index) => {
+              if (!module || typeof module !== "object") {
+                return;
+              }
+
+              const id = `studio-module-${index + 1}`;
+              modules[id] = {
+                label: "Modulo",
+                title: module.title || `Modulo ${index + 1}`,
+                body: module.body || module.description || "",
+              };
+              modulesOrder.push(id);
+            });
+          }
+
+          if (Array.isArray(detail.flow) && detail.flow.length > 0) {
+            modules.timeline = {
+              label: "Flujo",
+              title: "Flujo",
+              body: "Linea de tiempo del recorrido o proceso del proyecto.",
+              items: detail.flow.map((step) => ({
+                label: step.step,
+                title: step.title,
+                description: step.description,
+              })),
+            };
+            modulesOrder.push("timeline");
+          }
+
+          return { modules, modulesOrder };
+        };
+
+        const normalizePreviewModules = (modules, lang) => {
+          if (!modules || typeof modules !== "object") {
+            return {};
+          }
+
+          return Object.entries(modules).reduce((accumulator, [id, module]) => {
+            if (!module || typeof module !== "object") {
+              return accumulator;
+            }
+
+            accumulator[id] = {
+              ...module,
+              label: pickLocalized(module.label, lang, typeof module.label === "string" ? module.label : ""),
+              title: pickLocalized(module.title, lang, typeof module.title === "string" ? module.title : id),
+              body: pickLocalized(module.body, lang, typeof module.body === "string" ? module.body : ""),
+              items: Array.isArray(module.items)
+                ? module.items.map((item) => normalizePreviewModuleItem(item, lang)).filter(Boolean)
+                : [],
+              links: Array.isArray(module.links)
+                ? module.links.map((link) => ({
+                    ...link,
+                    label: pickLocalized(link.label, lang, typeof link.label === "string" ? link.label : link.href),
+                  }))
+                : [],
+            };
+
+            return accumulator;
+          }, {});
+        };
+
+        const buildPreviewLocale = (project, lang) => {
+          const copy = project.copy?.[lang] || project.copy?.es || {};
+          const fallbackCopy = project.copy?.es || {};
+          const detail = project.detail || {};
+          const detailEs = detail.es || {};
+          const detailLang = detail[lang] || {};
+          const title = pickField(detailLang, detailEs, "title", pickText(copy.title, pickText(fallbackCopy.title, project.slug)));
+          const accent = pickField(detailLang, detailEs, "accent", pickText(copy.accent, fallbackCopy.accent || ""));
+          const tag = pickField(detailLang, detailEs, "tag", pickText(copy.tag, fallbackCopy.tag || ""));
+          const summary = pickField(detailLang, detailEs, "summary", pickText(copy.description, fallbackCopy.description || ""));
+          const media = detail.media || {};
+          const fallbackModules = fallbackPreviewModules(detail);
+          const hasProjectModules = project.modules && Object.keys(project.modules).length > 0;
+          const modules = hasProjectModules ? project.modules : fallbackModules.modules;
+          const modulesOrder =
+            Array.isArray(project.modulesOrder) && project.modulesOrder.length > 0 ? project.modulesOrder : fallbackModules.modulesOrder;
+
+          return {
+            title,
+            accent,
+            tag,
+            description: pickText(copy.description, fallbackCopy.description || summary),
+            category: pickLocalized(detail.category, lang, project.category || ""),
+            summary,
+            overview: pickField(detailLang, detailEs, "overview"),
+            longDescription: pickField(detailLang, detailEs, "longDescription"),
+            challenge: pickField(detailLang, detailEs, "challenge"),
+            solution: pickField(detailLang, detailEs, "solution"),
+            process: pickArray(detailLang, detailEs, "process"),
+            results: pickArray(detailLang, detailEs, "results"),
+            deliverables: pickArray(detailLang, detailEs, "deliverables"),
+            learnings: pickArray(detailLang, detailEs, "learnings"),
+            interactiveTitle: pickField(detailLang, detailEs, "interactiveTitle", title),
+            interactiveDescription: pickField(detailLang, detailEs, "interactiveDescription"),
+            stack: Array.isArray(detail.stack) ? detail.stack : [],
+            metrics: Array.isArray(detail.metrics)
+              ? detail.metrics.map((metric) => ({
+                  ...metric,
+                  label: pickLocalized(metric.label, lang, typeof metric.label === "string" ? metric.label : ""),
+                }))
+              : [],
+            links: (Array.isArray(detail.links) ? detail.links : [])
+              .filter((link) => hasText(link?.href))
+              .map((link) => {
+                const type = link.type || "custom";
+
+                return {
+                  type,
+                  href: link.href,
+                  label: pickLocalized(link.label, lang, previewLinkLabels[lang][type] || previewLinkLabels[lang].custom),
+                };
+              }),
+            media: {
+              images: [
+                ...(hasText(project.previewImage) ? [{ src: project.previewImage }] : []),
+                ...(Array.isArray(media.images) ? media.images : []),
+              ]
+                .filter((image) => hasText(image?.src))
+                .map((image, index) => ({
+                  src: image.src,
+                  alt: pickLocalized(image.alt, lang, `${title} ${labels[lang].imageFallback} ${index + 1}`),
+                  caption: pickLocalized(image.caption, lang, ""),
+                })),
+              videos: (Array.isArray(media.videos) ? media.videos : [])
+                .filter((video) => hasText(video?.src))
+                .map((video, index) => ({
+                  src: video.src,
+                  poster: video.poster,
+                  title: pickLocalized(video.title, lang, `${title} video ${index + 1}`),
+                  caption: pickLocalized(video.caption, lang, ""),
+                })),
+              youtube: null,
+            },
+            modules: normalizePreviewModules(modules, lang),
+            modulesOrder: modulesOrder.filter((id) => modules[id]),
+            sectionOrder: normalizeSectionOrder(project.sectionOrder || detail.sectionOrder),
+          };
+        };
+
+        const applyStudioPreviewProject = (project) => {
+          liveProjectLocales = {
+            es: buildPreviewLocale(project, "es"),
+            en: buildPreviewLocale(project, "en"),
+          };
+          liveProjectYear = project.year || "";
+          liveProjectPreviewImage = project.detail?.previewImage || project.previewImage || "";
+          liveProjectVisualClass = project.detail?.visualClass || project.visualClass || liveProjectVisualClass;
+          liveProjectLiveUrl = project.detail?.liveUrl || project.liveUrl || "";
+          applyLanguage(state.lang, false);
+        };
+
+        const refreshStudioPreview = async () => {
+          if (!isStudioPreview) {
+            return;
+          }
+
+          try {
+            const response = await fetch(`${withBase("/project-studio-preview.json")}?t=${Date.now()}`, {
+              cache: "no-store",
+            });
+
+            if (!response.ok) {
+              return;
+            }
+
+            const project = await response.json();
+            const signature = JSON.stringify(project);
+
+            if (signature === lastStudioPreviewSignature) {
+              return;
+            }
+
+            lastStudioPreviewSignature = signature;
+            applyStudioPreviewProject(project);
+          } catch {
+            // El preview local puede no existir todavia al abrir la ruta por primera vez.
+          }
+        };
+
         const setText = (id, value) => {
           const element = document.getElementById(id);
           if (element) {
@@ -585,7 +901,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           }
         };
 
-        const getCopy = (lang) => projectLocales[lang] || projectLocales.es;
+        const getCopy = (lang) => liveProjectLocales[lang] || liveProjectLocales.es;
 
         const applyTheme = (theme, persist = true) => {
           state.theme = theme;
@@ -724,6 +1040,33 @@ const youtubeEmbedUrl = youtube?.youtubeId
             .join("");
         };
 
+        const renderHeroVisual = (image, copy) => {
+          const heroVisual = document.getElementById("detail-hero-visual");
+          if (!heroVisual) {
+            return;
+          }
+
+          const heroSrc = image?.src || liveProjectPreviewImage || "";
+          if (!heroSrc) {
+            heroVisual.className = `project-visual ${liveProjectVisualClass || "visual-brand"} detail-hero-visual min-h-[320px] rounded-[1.25rem] sm:min-h-[380px]`;
+            heroVisual.innerHTML = "";
+            return;
+          }
+
+          heroVisual.className =
+            "project-visual project-live-visual detail-hero-visual detail-adaptive-image-frame relative overflow-hidden rounded-[1.25rem] border border-outline-variant/15 bg-white";
+          heroVisual.innerHTML = `
+            <img
+              id="detail-hero-image"
+              src="${escapeHtml(withBase(heroSrc))}"
+              alt="${escapeHtml(image?.alt || `${copy.title} ${labels[state.lang].imageFallback}`)}"
+              loading="eager"
+              class="project-preview-image"
+            />
+          `;
+          syncAdaptiveImageFrames(heroVisual);
+        };
+
         const renderImages = (images = [], copy) => {
           const grid = document.getElementById("detail-images-grid");
           setSectionVisibility("detail-images-section", images.length > 0);
@@ -731,29 +1074,78 @@ const youtubeEmbedUrl = youtube?.youtubeId
             return;
           }
 
+          renderHeroVisual(images[0], copy);
+
           grid.innerHTML = images
             .map(
-              (image) => `
+              (image) => {
+                const src = withBase(image.src);
+                const alt = image.alt || labels[state.lang].imageFallback;
+                const caption = image.caption || "";
+
+                return `
                 <figure class="detail-gallery-card" data-detail-reveal>
-                  <div class="project-live-visual aspect-[16/10] bg-white">
-                    <img src="${escapeHtml(withBase(image.src))}" alt="${escapeHtml(image.alt || labels[state.lang].imageFallback)}" loading="lazy" class="project-preview-image" />
-                  </div>
+                  <button
+                    type="button"
+                    class="detail-gallery-zoom"
+                    data-gallery-image
+                    data-gallery-src="${escapeHtml(src)}"
+                    data-gallery-alt="${escapeHtml(alt)}"
+                    data-gallery-caption="${escapeHtml(caption)}"
+                    aria-label="Ampliar imagen"
+                  >
+                    <div class="project-live-visual detail-adaptive-image-frame bg-white">
+                      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" class="project-preview-image" />
+                    </div>
+                  </button>
                   ${
-                    image.caption
-                      ? `<figcaption class="detail-gallery-caption">${escapeHtml(image.caption)}</figcaption>`
+                    caption
+                      ? `<figcaption class="detail-gallery-caption">${escapeHtml(caption)}</figcaption>`
                       : ""
                   }
                 </figure>
-              `,
+              `;
+              },
             )
             .join("");
+          syncAdaptiveImageFrames(grid);
+        };
 
-          const heroImage = document.getElementById("detail-hero-image");
-          if (heroImage) {
-            const firstImage = images[0];
-            heroImage.src = withBase(firstImage?.src || projectPreviewImage || "");
-            heroImage.alt = firstImage?.alt || `${copy.title} ${labels[state.lang].imageFallback}`;
+        const getYouTubeEmbedUrl = (url = "") => {
+          if (!url) {
+            return "";
           }
+
+          try {
+            const parsedUrl = new URL(url, window.location.origin);
+            const host = parsedUrl.hostname.replace(/^www\./, "");
+
+            if (host === "youtu.be") {
+              const id = parsedUrl.pathname.replace(/^\/+/, "").split("/")[0];
+              return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}` : "";
+            }
+
+            if (host.endsWith("youtube.com")) {
+              const watchId = parsedUrl.searchParams.get("v");
+              if (watchId) {
+                return `https://www.youtube.com/embed/${encodeURIComponent(watchId)}`;
+              }
+
+              const [, kind, id] = parsedUrl.pathname.split("/");
+              if ((kind === "shorts" || kind === "embed") && id) {
+                return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+              }
+
+              const playlistId = parsedUrl.searchParams.get("list");
+              if (playlistId) {
+                return `https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(playlistId)}`;
+              }
+            }
+          } catch {
+            return "";
+          }
+
+          return "";
         };
 
         const renderVideos = (videos = []) => {
@@ -765,17 +1157,35 @@ const youtubeEmbedUrl = youtube?.youtubeId
 
           grid.innerHTML = videos
             .map(
-              (video) => `
-                <figure class="detail-gallery-card" data-detail-reveal>
-                  <video controls preload="metadata" ${video.poster ? `poster="${escapeHtml(withBase(video.poster))}"` : ""} class="aspect-video w-full bg-black">
-                    <source src="${escapeHtml(withBase(video.src))}" />
-                  </video>
-                  <figcaption class="detail-gallery-caption">
-                    <strong class="block text-on-surface">${escapeHtml(video.title)}</strong>
-                    ${video.caption ? `<span class="mt-1 block">${escapeHtml(video.caption)}</span>` : ""}
-                  </figcaption>
-                </figure>
-              `,
+              (video) => {
+                const youtubeEmbedUrl = getYouTubeEmbedUrl(video.src);
+                const media = youtubeEmbedUrl
+                  ? `
+                    <iframe
+                      src="${escapeHtml(youtubeEmbedUrl)}"
+                      title="${escapeHtml(video.title || labels[state.lang].youtube)}"
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen
+                      class="aspect-video w-full bg-black"
+                    ></iframe>
+                  `
+                  : `
+                    <video controls preload="metadata" ${video.poster ? `poster="${escapeHtml(withBase(video.poster))}"` : ""} class="aspect-video w-full bg-black">
+                      <source src="${escapeHtml(withBase(video.src))}" />
+                    </video>
+                  `;
+
+                return `
+                  <figure class="detail-gallery-card" data-detail-reveal>
+                    ${media}
+                    <figcaption class="detail-gallery-caption">
+                      <strong class="block text-on-surface">${escapeHtml(video.title)}</strong>
+                      ${video.caption ? `<span class="mt-1 block">${escapeHtml(video.caption)}</span>` : ""}
+                    </figcaption>
+                  </figure>
+                `;
+              },
             )
             .join("");
         };
@@ -856,8 +1266,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
 
         const renderDynamicModules = (copy) => {
           const container = document.getElementById("detail-dynamic-modules-list");
-          const moduleIds = copy.modulesOrder || [];
           const modules = copy.modules || {};
+          const moduleIds = Array.isArray(copy.modulesOrder) && copy.modulesOrder.length > 0 ? copy.modulesOrder : Object.keys(modules);
           const renderableModules = moduleIds
             .map((id) => ({ id, ...(modules[id] || {}) }))
             .filter((module) => module.body || module.code || module.items?.length || module.links?.length);
@@ -875,7 +1285,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
 
               return `
                 <article class="detail-module-card" data-detail-reveal>
-                  <p class="detail-label">${escapeHtml(moduleTitles[state.lang]?.[module.id] || module.id)}</p>
+                  <p class="detail-label">${escapeHtml(module.label || moduleTitles[state.lang]?.[module.id] || module.id)}</p>
                   <h3 class="mt-3 font-headline text-xl font-bold tracking-tight text-on-surface">${escapeHtml(module.title || moduleTitles[state.lang]?.[module.id] || module.id)}</h3>
                   ${module.body ? `<p class="mt-3 text-sm leading-7 text-on-surface-variant">${formatRichText(module.body)}</p>` : ""}
                   ${
@@ -904,6 +1314,28 @@ const youtubeEmbedUrl = youtube?.youtubeId
             .join("");
         };
 
+        const applySectionOrder = (sectionOrder = []) => {
+          const container = document.getElementById("detail-ordered-sections");
+          if (!container) {
+            return;
+          }
+
+          const sectionElements = {
+            images: ["detail-images-section"],
+            videos: ["detail-videos-section", "detail-youtube-section"],
+            modules: ["detail-dynamic-modules-section"],
+          };
+
+          normalizeSectionOrder(sectionOrder).forEach((sectionId) => {
+            sectionElements[sectionId]?.forEach((elementId) => {
+              const element = document.getElementById(elementId);
+              if (element) {
+                container.appendChild(element);
+              }
+            });
+          });
+        };
+
         const renderRelated = (lang) => {
           const grid = document.getElementById("detail-related-grid");
           if (!grid) {
@@ -920,7 +1352,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
                     <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.media?.images?.[0]?.alt || copy.title)}" loading="lazy" class="project-preview-image" />
                   </div>
                 `
-                : `<div class="project-visual ${escapeHtml(item.visualClass || projectVisualClass)} aspect-[16/10] rounded-[1.3rem]"></div>`;
+                : `<div class="project-visual ${escapeHtml(item.visualClass || liveProjectVisualClass)} aspect-[16/10] rounded-[1.3rem]"></div>`;
 
               return `
                 <a href="${escapeHtml(withBase(item.href || `/proyectos/${item.slug}`))}" class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
@@ -955,7 +1387,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           document.querySelector('meta[name="description"]')?.setAttribute("content", copy.summary || copy.description || "");
 
           setText("detail-back-label", label.back);
-          setText("detail-kicker", `${copy.accent} - ${projectYear}`);
+          setText("detail-kicker", `${copy.accent} - ${liveProjectYear}`);
           setText("detail-title", copy.title);
           setText("detail-device-title", copy.title);
           setText("detail-summary", copy.summary);
@@ -967,6 +1399,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
           setText("detail-focus-value", copy.accent);
           setText("detail-overview-label", label.overview);
           setText("detail-overview", copy.overview);
+          setText("detail-long-description-label", label.longDescription);
+          setText("detail-long-description", copy.longDescription);
           setText("detail-challenge-label", label.challenge);
           setText("detail-challenge", copy.challenge);
           setText("detail-solution-label", label.solution);
@@ -989,7 +1423,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           setText("detail-open-live", label.openLive);
           setText("detail-contact-cta", label.contact);
           setText("detail-live-note", label.liveNote);
-          setText("detail-iframe-url", projectLiveUrl || "");
+          setText("detail-iframe-url", liveProjectLiveUrl || "");
           setNavText("context", label.navContext);
           setNavText("process", label.navProcess);
           setNavText("impact", label.navImpact);
@@ -1013,7 +1447,9 @@ const youtubeEmbedUrl = youtube?.youtubeId
           renderVideos(copy.media?.videos || []);
           renderYoutube(copy.media || {});
           renderDynamicModules(copy);
+          applySectionOrder(copy.sectionOrder);
           renderRelated(lang);
+          setSectionVisibility("detail-long-description-section", Boolean(copy.longDescription));
           setNavVisibility("process", Array.isArray(copy.process) && copy.process.length > 0);
           setNavVisibility("impact", (Array.isArray(copy.results) && copy.results.length > 0) || (Array.isArray(copy.metrics) && copy.metrics.length > 0));
           setNavVisibility(
@@ -1022,13 +1458,98 @@ const youtubeEmbedUrl = youtube?.youtubeId
               (Array.isArray(copy.media?.images) && copy.media.images.length > 0) ||
               (Array.isArray(copy.media?.videos) && copy.media.videos.length > 0),
           );
-          setNavVisibility("live", Boolean(projectLiveUrl));
+          setNavVisibility("live", Boolean(liveProjectLiveUrl));
           applyTheme(state.theme, false);
           scheduleRevealAnimations();
         };
 
+        const openGalleryLightbox = ({ src, alt, caption }) => {
+          const lightbox = document.getElementById("detail-gallery-lightbox");
+          const image = document.getElementById("detail-gallery-lightbox-image");
+          const captionElement = document.getElementById("detail-gallery-lightbox-caption");
+          const closeButton = document.getElementById("detail-gallery-lightbox-close");
+
+          if (!lightbox || !image || !src) {
+            return;
+          }
+
+          image.setAttribute("src", src);
+          image.setAttribute("alt", alt || "");
+
+          if (captionElement) {
+            captionElement.textContent = caption || "";
+            captionElement.hidden = !caption;
+          }
+
+          lightbox.hidden = false;
+          lightbox.setAttribute("aria-hidden", "false");
+          document.body.classList.add("is-gallery-lightbox-open");
+          closeButton?.focus({ preventScroll: true });
+        };
+
+        const closeGalleryLightbox = () => {
+          const lightbox = document.getElementById("detail-gallery-lightbox");
+          const image = document.getElementById("detail-gallery-lightbox-image");
+
+          if (!lightbox || lightbox.hidden) {
+            return;
+          }
+
+          lightbox.hidden = true;
+          lightbox.setAttribute("aria-hidden", "true");
+          document.body.classList.remove("is-gallery-lightbox-open");
+          image?.setAttribute("src", "");
+        };
+
         applyTheme(state.theme, false);
         applyLanguage(state.lang, false);
+
+        document.addEventListener("click", (event) => {
+          const galleryTrigger = event.target instanceof Element ? event.target.closest("[data-gallery-image]") : null;
+          if (galleryTrigger) {
+            event.preventDefault();
+            openGalleryLightbox({
+              src: galleryTrigger.getAttribute("data-gallery-src") || "",
+              alt: galleryTrigger.getAttribute("data-gallery-alt") || "",
+              caption: galleryTrigger.getAttribute("data-gallery-caption") || "",
+            });
+            return;
+          }
+
+          const lightbox = document.getElementById("detail-gallery-lightbox");
+          const closeTrigger = event.target instanceof Element ? event.target.closest("[data-gallery-close]") : null;
+          if (closeTrigger || event.target === lightbox) {
+            event.preventDefault();
+            closeGalleryLightbox();
+            return;
+          }
+
+          const button = event.target instanceof Element ? event.target.closest("[data-carousel-target]") : null;
+          if (!button) {
+            return;
+          }
+
+          const track = document.getElementById(button.getAttribute("data-carousel-target") || "");
+          if (!track) {
+            return;
+          }
+
+          const direction = Number(button.getAttribute("data-carousel-direction") || "1");
+          const firstSlide = track.querySelector(".detail-gallery-card");
+          const gap = Number.parseFloat(window.getComputedStyle(track).columnGap || "16") || 16;
+          const distance = firstSlide ? firstSlide.getBoundingClientRect().width + gap : track.clientWidth * 0.85;
+
+          track.scrollBy({
+            left: direction * distance,
+            behavior: "smooth",
+          });
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeGalleryLightbox();
+          }
+        });
 
         themeToggle?.addEventListener("click", () => {
           state.theme = state.theme === "dark" ? "light" : "dark";
@@ -1038,6 +1559,12 @@ const youtubeEmbedUrl = youtube?.youtubeId
         languageToggle?.addEventListener("click", () => {
           applyLanguage(state.lang === "es" ? "en" : "es");
         });
+
+        if (isStudioPreview) {
+          refreshStudioPreview();
+          window.setInterval(refreshStudioPreview, 650);
+          window.addEventListener("focus", refreshStudioPreview);
+        }
       })();
     </script>
   </body>

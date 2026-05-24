@@ -1,4 +1,5 @@
 import projectCards from "./projects.generated.json";
+import projectStudioPreview from "./project-studio-preview.generated.json";
 
 const categoryLabels = {
   es: {
@@ -170,8 +171,48 @@ function normalizeModuleItem(item, lang) {
   };
 }
 
+function fallbackProjectModules(project) {
+  const detail = project.detail ?? {};
+  const modules = {};
+  const modulesOrder = [];
+
+  if (Array.isArray(detail.modules)) {
+    detail.modules.forEach((module, index) => {
+      if (!module || typeof module !== "object") {
+        return;
+      }
+
+      const id = `studio-module-${index + 1}`;
+      modules[id] = {
+        label: "Modulo",
+        title: module.title ?? `Modulo ${index + 1}`,
+        body: module.body ?? module.description ?? "",
+      };
+      modulesOrder.push(id);
+    });
+  }
+
+  if (Array.isArray(detail.flow) && detail.flow.length > 0) {
+    modules.timeline = {
+      label: "Flujo",
+      title: "Flujo",
+      body: "Linea de tiempo del recorrido o proceso del proyecto.",
+      items: detail.flow.map((step) => ({
+        label: step.step,
+        title: step.title,
+        description: step.description,
+      })),
+    };
+    modulesOrder.push("timeline");
+  }
+
+  return { modules, modulesOrder };
+}
+
 function normalizeModules(project, lang) {
-  const modules = project.modules ?? {};
+  const fallbackModules = fallbackProjectModules(project);
+  const hasProjectModules = project.modules && Object.keys(project.modules).length > 0;
+  const modules = hasProjectModules ? project.modules : fallbackModules.modules;
   const entries = Object.entries(modules);
 
   return entries.reduce((accumulator, [id, module]) => {
@@ -181,6 +222,7 @@ function normalizeModules(project, lang) {
 
     accumulator[id] = {
       ...module,
+      label: pickLocalized(module.label, lang, ""),
       title: pickLocalized(module.title, lang, id),
       body: pickLocalized(module.body, lang, ""),
       items: Array.isArray(module.items) ? module.items.map((item) => normalizeModuleItem(item, lang)).filter(Boolean) : [],
@@ -196,6 +238,21 @@ function normalizeModules(project, lang) {
   }, {});
 }
 
+function normalizeModulesOrder(project) {
+  const fallbackModules = fallbackProjectModules(project);
+  const modulesOrder = Array.isArray(project.modulesOrder) && project.modulesOrder.length > 0 ? project.modulesOrder : fallbackModules.modulesOrder;
+  const modules = project.modules && Object.keys(project.modules).length > 0 ? project.modules : fallbackModules.modules;
+
+  return modulesOrder.filter((id) => modules[id]);
+}
+
+function normalizeSectionOrder(value) {
+  const defaultOrder = ["images", "videos", "modules"];
+  const order = Array.isArray(value) ? value.filter((item) => defaultOrder.includes(item)) : [];
+
+  return [...order, ...defaultOrder.filter((item) => !order.includes(item))];
+}
+
 function buildLocale(project, lang) {
   const copy = project.copy?.[lang] ?? project.copy?.es ?? {};
   const fallbackCopy = project.copy?.es ?? {};
@@ -207,15 +264,17 @@ function buildLocale(project, lang) {
   const tag = pickField(detailLang, detailEs, "tag", pickText(copy.tag, fallbackCopy.tag ?? ""));
   const summary = pickField(detailLang, detailEs, "summary", pickText(copy.description, fallbackCopy.description ?? ""));
   const overview = pickField(detailLang, detailEs, "overview", pickText(copy.longDescription, pickText(fallbackCopy.longDescription, "")));
+  const longDescription = pickField(detailLang, detailEs, "longDescription", "");
 
   return {
     title,
     accent,
     tag,
     description: pickText(copy.description, fallbackCopy.description ?? summary),
-    category: detail.category ?? categoryLabels[lang][project.category] ?? project.category,
+    category: pickLocalized(detail.category, lang, categoryLabels[lang][project.category] ?? project.category),
     summary,
     overview,
+    longDescription,
     challenge: pickField(detailLang, detailEs, "challenge"),
     solution: pickField(detailLang, detailEs, "solution"),
     process: pickArray(detailLang, detailEs, "process"),
@@ -225,11 +284,17 @@ function buildLocale(project, lang) {
     interactiveTitle: pickField(detailLang, detailEs, "interactiveTitle", `${title}`),
     interactiveDescription: pickField(detailLang, detailEs, "interactiveDescription"),
     stack: Array.isArray(project.stack) && project.stack.length > 0 ? project.stack : Array.isArray(detail.stack) ? detail.stack : [],
-    metrics: Array.isArray(detail.metrics) ? detail.metrics : [],
+    metrics: Array.isArray(detail.metrics)
+      ? detail.metrics.map((metric) => ({
+          ...metric,
+          label: pickLocalized(metric.label, lang, metric.label ?? ""),
+        }))
+      : [],
     links: normalizeLinks(detail, project, lang),
     media: normalizeMedia(project, detail, lang, title),
     modules: normalizeModules(project, lang),
-    modulesOrder: Array.isArray(project.modulesOrder) ? project.modulesOrder : [],
+    modulesOrder: normalizeModulesOrder(project),
+    sectionOrder: normalizeSectionOrder(project.sectionOrder ?? detail.sectionOrder),
   };
 }
 
@@ -254,12 +319,16 @@ function buildProjectDetail(project) {
     status: project.status ?? "completed",
     pinned: Boolean(project.pinned),
     priority: Number.isFinite(project.priority) ? project.priority : undefined,
-    modulesOrder: Array.isArray(project.modulesOrder) ? project.modulesOrder : [],
-    modules: project.modules ?? {},
+    modulesOrder: defaultLocale.modulesOrder,
+    modules: defaultLocale.modules,
+    sectionOrder: defaultLocale.sectionOrder,
   };
 }
 
-export const projectDetails = projectCards.filter((project) => project.detail).map(buildProjectDetail);
+const previewProjectCards = import.meta.env.DEV && projectStudioPreview?.detail ? [projectStudioPreview] : [];
+const allProjectCards = [...projectCards, ...previewProjectCards];
+
+export const projectDetails = allProjectCards.filter((project) => project.detail).map(buildProjectDetail);
 
 export function getProjectDetailBySlug(slug) {
   return projectDetails.find((project) => project.slug === slug);

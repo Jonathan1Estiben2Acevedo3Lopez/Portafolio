@@ -1,0 +1,73 @@
+{
+  "category": "web",
+  "copy": {
+    "en": {
+      "accent": "Producto digital",
+      "description": "La descripcion corta aparecera aqui mientras escribes.",
+      "tag": "Web",
+      "title": "Docqee"
+    },
+    "es": {
+      "accent": "Producto digital",
+      "description": "La descripcion corta aparecera aqui mientras escribes.",
+      "tag": "Web",
+      "title": "Docqee"
+    }
+  },
+  "detail": {
+    "category": {
+      "en": "Digital product",
+      "es": "Producto digital"
+    },
+    "en": {
+      "challenge": "Define aqui el reto principal del proyecto.",
+      "deliverables": [],
+      "learnings": [],
+      "longDescription": "Empieza a escribir la descripcion larga para ver el caso completo con el diseno real del portafolio.",
+      "overview": "Escribe aqui el resumen que aparecera en el bloque Resumen de la ficha.",
+      "process": [],
+      "results": [],
+      "solution": "Describe aqui la solucion que estas construyendo.",
+      "summary": "La descripcion corta aparecera aqui mientras escribes."
+    },
+    "es": {
+      "challenge": "Define aqui el reto principal del proyecto.",
+      "deliverables": [],
+      "learnings": [],
+      "longDescription": "Empieza a escribir la descripcion larga para ver el caso completo con el diseno real del portafolio.",
+      "overview": "Escribe aqui el resumen que aparecera en el bloque Resumen de la ficha.",
+      "process": [],
+      "results": [],
+      "solution": "Describe aqui la solucion que estas construyendo.",
+      "summary": "La descripcion corta aparecera aqui mientras escribes."
+    },
+    "flow": [],
+    "links": [],
+    "media": {
+      "images": [],
+      "videos": []
+    },
+    "metrics": [],
+    "modules": [],
+    "sectionOrder": [
+      "images",
+      "videos",
+      "modules"
+    ],
+    "stack": []
+  },
+  "href": "/proyectos/studio-preview",
+  "modules": {},
+  "modulesOrder": [],
+  "order": 999999,
+  "sectionOrder": [
+    "images",
+    "videos",
+    "modules"
+  ],
+  "showInHome": false,
+  "slug": "studio-preview",
+  "status": "completed",
+  "visualClass": "visual-brand",
+  "year": "2026"
+}

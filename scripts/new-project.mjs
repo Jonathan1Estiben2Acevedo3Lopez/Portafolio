@@ -211,7 +211,7 @@ try {
   }
 
   const category = await ask("Categoria para filtro", "web");
-  const year = await ask("Anio", String(new Date().getFullYear()));
+  const year = await ask("Año", String(new Date().getFullYear()));
   const tag = await ask("Etiqueta de la card", "Web");
   const accent = await ask("Acento de la card", category);
   const description = await ask("Descripcion corta para la card");

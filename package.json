@@ -11,6 +11,7 @@
     "dev": "astro dev",
     "prebuild": "npm run sync:projects",
     "build": "astro build",
+    "studio:build": "npm --prefix project-studio run tauri build",
     "prepreview": "npm run sync:projects",
     "preview": "astro preview"
   },
