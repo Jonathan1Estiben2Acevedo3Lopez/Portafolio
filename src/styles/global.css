@@ -1360,7 +1360,7 @@ html.light .about-work-card.about-profile-card,
 .about-work-timeline {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--work-count, 4), minmax(0, 1fr));
   gap: 0.35rem;
   width: min(100%, 64rem);
   min-height: 28rem;
@@ -1411,21 +1411,21 @@ html.light .about-work-card.about-profile-card,
     box-shadow 180ms ease;
 }
 
-.about-work-item:nth-child(2) .about-work-node {
+.about-work-item:nth-child(3n + 2) .about-work-node {
   background: rgb(var(--color-primary));
   box-shadow:
     0 0 0 1px rgb(var(--color-primary) / 0.62),
     0 0 26px rgb(var(--color-primary) / 0.3);
 }
 
-.about-work-item:nth-child(3) .about-work-node {
+.about-work-item:nth-child(3n) .about-work-node {
   background: rgb(var(--color-tertiary));
   box-shadow:
     0 0 0 1px rgb(var(--color-tertiary) / 0.62),
     0 0 26px rgb(var(--color-tertiary) / 0.28);
 }
 
-.about-work-item:nth-child(4) .about-work-node {
+.about-work-item:nth-child(3n + 1) .about-work-node {
   background: rgb(var(--color-secondary));
 }
 
@@ -1440,11 +1440,11 @@ html.light .about-work-card.about-profile-card,
   transform: translateX(-50%);
 }
 
-.about-work-item:nth-child(2) .about-work-branch {
+.about-work-item:nth-child(3n + 2) .about-work-branch {
   background: rgb(var(--color-primary) / 0.62);
 }
 
-.about-work-item:nth-child(3) .about-work-branch {
+.about-work-item:nth-child(3n) .about-work-branch {
   background: rgb(var(--color-tertiary) / 0.62);
 }
 

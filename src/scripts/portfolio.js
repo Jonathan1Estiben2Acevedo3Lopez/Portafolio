@@ -1449,7 +1449,7 @@ function renderAboutWorkTimeline(group) {
         <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
       </div>
 
-      <div class="about-work-timeline" aria-label="${group.title}">
+      <div class="about-work-timeline" aria-label="${group.title}" style="--work-count: ${group.items.length || 1}">
         ${group.items
           .map(
             (item, index) => `

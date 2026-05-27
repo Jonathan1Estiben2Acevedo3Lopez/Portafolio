@@ -41,6 +41,15 @@
               "detailPlacement": "right"
             },
             {
+              "period": "2026",
+              "title": "Apoyo al desarrollo Android - Gluvi",
+              "category": "Software - Salud digital colaborativa",
+              "description": "Apoyo en el desarrollo de Gluvi, una app Android informativa de salud creada en colaboración con la Universidad Católica de Colombia, el Tecnológico de Monterrey y la University of Florida.",
+              "stack": ["Android", "Kotlin", "Jetpack Compose", "GitLab"],
+              "focus": [],
+              "skills": []
+            },
+            {
               "period": "2025",
               "title": "Mantenimiento exterior residencial - Canadá",
               "category": "Trabajo internacional",
@@ -108,6 +117,15 @@
               "focus": ["Modular architecture", "REST APIs", "Full Stack"],
               "skills": [],
               "detailPlacement": "right"
+            },
+            {
+              "period": "2026",
+              "title": "Android Development Support - Gluvi",
+              "category": "Software - Collaborative digital health",
+              "description": "Support in the development of Gluvi, an informational Android health app created in collaboration with Universidad Católica de Colombia, Tecnológico de Monterrey and the University of Florida.",
+              "stack": ["Android", "Kotlin", "Jetpack Compose", "GitLab"],
+              "focus": [],
+              "skills": []
             },
             {
               "period": "2025",
