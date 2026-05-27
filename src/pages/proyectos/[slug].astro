@@ -1581,11 +1581,27 @@ const youtubeEmbedUrl = youtube?.youtubeId
           lightbox.hidden = true;
           lightbox.setAttribute("aria-hidden", "true");
           document.body.classList.remove("is-gallery-lightbox-open");
-          image?.setAttribute("src", "");
+
+          if (image) {
+            window.setTimeout(() => {
+              if (lightbox.hidden) {
+                image.setAttribute("src", "");
+              }
+            }, 80);
+          }
         };
 
         applyTheme(state.theme, false);
         applyLanguage(state.lang, false);
+
+        document.getElementById("detail-gallery-lightbox-close")?.addEventListener(
+          "touchstart",
+          (event) => {
+            event.preventDefault();
+            closeGalleryLightbox();
+          },
+          { passive: false },
+        );
 
         document.addEventListener("click", (event) => {
           const galleryTrigger = event.target instanceof Element ? event.target.closest("[data-gallery-image]") : null;

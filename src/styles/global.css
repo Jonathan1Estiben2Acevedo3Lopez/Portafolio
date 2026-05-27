@@ -105,14 +105,14 @@ html.light {
 
 html {
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
   max-width: 100%;
   min-height: 100vh;
-  overflow-x: clip;
+  overflow-x: hidden;
   color: rgb(var(--color-on-surface));
   background:
     radial-gradient(circle at top, rgb(var(--page-glow-primary) / 0.12), transparent 28%),
@@ -1748,6 +1748,10 @@ html.light .about-work-card.about-profile-card,
 
   .about-work-detail {
     position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
     width: auto;
     max-height: none;
     overflow: visible;
@@ -1760,8 +1764,27 @@ html.light .about-work-card.about-profile-card,
     margin-top: 1rem;
     padding: 0;
     padding-top: 1rem;
+    pointer-events: auto;
     transform: none;
     visibility: visible;
+  }
+
+  .about-work-item--top .about-work-detail,
+  .about-work-item--bottom .about-work-detail,
+  .about-work-item:first-child .about-work-detail,
+  .about-work-item:last-child .about-work-detail,
+  .about-work-item.about-work-item--detail-right .about-work-detail {
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;
+  }
+
+  .about-work-description,
+  .about-work-inline-list,
+  .about-work-tech-list span {
+    overflow-wrap: anywhere;
   }
 }
 
@@ -2414,14 +2437,15 @@ body.is-gallery-lightbox-open {
   border-radius: 999px;
   color: rgb(var(--color-on-surface));
   display: inline-flex;
-  height: 2.75rem;
+  height: 3rem;
   justify-content: center;
-  position: absolute;
-  right: 0.85rem;
-  top: 0.85rem;
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  top: max(1rem, env(safe-area-inset-top));
+  touch-action: manipulation;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
-  width: 2.75rem;
-  z-index: 2;
+  width: 3rem;
+  z-index: 3;
 }
 
 .detail-gallery-lightbox-close:hover,
@@ -3672,8 +3696,36 @@ html.certificate-page-is-blackout .certificate-page-blackout {
     padding-bottom: 1.4rem;
   }
 
-  .detail-hero-media {
+  .detail-hero-copy {
+    display: contents;
+  }
+
+  .detail-kicker {
     order: 0;
+  }
+
+  .detail-display {
+    order: 1;
+  }
+
+  .detail-hero-media {
+    order: 2;
+  }
+
+  .detail-summary {
+    order: 3;
+  }
+
+  .detail-brief-grid {
+    order: 4;
+  }
+
+  #detail-metrics {
+    order: 5;
+  }
+
+  #detail-links {
+    order: 6;
   }
 
   .detail-kicker {
@@ -3687,35 +3739,40 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   }
 
   .detail-display {
+    display: block;
     font-size: 2.25rem !important;
     line-height: 1.02 !important;
     margin-top: 0.65rem !important;
-    max-height: 4.6rem;
+    max-height: none;
+    overflow: visible;
+    -webkit-line-clamp: unset;
   }
 
   .detail-summary {
-    -webkit-line-clamp: 2;
+    display: block;
     font-size: 0.94rem !important;
     line-height: 1.5rem !important;
     margin-top: 0.8rem !important;
-    max-height: 3rem;
+    max-height: none;
+    overflow: visible;
+    -webkit-line-clamp: unset;
   }
 
   .detail-brief-grid {
     gap: 0.62rem !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     margin-top: 1rem !important;
   }
 
   #detail-metrics {
     gap: 0.62rem !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     margin-top: 0.75rem !important;
   }
 
   #detail-links {
     gap: 0.52rem !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     margin-top: 0.82rem !important;
   }
 
@@ -3738,10 +3795,13 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   }
 
   .detail-brief-card p:not(.detail-label) {
+    display: block;
     font-size: 0.72rem !important;
     line-height: 1rem;
     margin-top: 0.3rem !important;
-    max-height: 2rem;
+    max-height: none;
+    overflow: visible;
+    -webkit-line-clamp: unset;
   }
 
   .detail-metric-card .text-3xl {
@@ -3750,10 +3810,13 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   }
 
   .detail-metric-card p:last-child {
+    display: block;
     font-size: 0.51rem !important;
     letter-spacing: 0.08em !important;
     margin-top: 0.25rem !important;
-    max-height: 2rem;
+    max-height: none;
+    overflow: visible;
+    -webkit-line-clamp: unset;
   }
 
   .detail-action {
@@ -3809,10 +3872,13 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   align-items: stretch;
   gap: 1.35rem;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
+  overscroll-behavior-inline: contain;
   padding-bottom: 0.65rem;
   scroll-padding-left: 0.25rem;
   scroll-snap-type: x mandatory;
+  touch-action: pan-x;
 }
 
 .projects-scroll-row > * {
