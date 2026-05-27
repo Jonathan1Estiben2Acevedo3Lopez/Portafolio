@@ -2660,6 +2660,10 @@ body.is-gallery-lightbox-open {
   gap: 0.45rem;
 }
 
+.project-card-actions--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .project-card-action {
   display: inline-flex;
   min-height: 2.35rem;

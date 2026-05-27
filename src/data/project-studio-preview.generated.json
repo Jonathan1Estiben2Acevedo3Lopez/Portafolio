@@ -2,72 +2,311 @@
   "category": "web",
   "copy": {
     "en": {
-      "accent": "Producto digital",
-      "description": "La descripcion corta aparecera aqui mientras escribes.",
-      "tag": "Web",
+      "accent": "Web plataform",
+      "description": "Docqee is a web platform that facilitates the connection between volunteer patients and dental students in supervised university clinical practices.",
+      "tag": "HealthTech",
       "title": "Docqee"
     },
     "es": {
-      "accent": "Producto digital",
-      "description": "La descripcion corta aparecera aqui mientras escribes.",
-      "tag": "Web",
+      "accent": "Plataforma web",
+      "description": "Docqee es una plataforma web que facilita la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas.",
+      "tag": "HealthTech",
       "title": "Docqee"
     }
   },
   "detail": {
     "category": {
-      "en": "Digital product",
-      "es": "Producto digital"
+      "en": "Web",
+      "es": "Web"
     },
+    "collaborators": [],
     "en": {
-      "challenge": "Define aqui el reto principal del proyecto.",
+      "challenge": "Docqee addresses the difficulty dental students face in finding volunteer patients, replacing an informal and poorly traceable process with an organized platform that connects patients and students within a supervised university environment.",
       "deliverables": [],
       "learnings": [],
-      "longDescription": "Empieza a escribir la descripcion larga para ver el caso completo con el diseno real del portafolio.",
-      "overview": "Escribe aqui el resumen que aparecera en el bloque Resumen de la ficha.",
-      "process": [],
-      "results": [],
-      "solution": "Describe aqui la solucion que estas construyendo.",
-      "summary": "La descripcion corta aparecera aqui mientras escribes."
+      "longDescription": "Docqee is a web platform designed to facilitate the connection between volunteer patients and dental students in supervised university clinical practices. The project aims to organize and make the initial connection process more traceable, allowing patients to find available students, view their profiles, send care requests, and coordinate appointments within a clear and structured digital environment. At the same time, students can manage their professional profiles, receive requests, communicate with patients, manage their schedules, and follow up on appointments. The platform also includes administrative roles for universities and overall system management, integrating features such as credentials, notifications, chat, ratings, and institutional control.",
+      "overview": "Docqee is a functional prototype of a web platform designed to facilitate the connection between volunteer patients and dental students in supervised university clinical practices. The project was created in response to the difficulty many students face when trying to find patients, a situation that can lead to academic pressure, stress, delays in their clinical practices, and personal expenses.\n\nThe platform organizes this process through user profiles, student search, request submission and acceptance, appointment management, chat, notifications, and ratings. It also includes modules for four main roles: platform administrator, university administrator, student, and patient. Its purpose is to make the interaction between patients and students clearer, more organized, and more traceable within a supervised academic environment.",
+      "process": [
+        "Problem Analysis",
+        "User Surveys",
+        "Requirements Definition",
+        "System Design",
+        "Prototype Development",
+        "Service Integration",
+        "Prototype Validation"
+      ],
+      "results": "Docqee became a functional prototype of a web platform designed to organize the connection between volunteer patients and dental students in supervised university clinical practices. Based on surveys conducted with students and potential patients, the system requirements were defined, a web architecture was designed with modules for the platform administrator, university administrator, student, and patient, and features such as profiles, student search, requests, appointments, chat, notifications, and ratings were developed. In addition, the prototype was validated through automated end-to-end tests, achieving 71 approved cases out of 71 executed, as well as a usability evaluation with 12 dental students, who positively rated the student module. Overall, the project demonstrated that the platform can serve as a functional foundation to make the interaction between patients and students clearer, more organized, and more traceable within a supervised academic environment.",
+      "solution": "Docqee offers an organized platform to connect volunteer patients with dental students, integrating search, requests, appointments, chat, ratings, and institutional management within a supervised university environment.",
+      "summary": "Docqee is a web platform that facilitates the connection between volunteer patients and dental students in supervised university clinical practices."
     },
     "es": {
-      "challenge": "Define aqui el reto principal del proyecto.",
+      "challenge": "Docqee aborda la dificultad que enfrentan los estudiantes de odontología para conseguir pacientes voluntarios, reemplazando un proceso informal y poco trazable por una plataforma organizada para conectar pacientes y estudiantes en un entorno universitario supervisado.",
       "deliverables": [],
       "learnings": [],
-      "longDescription": "Empieza a escribir la descripcion larga para ver el caso completo con el diseno real del portafolio.",
-      "overview": "Escribe aqui el resumen que aparecera en el bloque Resumen de la ficha.",
-      "process": [],
-      "results": [],
-      "solution": "Describe aqui la solucion que estas construyendo.",
-      "summary": "La descripcion corta aparecera aqui mientras escribes."
+      "longDescription": "Docqee es una plataforma web diseñada para facilitar la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas. El proyecto busca organizar y hacer más trazable el proceso de conexión inicial, permitiendo que los pacientes encuentren estudiantes disponibles, consulten sus perfiles, envíen solicitudes de atención y coordinen citas dentro de un entorno digital claro y estructurado. A su vez, los estudiantes pueden gestionar su perfil profesional, recibir solicitudes, comunicarse con pacientes, administrar su agenda y dar seguimiento a sus citas. La plataforma también contempla roles administrativos para universidades y para la gestión general del sistema, integrando funcionalidades como credenciales, notificaciones, chat, valoraciones y control institucional.",
+      "overview": "Docqee es un prototipo funcional de plataforma web orientado a facilitar la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas. El proyecto nace como respuesta a la dificultad que tienen muchos estudiantes para conseguir pacientes, situación que puede generar carga académica, estrés, retrasos en sus prácticas y costos personales.\n\nLa plataforma permite organizar este proceso mediante perfiles de usuario, búsqueda de estudiantes, envío y aceptación de solicitudes, gestión de citas, chat, notificaciones y valoraciones. Además, incluye módulos para cuatro roles principales: administrador de plataforma, administrador universitario, estudiante y paciente. Su propósito es hacer más claro, organizado y trazable el contacto entre pacientes y estudiantes dentro de un entorno académico supervisado.",
+      "process": [
+        "Análisis del problema",
+        "Encuestas a usuarios",
+        "Definición de requerimientos",
+        "Diseño del sistema",
+        "Desarrollo del prototipo",
+        "Integración de servicios",
+        "Validación del prototipo"
+      ],
+      "results": "Docqee logró consolidarse como un prototipo funcional de plataforma web para organizar la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas. A partir de encuestas aplicadas a estudiantes y posibles pacientes, se definieron los requerimientos del sistema, se diseñó una arquitectura web con módulos para administrador de plataforma, administrador universitario, estudiante y paciente, y se construyeron funcionalidades como perfiles, búsqueda de estudiantes, solicitudes, citas, chat, notificaciones y valoraciones. Además, el prototipo fue validado mediante pruebas automatizadas end-to-end, logrando 71 casos aprobados de 71 ejecutados, y una evaluación de usabilidad con 12 estudiantes de odontología, quienes valoraron favorablemente el módulo de estudiantes. En conjunto, el proyecto demostró que la plataforma puede servir como una base funcional para hacer más claro, organizado y trazable el contacto entre pacientes y estudiantes dentro de un entorno académico supervisado.",
+      "solution": "Docqee ofrece una plataforma organizada para conectar pacientes voluntarios con estudiantes de odontología, integrando búsqueda, solicitudes, citas, chat, valoraciones y gestión institucional en un entorno universitario supervisado.",
+      "summary": "Docqee es una plataforma web que facilita la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas."
     },
     "flow": [],
-    "links": [],
-    "media": {
-      "images": [],
-      "videos": []
-    },
-    "metrics": [],
-    "modules": [],
-    "sectionOrder": [
-      "images",
-      "videos",
-      "modules"
+    "links": [
+      {
+        "href": "https://docqee.vercel.app/",
+        "label": {
+          "en": "Open demo",
+          "es": "Abrir demo"
+        },
+        "type": "demo"
+      },
+      {
+        "href": "https://github.com/SebasGil-Dev/Docqee",
+        "label": {
+          "en": "Repository",
+          "es": "Repositorio"
+        },
+        "type": "repo"
+      }
     ],
-    "stack": []
+    "liveUrl": "https://docqee.vercel.app/",
+    "media": {
+      "images": [
+        {
+          "alt": {
+            "en": "Docqee",
+            "es": "Docqee"
+          },
+          "src": "/project-assets/docqee/captura-de-pantalla-2026-05-24-112454.png"
+        },
+        {
+          "alt": {
+            "en": "Docqee",
+            "es": "Docqee"
+          },
+          "src": "/project-assets/docqee/captura-de-pantalla-2026-05-24-112532.png"
+        },
+        {
+          "alt": {
+            "en": "Docqee",
+            "es": "Docqee"
+          },
+          "src": "/project-assets/docqee/captura-de-pantalla-2026-05-24-112612.png"
+        },
+        {
+          "alt": {
+            "en": "Docqee",
+            "es": "Docqee"
+          },
+          "src": "/project-assets/docqee/captura-de-pantalla-2026-05-24-112754.png"
+        }
+      ],
+      "videos": [
+        {
+          "src": "https://youtu.be/Af-k1aOvczE?si=b7aJAS1bpPGaJV63",
+          "title": {
+            "en": "Landing Page - Docqee",
+            "es": "Landing Page - Docqee"
+          }
+        },
+        {
+          "src": "https://youtu.be/BlH9qCSnazs?si=D7mscT3Z3JBkCLU8",
+          "title": {
+            "en": "Authentication module - Docqee",
+            "es": "Módulo de autenticación - Docqee"
+          }
+        },
+        {
+          "src": "https://youtu.be/OWigQkVn2vA?si=Hq5Zux8r3qDaMIGh",
+          "title": {
+            "en": "Platform administrator module - Docqee",
+            "es": "Módulo administrador de la plataforma - Docqee"
+          }
+        },
+        {
+          "src": "https://youtu.be/xCd1O0xSVC0?si=dkugNsnSaQKIBW33",
+          "title": {
+            "en": "University administrator module - Docqee",
+            "es": "Módulo administrador universitario - Docqee"
+          }
+        },
+        {
+          "src": "https://youtu.be/GctVDFm_pY0?si=IGksneGjAcoFqVhX",
+          "title": {
+            "en": "Student Module - Docqee",
+            "es": "Módulo estudiante - Docqee"
+          }
+        },
+        {
+          "src": "https://youtu.be/_gWlDoxb6UE?si=IVrc3x40rGDco9uH",
+          "title": {
+            "en": "Patient module - Docqee",
+            "es": "Módulo paciente - Docqee"
+          }
+        }
+      ]
+    },
+    "metrics": [
+      {
+        "label": {
+          "en": "Roles",
+          "es": "Roles"
+        },
+        "value": "4"
+      }
+    ],
+    "modules": [
+      {
+        "description": {
+          "en": "The Platform Administrator Module allows centralized management of the universities registered in Docqee. Through this module, new institutions can be registered, their basic information can be reviewed, universities can be activated or deactivated, and the initial credentials of university administrators can be managed. Its main purpose is to control institutional access to the platform and keep the university onboarding process organized within the system.",
+          "es": "El módulo de Administrador de Plataforma permite gestionar de forma centralizada las universidades registradas en Docqee. Desde este módulo se pueden registrar nuevas instituciones, consultar su información básica, activar o inactivar universidades y administrar las credenciales iniciales de los administradores universitarios. Su función principal es controlar el acceso institucional a la plataforma y mantener organizada la vinculación de universidades dentro del sistema."
+        },
+        "title": {
+          "en": "Platform Administrator Module",
+          "es": "Módulo Administrador de Plataforma"
+        }
+      },
+      {
+        "description": {
+          "en": "The University Administrator Module allows each university to manage its internal information within Docqee. Through this module, the university administrator can update institutional information, manage campuses, register students and teachers, activate or deactivate users, perform bulk uploads using Excel templates, and send access credentials. Its main purpose is to organize the university’s academic base so that students, teachers, and campuses are properly enabled within the platform.",
+          "es": "El módulo de Administrador Universitario permite gestionar la información interna de cada universidad dentro de Docqee. Desde este módulo se puede actualizar la información institucional, administrar sedes, registrar estudiantes y docentes, activar o inactivar usuarios, realizar cargas masivas mediante plantillas Excel y enviar credenciales de acceso. Su función principal es organizar la base académica de la universidad para que estudiantes, docentes y sedes estén correctamente habilitados dentro de la plataforma."
+        },
+        "title": {
+          "en": "University Administrator Module",
+          "es": "Módulo Administrador Universitario"
+        }
+      },
+      {
+        "description": {
+          "en": "The Student Module allows dental students to manage their participation within Docqee. Through this module, students can set up their professional profile, indicate the treatments they offer, associate care locations, review patient requests, accept or reject requests, communicate through chat, schedule appointments, check their agenda, receive notifications, and rate completed appointments. Its main purpose is to centralize the student’s activities and support the connection with volunteer patients within a supervised university environment.",
+          "es": "El módulo de Estudiante permite que el estudiante de odontología gestione su participación dentro de Docqee. Desde este módulo puede configurar su perfil profesional, indicar los tratamientos que ofrece, asociar sedes de atención, revisar solicitudes de pacientes, aceptar o rechazar solicitudes, comunicarse mediante chat, agendar citas, consultar su agenda, recibir notificaciones y valorar la atención realizada. Su función principal es centralizar las actividades del estudiante para facilitar la conexión con pacientes voluntarios dentro de un entorno universitario supervisado."
+        },
+        "title": {
+          "en": "Student Module",
+          "es": "Módulo Estudiante"
+        }
+      },
+      {
+        "description": {
+          "en": "The Patient Module allows volunteer patients to use Docqee to find supervised university dental care. Through this module, patients can register, create and update their profile, search for students using filters, review available student profiles, send care requests, manage appointments, communicate through chat with accepted students, receive notifications, and rate the care received. Its main purpose is to help patients connect with dental students in a clearer, more organized, and safer way within a supervised university environment.",
+          "es": "El módulo de Paciente permite que los pacientes voluntarios participen en Docqee para encontrar atención odontológica universitaria supervisada. Desde este módulo, el paciente puede registrarse, crear y actualizar su perfil, buscar estudiantes mediante filtros, revisar perfiles disponibles, enviar solicitudes de atención, gestionar citas, comunicarse por chat con estudiantes aceptados, recibir notificaciones y valorar la atención recibida. Su función principal es facilitar que los pacientes encuentren estudiantes de odontología de forma más clara, organizada y segura dentro de un entorno universitario supervisado."
+        },
+        "title": {
+          "en": "Patient Module",
+          "es": "Módulo Paciente"
+        }
+      }
+    ],
+    "previewImage": "/project-assets/docqee/captura-de-pantalla-2026-05-24-094147-1.png",
+    "sectionOrder": [
+      "modules",
+      "images",
+      "videos"
+    ],
+    "stack": [
+      "React",
+      "TypeScript",
+      "JavaScript",
+      "HTML",
+      "Tailwind CSS",
+      "Node.js",
+      "Vite",
+      "Next.js",
+      "Supabase",
+      "PostgreSQL",
+      "Prisma",
+      "REST API",
+      "Git",
+      "GitHub",
+      "Vercel"
+    ]
   },
+  "featuredLevel": "featured",
+  "githubUrl": "https://github.com/SebasGil-Dev/Docqee",
   "href": "/proyectos/studio-preview",
-  "modules": {},
-  "modulesOrder": [],
+  "liveUrl": "https://docqee.vercel.app/",
+  "modules": {
+    "studio-module-1": {
+      "body": {
+        "en": "The Platform Administrator Module allows centralized management of the universities registered in Docqee. Through this module, new institutions can be registered, their basic information can be reviewed, universities can be activated or deactivated, and the initial credentials of university administrators can be managed. Its main purpose is to control institutional access to the platform and keep the university onboarding process organized within the system.",
+        "es": "El módulo de Administrador de Plataforma permite gestionar de forma centralizada las universidades registradas en Docqee. Desde este módulo se pueden registrar nuevas instituciones, consultar su información básica, activar o inactivar universidades y administrar las credenciales iniciales de los administradores universitarios. Su función principal es controlar el acceso institucional a la plataforma y mantener organizada la vinculación de universidades dentro del sistema."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Platform Administrator Module",
+        "es": "Módulo Administrador de Plataforma"
+      }
+    },
+    "studio-module-2": {
+      "body": {
+        "en": "The University Administrator Module allows each university to manage its internal information within Docqee. Through this module, the university administrator can update institutional information, manage campuses, register students and teachers, activate or deactivate users, perform bulk uploads using Excel templates, and send access credentials. Its main purpose is to organize the university’s academic base so that students, teachers, and campuses are properly enabled within the platform.",
+        "es": "El módulo de Administrador Universitario permite gestionar la información interna de cada universidad dentro de Docqee. Desde este módulo se puede actualizar la información institucional, administrar sedes, registrar estudiantes y docentes, activar o inactivar usuarios, realizar cargas masivas mediante plantillas Excel y enviar credenciales de acceso. Su función principal es organizar la base académica de la universidad para que estudiantes, docentes y sedes estén correctamente habilitados dentro de la plataforma."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "University Administrator Module",
+        "es": "Módulo Administrador Universitario"
+      }
+    },
+    "studio-module-3": {
+      "body": {
+        "en": "The Student Module allows dental students to manage their participation within Docqee. Through this module, students can set up their professional profile, indicate the treatments they offer, associate care locations, review patient requests, accept or reject requests, communicate through chat, schedule appointments, check their agenda, receive notifications, and rate completed appointments. Its main purpose is to centralize the student’s activities and support the connection with volunteer patients within a supervised university environment.",
+        "es": "El módulo de Estudiante permite que el estudiante de odontología gestione su participación dentro de Docqee. Desde este módulo puede configurar su perfil profesional, indicar los tratamientos que ofrece, asociar sedes de atención, revisar solicitudes de pacientes, aceptar o rechazar solicitudes, comunicarse mediante chat, agendar citas, consultar su agenda, recibir notificaciones y valorar la atención realizada. Su función principal es centralizar las actividades del estudiante para facilitar la conexión con pacientes voluntarios dentro de un entorno universitario supervisado."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Student Module",
+        "es": "Módulo Estudiante"
+      }
+    },
+    "studio-module-4": {
+      "body": {
+        "en": "The Patient Module allows volunteer patients to use Docqee to find supervised university dental care. Through this module, patients can register, create and update their profile, search for students using filters, review available student profiles, send care requests, manage appointments, communicate through chat with accepted students, receive notifications, and rate the care received. Its main purpose is to help patients connect with dental students in a clearer, more organized, and safer way within a supervised university environment.",
+        "es": "El módulo de Paciente permite que los pacientes voluntarios participen en Docqee para encontrar atención odontológica universitaria supervisada. Desde este módulo, el paciente puede registrarse, crear y actualizar su perfil, buscar estudiantes mediante filtros, revisar perfiles disponibles, enviar solicitudes de atención, gestionar citas, comunicarse por chat con estudiantes aceptados, recibir notificaciones y valorar la atención recibida. Su función principal es facilitar que los pacientes encuentren estudiantes de odontología de forma más clara, organizada y segura dentro de un entorno universitario supervisado."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Patient Module",
+        "es": "Módulo Paciente"
+      }
+    }
+  },
+  "modulesOrder": [
+    "studio-module-1",
+    "studio-module-2",
+    "studio-module-3",
+    "studio-module-4"
+  ],
   "order": 999999,
+  "previewImage": "/project-assets/docqee/captura-de-pantalla-2026-05-24-094147-1.png",
   "sectionOrder": [
+    "modules",
     "images",
-    "videos",
-    "modules"
+    "videos"
   ],
   "showInHome": false,
   "slug": "studio-preview",
   "status": "completed",
-  "visualClass": "visual-brand",
+  "visualClass": "visual-system",
   "year": "2026"
 }

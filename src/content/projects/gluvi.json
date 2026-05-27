@@ -1,0 +1,371 @@
+{
+  "category": "mobile-app",
+  "copy": {
+    "en": {
+      "accent": "Digital health",
+      "description": "Informational Android health app with orientative tests about type 1 diabetes and metabolic syndrome.",
+      "tag": "Android app",
+      "title": "Gluvi"
+    },
+    "es": {
+      "accent": "Salud digital",
+      "description": "App Android informativa de salud con tests orientativos sobre diabetes tipo 1 y sindrome metabolico.",
+      "tag": "App Android",
+      "title": "Gluvi"
+    }
+  },
+  "detail": {
+    "category": {
+      "en": "Mobile app",
+      "es": "App movil"
+    },
+    "collaborators": [
+      {
+        "name": "Universidad Catolica de Colombia",
+        "role": {
+          "en": "Collaborating institution",
+          "es": "Institucion colaboradora"
+        }
+      },
+      {
+        "name": "Tecnologico de Monterrey",
+        "role": {
+          "en": "Collaborating institution",
+          "es": "Institucion colaboradora"
+        }
+      },
+      {
+        "name": "University of Florida",
+        "role": {
+          "en": "Collaborating institution",
+          "es": "Institucion colaboradora"
+        }
+      }
+    ],
+    "en": {
+      "challenge": "The challenge was to build a clear and responsible app for a sensitive health topic, separating orientative information from medical diagnosis and enabling several team members to work by modules from GitLab.",
+      "deliverables": [
+        "Compilable base Android project",
+        "Configured GitLab repository",
+        "Welcome and home screen",
+        "Main bottom navigation",
+        "Base screens for modules",
+        "Collaborators module",
+        "Spanish/English base language resources",
+        "README and collaborative structure"
+      ],
+      "learnings": [
+        "In health projects",
+        "communicating orientative scope and avoiding diagnostic promises is essential.",
+        "Separating navigation",
+        "data",
+        "models",
+        "and logic makes team integration easier.",
+        "GitLab helps organize deliveries through branches",
+        "issues",
+        "and merge requests.",
+        "Bilingual support should be planned from the beginning to avoid hardcoded interface text."
+      ],
+      "longDescription": "My participation focused on the Android project base: creating the initial structure, configuring the GitLab repository, organizing navigation, implementing the home screen, connecting the collaborators module, and preparing the language base. From that structure, the team integrated tests, risk logic, results, and educational content.",
+      "overview": "Gluvi is an informational Android health app developed as a collaborative project between Universidad Catolica de Colombia, Tecnologico de Monterrey, and the University of Florida. The app lets a person complete orientative tests about type 1 diabetes and metabolic syndrome, review their risk level, and read educational facts, concepts, and recommendations.\n\nThe application is not diagnostic: its own content states that results do not replace a professional medical evaluation. Its purpose is to guide, educate, and help users identify signs or factors they should review with health professionals.",
+      "process": [
+        "Defined roles and functional scope",
+        "Created the base project in Android Studio",
+        "Configured the repository and GitLab workflow",
+        "Implemented welcome, main navigation, and home screens",
+        "Built base screens for team module integration",
+        "Integrated local tests, scoring, and risk results",
+        "Connected the collaborators module with GitLab Pages",
+        "Prepared Spanish and English language resources"
+      ],
+      "results": "The result was a functional Android app that integrates main navigation, orientative tests, risk evaluation, educational content, and project collaborators. Its architecture separates data, models, logic, screens, and navigation, supporting collaborative work and future evolution.",
+      "solution": "An Android app was implemented with Jetpack Compose, bottom navigation, local data for tests and educational content, separated risk calculation functions, and a collaborators module connected to a remote JSON through Retrofit and Coil.",
+      "summary": "Informational Android health app with orientative tests about type 1 diabetes and metabolic syndrome."
+    },
+    "es": {
+      "challenge": "El reto fue construir una app clara y responsable para un tema sensible de salud, separando informacion orientativa de diagnostico medico y permitiendo que varios integrantes trabajaran por modulos desde GitLab.",
+      "deliverables": [
+        "Proyecto Android base compilable",
+        "Repositorio GitLab configurado",
+        "Pantalla de bienvenida e inicio",
+        "Navegacion inferior principal",
+        "Pantallas base para modulos",
+        "Modulo de colaboradores",
+        "Recursos base de idioma espanol/ingles",
+        "README y estructura colaborativa"
+      ],
+      "learnings": [
+        "En proyectos de salud es clave comunicar el alcance orientativo y evitar promesas diagnosticas.",
+        "Separar navegacion",
+        "datos",
+        "modelos y logica facilita integrar el trabajo de un equipo.",
+        "GitLab permite ordenar entregas por ramas",
+        "issues y merge requests.",
+        "El soporte bilingue debe planearse desde el inicio para evitar textos quemados en la interfaz."
+      ],
+      "longDescription": "Mi participacion se centro en la base del proyecto Android: crear la estructura inicial, configurar el repositorio en GitLab, organizar la navegacion, implementar la pantalla de inicio, conectar el modulo de colaboradores y preparar la base de idioma. A partir de esa estructura, el equipo pudo integrar los tests, la logica de riesgo, los resultados y el contenido educativo.",
+      "overview": "Gluvi es una aplicacion Android informativa de salud desarrollada como un proyecto colaborativo entre la Universidad Catolica de Colombia, el Tecnologico de Monterrey y la University of Florida. La app permite que una persona realice tests orientativos sobre diabetes tipo 1 y sindrome metabolico, consulte su nivel de riesgo y lea datos educativos, conceptos y recomendaciones.\n\nLa aplicacion no es diagnostica: su propio contenido aclara que los resultados no reemplazan una valoracion medica profesional. Su enfoque es orientar, educar y facilitar que el usuario identifique senales o factores que deberia revisar con personal de salud.",
+      "process": [
+        "Definicion de roles y alcance funcional del proyecto",
+        "Creacion del proyecto base en Android Studio",
+        "Configuracion del repositorio y flujo de trabajo en GitLab",
+        "Implementacion de bienvenida, navegacion principal e inicio",
+        "Construccion de pantallas base para integrar los modulos del equipo",
+        "Integracion de tests locales, puntajes y resultados de riesgo",
+        "Conexion del modulo de colaboradores con GitLab Pages",
+        "Preparacion de recursos de idioma para espanol e ingles"
+      ],
+      "results": "El resultado fue una app Android funcional que integra navegacion principal, tests orientativos, evaluacion de riesgo, contenido educativo y colaboradores del proyecto. La arquitectura separa datos, modelos, logica, pantallas y navegacion, lo que facilita el trabajo colaborativo y la evolucion del proyecto.",
+      "solution": "Se implemento una app Android con Jetpack Compose, navegacion inferior, datos locales para tests y contenido educativo, calculo de riesgo en funciones separadas, y un modulo de colaboradores conectado a un JSON remoto con Retrofit y Coil.",
+      "summary": "App Android informativa de salud con tests orientativos sobre diabetes tipo 1 y sindrome metabolico."
+    },
+    "flow": [],
+    "links": [
+      {
+        "href": "https://gitlab.com/JonathanAcevedo/gluvi",
+        "label": {
+          "en": "Repository",
+          "es": "Repositorio"
+        },
+        "type": "repo"
+      }
+    ],
+    "media": {
+      "images": [
+        {
+          "alt": {
+            "en": "Gluvi welcome screen",
+            "es": "Pantalla de bienvenida de Gluvi"
+          },
+          "caption": {
+            "en": "App start with logo, welcome message, and informational disclaimer.",
+            "es": "Inicio de la app con logo, mensaje de bienvenida y aviso informativo."
+          },
+          "src": "/project-assets/gluvi/welcome.png"
+        },
+        {
+          "alt": {
+            "en": "Test selection in Gluvi",
+            "es": "Seleccion de test en Gluvi"
+          },
+          "caption": {
+            "en": "Selection between the type 1 diabetes test and metabolic syndrome test.",
+            "es": "Seleccion entre test de diabetes tipo 1 y test de sindrome metabolico."
+          },
+          "src": "/project-assets/gluvi/test-selection.png"
+        },
+        {
+          "alt": {
+            "en": "Type 1 diabetes test question",
+            "es": "Pregunta del test de diabetes tipo 1"
+          },
+          "caption": {
+            "en": "Question screen with local answer options and quiz progress.",
+            "es": "Pantalla de preguntas con opciones locales y progreso del cuestionario."
+          },
+          "src": "/project-assets/gluvi/quiz-question.png"
+        },
+        {
+          "alt": {
+            "en": "Risk result in Gluvi",
+            "es": "Resultado de riesgo en Gluvi"
+          },
+          "caption": {
+            "en": "Orientative result with risk level and medical evaluation disclaimer.",
+            "es": "Resultado orientativo con nivel de riesgo y aviso de valoracion medica."
+          },
+          "src": "/project-assets/gluvi/risk-result.png"
+        },
+        {
+          "alt": {
+            "en": "Curiosities in Gluvi",
+            "es": "Datos curiosos en Gluvi"
+          },
+          "caption": {
+            "en": "Educational content filterable by disease and category.",
+            "es": "Contenido educativo filtrable por enfermedad y categoria."
+          },
+          "src": "/project-assets/gluvi/curiosities.png"
+        },
+        {
+          "alt": {
+            "en": "Collaborators by institution view",
+            "es": "Vista de colaboradores por institucion"
+          },
+          "caption": {
+            "en": "Collaborators module organized by participating institutions.",
+            "es": "Modulo de colaboradores organizado por instituciones participantes."
+          },
+          "src": "/project-assets/gluvi/collaborators-overview.png"
+        },
+        {
+          "alt": {
+            "en": "Gluvi collaborators detail",
+            "es": "Detalle de colaboradores de Gluvi"
+          },
+          "caption": {
+            "en": "Expanded detail of team members and roles.",
+            "es": "Detalle expandido de integrantes y roles del equipo."
+          },
+          "src": "/project-assets/gluvi/collaborators-detail.png"
+        }
+      ],
+      "videos": []
+    },
+    "metrics": [
+      {
+        "label": {
+          "en": "Tests",
+          "es": "Tests"
+        },
+        "value": "2"
+      },
+      {
+        "label": {
+          "en": "Sections",
+          "es": "Secciones"
+        },
+        "value": "4"
+      },
+      {
+        "label": {
+          "en": "Institutions",
+          "es": "Instituciones"
+        },
+        "value": "3"
+      }
+    ],
+    "modules": [
+      {
+        "description": {
+          "en": "Welcome screen and bottom navigation with access to Home, Tests, Curiosities, and Collaborators.",
+          "es": "Pantalla de bienvenida y barra inferior con acceso a Inicio, Tests, Datos curiosos y Colaboradores."
+        },
+        "title": {
+          "en": "Main navigation",
+          "es": "Navegacion principal"
+        }
+      },
+      {
+        "description": {
+          "en": "Local questionnaires for type 1 diabetes and metabolic syndrome, with scored answers and diagnostic criteria.",
+          "es": "Cuestionarios locales para diabetes tipo 1 y sindrome metabolico, con respuestas puntuadas y criterios diagnosticos."
+        },
+        "title": {
+          "en": "Orientative tests",
+          "es": "Tests orientativos"
+        }
+      },
+      {
+        "description": {
+          "en": "Score calculation and generation of low, moderate, high, or urgency risk levels according to user answers.",
+          "es": "Calculo de puntajes y generacion de niveles de riesgo bajo, moderado, alto o urgencia segun las respuestas del usuario."
+        },
+        "title": {
+          "en": "Risk results",
+          "es": "Resultados de riesgo"
+        }
+      },
+      {
+        "description": {
+          "en": "Module connected to GitLab Pages through Retrofit, with in-memory cache and image loading through Coil.",
+          "es": "Modulo conectado a GitLab Pages mediante Retrofit, con cache en memoria y carga de imagenes con Coil."
+        },
+        "title": {
+          "en": "Collaborators",
+          "es": "Colaboradores"
+        }
+      }
+    ],
+    "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.png",
+    "sectionOrder": [
+      "images",
+      "videos",
+      "modules"
+    ],
+    "stack": [
+      "Android",
+      "Kotlin",
+      "Jetpack Compose",
+      "GitLab"
+    ]
+  },
+  "featuredLevel": "featured",
+  "githubUrl": "https://gitlab.com/JonathanAcevedo/gluvi",
+  "href": "/proyectos/gluvi",
+  "modules": {
+    "studio-module-1": {
+      "body": {
+        "en": "Welcome screen and bottom navigation with access to Home, Tests, Curiosities, and Collaborators.",
+        "es": "Pantalla de bienvenida y barra inferior con acceso a Inicio, Tests, Datos curiosos y Colaboradores."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Main navigation",
+        "es": "Navegacion principal"
+      }
+    },
+    "studio-module-2": {
+      "body": {
+        "en": "Local questionnaires for type 1 diabetes and metabolic syndrome, with scored answers and diagnostic criteria.",
+        "es": "Cuestionarios locales para diabetes tipo 1 y sindrome metabolico, con respuestas puntuadas y criterios diagnosticos."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Orientative tests",
+        "es": "Tests orientativos"
+      }
+    },
+    "studio-module-3": {
+      "body": {
+        "en": "Score calculation and generation of low, moderate, high, or urgency risk levels according to user answers.",
+        "es": "Calculo de puntajes y generacion de niveles de riesgo bajo, moderado, alto o urgencia segun las respuestas del usuario."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Risk results",
+        "es": "Resultados de riesgo"
+      }
+    },
+    "studio-module-4": {
+      "body": {
+        "en": "Module connected to GitLab Pages through Retrofit, with in-memory cache and image loading through Coil.",
+        "es": "Modulo conectado a GitLab Pages mediante Retrofit, con cache en memoria y carga de imagenes con Coil."
+      },
+      "label": {
+        "en": "Module",
+        "es": "Modulo"
+      },
+      "title": {
+        "en": "Collaborators",
+        "es": "Colaboradores"
+      }
+    }
+  },
+  "modulesOrder": [
+    "studio-module-1",
+    "studio-module-2",
+    "studio-module-3",
+    "studio-module-4"
+  ],
+  "order": 30,
+  "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.png",
+  "sectionOrder": [
+    "images",
+    "videos",
+    "modules"
+  ],
+  "slug": "gluvi",
+  "status": "completed",
+  "visualClass": "visual-system",
+  "year": "2026"
+}

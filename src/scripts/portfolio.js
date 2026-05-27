@@ -1059,12 +1059,11 @@ function renderProjects() {
       }
 
       return `
-        <a
+        <article
           class="project-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
-          href="${detailHref}"
         >
           ${renderProjectVisual(item, imageAlt)}
-          <div class="flex flex-col px-1.5 pb-1 pt-4">
+          <div class="flex flex-1 flex-col px-1.5 pb-1 pt-4">
             <div class="flex items-start justify-between gap-4">
               <div>
                 <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.accent}</p>
@@ -1078,8 +1077,16 @@ function renderProjects() {
               <span class="h-1 w-1 rounded-full bg-outline"></span>
               <span>${item.year}</span>
             </div>
+            <div class="project-card-actions project-card-actions--single mt-auto pt-4">
+              <a
+                class="project-card-action border border-outline-variant/22 text-on-surface transition hover:border-primary/45 hover:text-primary"
+                href="${detailHref}"
+              >
+                ${projectCopy.detailCta}
+              </a>
+            </div>
           </div>
-        </a>
+        </article>
       `;
     })
     .join("");
