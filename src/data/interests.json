@@ -1,221 +1,26 @@
 [
   {
-    "filter": "movies",
-    "visualClass": "visual-cinema",
-    "copy": {
-      "es": {
-        "category": "Películas",
-        "title": "Dune: Part Two",
-        "meta": "Sci-fi / escala visual",
-        "description": "Me atrae por la manera en que combina silencio, tensión y composición monumental.",
-        "body": "Es una referencia clara cuando pienso en atmósfera, contraste y escenas que se sienten grandes sin saturarse. Me gusta cómo construye impacto desde la contención.",
-        "tags": ["Dirección", "Escala", "Atmósfera"]
-      },
-      "en": {
-        "category": "Movies",
-        "title": "Dune: Part Two",
-        "meta": "Sci-fi / visual scale",
-        "description": "I like how it combines silence, tension and monumental composition.",
-        "body": "It is a clear reference when I think about atmosphere, contrast and scenes that feel huge without becoming noisy. A lot of its impact comes from restraint.",
-        "tags": ["Direction", "Scale", "Atmosphere"]
-      }
-    }
-  },
-  {
-    "filter": "movies",
-    "visualClass": "visual-cinema",
-    "copy": {
-      "es": {
-        "category": "Películas",
-        "title": "Blade Runner 2049",
-        "meta": "Ciencia ficción / ritmo",
-        "description": "Una película que me sigue pareciendo ejemplar en color, profundidad y ritmo contemplativo.",
-        "body": "La tomo como referencia por su manejo de la luz, la arquitectura visual y la forma en que cada plano sostiene identidad sin perder claridad.",
-        "tags": ["Color", "Profundidad", "Ritmo"]
-      },
-      "en": {
-        "category": "Movies",
-        "title": "Blade Runner 2049",
-        "meta": "Science fiction / pacing",
-        "description": "It still feels exemplary to me in color, depth and contemplative rhythm.",
-        "body": "I keep it as a reference because of its lighting, architectural framing and the way every shot carries identity without losing clarity.",
-        "tags": ["Color", "Depth", "Pacing"]
-      }
-    }
-  },
-  {
-    "filter": "series",
-    "visualClass": "visual-series",
-    "copy": {
-      "es": {
-        "category": "Series",
-        "title": "Dark",
-        "meta": "Serie / estructura narrativa",
-        "description": "Me interesa por su construcción de tensión y por la forma en que ordena sistemas complejos sin perder misterio.",
-        "body": "Cuando una historia tiene muchas capas, Dark demuestra que se puede sostener complejidad con una identidad muy coherente. Eso conecta mucho con cómo pienso sistemas y flujos.",
-        "tags": ["Sistema", "Tensión", "Coherencia"]
-      },
-      "en": {
-        "category": "Series",
-        "title": "Dark",
-        "meta": "Series / narrative structure",
-        "description": "I am drawn to how it organizes complex systems without losing mystery.",
-        "body": "When a story has many layers, Dark shows that complexity can still feel coherent. That connects a lot with how I think about systems and flows.",
-        "tags": ["System", "Tension", "Coherence"]
-      }
-    }
-  },
-  {
-    "filter": "series",
-    "visualClass": "visual-series",
-    "copy": {
-      "es": {
-        "category": "Series",
-        "title": "Mr. Robot",
-        "meta": "Serie / lenguaje visual",
-        "description": "Me gusta su encuadre raro, su incomodidad visual y la forma en que usa composición para contar el estado interno.",
-        "body": "Es una referencia fuerte cuando pienso en interfaces con personalidad. No busca verse neutra: busca transmitir tensión y punto de vista.",
-        "tags": ["Encuadre", "Tono", "Personalidad"]
-      },
-      "en": {
-        "category": "Series",
-        "title": "Mr. Robot",
-        "meta": "Series / visual language",
-        "description": "I like its awkward framing and the way composition communicates internal state.",
-        "body": "It is a strong reference when I think about interfaces with personality. It does not try to feel neutral. It tries to convey tension and point of view.",
-        "tags": ["Framing", "Tone", "Personality"]
-      }
-    }
-  },
-  {
-    "filter": "anime",
-    "visualClass": "visual-anime",
-    "copy": {
-      "es": {
-        "category": "Animes",
-        "title": "Vinland Saga",
-        "meta": "Anime / evolución de personaje",
-        "description": "Me interesa por su evolución emocional, el peso de sus decisiones y su mirada sobre conflicto y sentido.",
-        "body": "Más que la acción, me marca la manera en que trabaja crecimiento, identidad y consecuencia. Ese tipo de progresión también me interesa al construir experiencias.",
-        "tags": ["Narrativa", "Evolución", "Intensidad"]
-      },
-      "en": {
-        "category": "Anime",
-        "title": "Vinland Saga",
-        "meta": "Anime / character growth",
-        "description": "It stands out to me because of its emotional evolution and the weight of decisions.",
-        "body": "More than the action, what stays with me is how it works through growth, identity and consequence. That kind of progression matters to me in design too.",
-        "tags": ["Narrative", "Growth", "Intensity"]
-      }
-    }
-  },
-  {
-    "filter": "anime",
-    "visualClass": "visual-anime",
-    "copy": {
-      "es": {
-        "category": "Animes",
-        "title": "Monster",
-        "meta": "Anime / suspenso psicológico",
-        "description": "Lo valoro por su paciencia narrativa y por cómo hace que pequeños detalles carguen peso.",
-        "body": "Es una referencia de ritmo y tensión sostenida. Me recuerda que no todo impacto tiene que venir de algo ruidoso; muchas veces viene de una buena construcción.",
-        "tags": ["Suspenso", "Ritmo", "Detalle"]
-      },
-      "en": {
-        "category": "Anime",
-        "title": "Monster",
-        "meta": "Anime / psychological suspense",
-        "description": "I value its patience and the way small details carry real weight.",
-        "body": "It is a reference for pacing and sustained tension. It reminds me that impact does not always need noise. Sometimes it comes from strong construction.",
-        "tags": ["Suspense", "Pacing", "Detail"]
-      }
-    }
-  },
-  {
-    "filter": "books",
-    "visualClass": "visual-library",
-    "copy": {
-      "es": {
-        "category": "Libros",
-        "title": "Meditaciones",
-        "meta": "Libro / claridad mental",
-        "description": "Me gusta por su tono directo y por la forma en que vuelve simples ideas que siguen siendo profundas.",
-        "body": "Lo relaciono con la importancia de quitar ruido. Tanto en lectura como en interfaz, la claridad suele nacer de una estructura sobria y bien pensada.",
-        "tags": ["Claridad", "Criterio", "Enfoque"]
-      },
-      "en": {
-        "category": "Books",
-        "title": "Meditations",
-        "meta": "Book / mental clarity",
-        "description": "I like its direct tone and the way it keeps deep ideas simple.",
-        "body": "I connect it with the value of removing noise. In reading and in interface work, clarity usually comes from a restrained and thoughtful structure.",
-        "tags": ["Clarity", "Judgment", "Focus"]
-      }
-    }
-  },
-  {
-    "filter": "books",
-    "visualClass": "visual-library",
-    "copy": {
-      "es": {
-        "category": "Libros",
-        "title": "1984",
-        "meta": "Libro / atmósfera",
-        "description": "Sigue siendo una referencia fuerte por el peso del entorno y por cómo la atmósfera condiciona toda la experiencia.",
-        "body": "Me interesa porque demuestra que el contexto cambia completamente la lectura de un sistema. El ambiente no es decoración; afecta cómo se interpreta todo.",
-        "tags": ["Contexto", "Atmósfera", "Lectura"]
-      },
-      "en": {
-        "category": "Books",
-        "title": "1984",
-        "meta": "Book / atmosphere",
-        "description": "It remains a strong reference because of how much the environment shapes the whole experience.",
-        "body": "It interests me because it proves that context changes how an entire system is interpreted. Atmosphere is not decoration. It changes meaning.",
-        "tags": ["Context", "Atmosphere", "Reading"]
-      }
-    }
-  },
-  {
     "filter": "games",
     "visualClass": "visual-gaming",
+    "image": "/interest-assets/stray.png",
     "copy": {
       "es": {
         "category": "Videojuegos",
-        "title": "Elden Ring",
-        "meta": "Videojuego / exploración",
-        "description": "Lo disfruto por su libertad, por el sentido de descubrimiento y por cómo recompensa curiosidad real.",
-        "body": "Es una referencia de mundo, misterio y densidad bien medida. Me gusta cómo hace que explorar sea parte central de la experiencia, no un extra.",
-        "tags": ["Exploración", "Mundo", "Curiosidad"]
+        "title": "Stray",
+        "meta": "Aventura / exploracion felina",
+        "imageAlt": "Captura de la biblioteca de juegos con Stray seleccionado",
+        "description": "Uno de los pocos juegos que he pasado por completo y que me hizo pensar desde la observacion, la paciencia y la creatividad.",
+        "body": "Stray me gusto porque no se trata de avanzar solo con fuerza o velocidad. El juego obliga a mirar el entorno con otros ojos: buscar rutas, notar detalles pequenos, entender comportamientos y resolver situaciones desde una perspectiva distinta. Al controlar a un gato perdido en una ciberciudad, la exploracion se vuelve mas intuitiva y curiosa. Esa forma de jugar me ayudo a salir del pensamiento normal, a observar mejor y a probar ideas hasta encontrar una salida.",
+        "tags": ["Observacion", "Creatividad", "Exploracion", "Persistencia"]
       },
       "en": {
         "category": "Games",
-        "title": "Elden Ring",
-        "meta": "Game / exploration",
-        "description": "I enjoy it because of its freedom, sense of discovery and how it rewards real curiosity.",
-        "body": "It is a reference for world-building, mystery and measured density. I like how exploration feels central to the experience rather than optional.",
-        "tags": ["Exploration", "World", "Curiosity"]
-      }
-    }
-  },
-  {
-    "filter": "games",
-    "visualClass": "visual-gaming",
-    "copy": {
-      "es": {
-        "category": "Videojuegos",
-        "title": "The Last of Us",
-        "meta": "Videojuego / narrativa",
-        "description": "Me marca por el nivel de detalle emocional y por cómo integra historia, tensión y recorrido.",
-        "body": "Lo tomo como referencia por su capacidad de hacer que cada espacio, silencio o decisión sume a la narrativa general. Todo tiene intención.",
-        "tags": ["Narrativa", "Detalle", "Tensión"]
-      },
-      "en": {
-        "category": "Games",
-        "title": "The Last of Us",
-        "meta": "Game / storytelling",
-        "description": "It stays with me because of its emotional detail and how it merges story, tension and journey.",
-        "body": "I keep it as a reference because every space, silence and decision contributes to the larger narrative. Nothing feels casual.",
-        "tags": ["Narrative", "Detail", "Tension"]
+        "title": "Stray",
+        "meta": "Adventure / feline exploration",
+        "imageAlt": "Game library screenshot with Stray selected",
+        "description": "One of the few games I have completed, and one that pushed me to think through observation, patience, and creativity.",
+        "body": "I liked Stray because progress is not only about force or speed. The game asks you to read the environment differently: find paths, notice small details, understand behaviors, and solve situations from another perspective. Playing as a lost cat in a cybercity makes exploration feel intuitive and curious. That experience helped me move beyond ordinary thinking, observe more carefully, and test ideas until I found a way forward.",
+        "tags": ["Observation", "Creativity", "Exploration", "Persistence"]
       }
     }
   }

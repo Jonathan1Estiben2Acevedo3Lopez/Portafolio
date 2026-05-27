@@ -109,10 +109,10 @@ const content = {
     },
     certificates: {
       title: "Certificados",
-      subtitle: "Formacion continua, cursos y logros academicos reunidos en un visor dedicado.",
-      privacyBadge: "Verificados",
-      emptyTitle: "Certificados en preparacion",
-      emptyDescription: "Pronto publicare aqui mis certificados y constancias mas relevantes.",
+      subtitle: "Formacion continua y cursos en progreso; aqui publicare certificados y constancias verificables cuando esten disponibles.",
+      privacyBadge: "En progreso",
+      emptyTitle: "Certificados proximamente",
+      emptyDescription: "Actualmente estoy fortaleciendo mi formacion con cursos y nuevas experiencias de aprendizaje. En cuanto cuente con certificados oficiales, los publicare aqui para consulta.",
       viewCta: "Ver certificado",
       unavailableCta: "Por cargar",
       fileUnavailable: "Archivo pendiente",
@@ -122,6 +122,8 @@ const content = {
       title: "Blog",
       cardLabel: "Seleccionado",
       cardAction: "Abrir",
+      emptyTitle: "Blog en preparacion",
+      emptyDescription: "Estoy preparando articulos para compartir aprendizajes, decisiones de desarrollo y reflexiones sobre tecnologia, diseno y proyectos desde mi perspectiva. Pronto publicare las primeras entradas.",
       filters: {
         all: "Todos",
         design: "Diseno",
@@ -138,6 +140,8 @@ const content = {
       subtitle: "Gustos personales, referencias e ideas que alimentan mi forma de crear.",
       cardLabel: "Seleccionado",
       cardAction: "Abrir",
+      emptyTitle: "Intereses en preparacion",
+      emptyDescription: "Pronto agregare referencias personales que conectan con mi forma de observar, aprender y crear.",
       filters: {
         all: "Todo",
         movies: "Peliculas",
@@ -223,10 +227,10 @@ const content = {
     },
     certificates: {
       title: "Certificates",
-      subtitle: "Continuous learning, courses and academic achievements gathered in a dedicated viewer.",
-      privacyBadge: "Verified",
-      emptyTitle: "Certificates in progress",
-      emptyDescription: "I will publish my most relevant certificates and course records here soon.",
+      subtitle: "Ongoing training and courses in progress; verified certificates will be published here when available.",
+      privacyBadge: "In progress",
+      emptyTitle: "Certificates coming soon",
+      emptyDescription: "I am currently strengthening my training through courses and new learning experiences. Once official certificates are available, I will publish them here for review.",
       viewCta: "View certificate",
       unavailableCta: "Pending file",
       fileUnavailable: "Pending file",
@@ -236,6 +240,8 @@ const content = {
       title: "Blog",
       cardLabel: "Selected",
       cardAction: "Open",
+      emptyTitle: "Blog in progress",
+      emptyDescription: "I am preparing articles to share learnings, development decisions, and reflections on technology, design, and projects from my own perspective. The first posts will be published soon.",
       filters: {
         all: "All",
         design: "Design",
@@ -252,6 +258,8 @@ const content = {
       subtitle: "Personal tastes, references and ideas that shape how I create.",
       cardLabel: "Selected",
       cardAction: "Open",
+      emptyTitle: "Interests in progress",
+      emptyDescription: "I will soon add personal references that connect with how I observe, learn, and create.",
       filters: {
         all: "All",
         movies: "Movies",
@@ -328,9 +336,11 @@ const elements = {
   projectFilters: document.getElementById("project-filters"),
   certificatesGrid: document.getElementById("certificates-grid"),
   articlesList: document.getElementById("articles-list"),
+  articleFilters: document.getElementById("insights-filters"),
   articleFeature: document.getElementById("article-feature"),
   aboutProfileGrid: document.getElementById("about-profile-grid"),
   interestsMediaList: document.getElementById("interests-media-list"),
+  interestFilters: document.getElementById("interests-media-filters"),
   interestsMediaFeature: document.getElementById("interests-media-feature"),
   contactGrid: document.getElementById("contact-grid"),
   projectPreviewModal: document.getElementById("project-preview-modal"),
@@ -750,6 +760,15 @@ function renderFilters() {
 
 function renderArticleFilters() {
   const labels = getCopy("insights.filters");
+  const hasArticles = Boolean((getCopy("articles") || []).length);
+
+  if (elements.articleFilters) {
+    elements.articleFilters.style.display = hasArticles ? "" : "none";
+  }
+
+  if (!hasArticles) {
+    state.articleFilter = "all";
+  }
 
   elements.articleFilterButtons.forEach((button) => {
     button.textContent = labels[button.dataset.articleFilter];
@@ -943,6 +962,23 @@ function renderProjectVisual(item, altText) {
   return `<div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>`;
 }
 
+function renderInterestVisual(item, classNames) {
+  if (item.image) {
+    return `
+      <div class="${classNames} interest-photo-visual">
+        <img
+          src="${withBase(item.image)}"
+          alt="${item.imageAlt || item.title}"
+          loading="lazy"
+          class="interest-photo-image"
+        />
+      </div>
+    `;
+  }
+
+  return `<div class="${classNames} ${item.visualClass}"></div>`;
+}
+
 function getProjectFeaturedRank(project) {
   if (project.featuredLevel === "main") {
     return 0;
@@ -1093,7 +1129,18 @@ function renderProjects() {
 }
 
 function renderArticles(preserveScroll = false) {
-  const articles = getCopy("articles")
+  const allArticles = getCopy("articles") || [];
+  const articleLayout = elements.articleFeature?.parentElement;
+
+  if (elements.articleFilters) {
+    elements.articleFilters.style.display = allArticles.length ? "" : "none";
+  }
+
+  if (!allArticles.length) {
+    state.articleFilter = "all";
+  }
+
+  const articles = allArticles
     .map((article, index) => ({ ...article, index }))
     .filter((article) => (state.articleFilter === "all" ? true : article.filter === state.articleFilter));
   const active = articles.find((article) => article.index === state.activeArticle) || articles[0];
@@ -1103,6 +1150,40 @@ function renderArticles(preserveScroll = false) {
       ? elements.articlesList.scrollLeft
       : elements.articlesList.scrollTop
     : 0;
+
+  if (!allArticles.length) {
+    articleLayout?.classList.add("is-empty-feature");
+    elements.articlesList.innerHTML = "";
+    elements.articleFeature.classList.remove("article-feature-mobile-hidden");
+    elements.articleFeature.innerHTML = `
+      <div class="article-empty-state">
+        <div class="article-empty-icon">
+          ${renderIcon("auto_awesome", "text-xl")}
+        </div>
+        <h3>${getCopy("insights.emptyTitle")}</h3>
+        <p>${getCopy("insights.emptyDescription")}</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (!articles.length) {
+    articleLayout?.classList.add("is-empty-feature");
+    elements.articlesList.innerHTML = "";
+    elements.articleFeature.classList.remove("article-feature-mobile-hidden");
+    elements.articleFeature.innerHTML = `
+      <div class="article-empty-state">
+        <div class="article-empty-icon">
+          ${renderIcon("auto_awesome", "text-xl")}
+        </div>
+        <h3>${getCopy("insights.emptyTitle")}</h3>
+        <p>${getCopy("insights.emptyDescription")}</p>
+      </div>
+    `;
+    return;
+  }
+
+  articleLayout?.classList.remove("is-empty-feature");
 
   if (active) {
     state.activeArticle = active.index;
@@ -1444,15 +1525,35 @@ function toggleAboutAcademicItem(item) {
 
 function renderInterestFilters() {
   const labels = getCopy("interests.filters");
+  const mediaItems = getCopy("interests.mediaItems") || [];
+  const availableFilters = new Set(mediaItems.map((item) => item.filter));
+  const shouldShowFilters = availableFilters.size > 1;
+
+  if (state.interestFilter !== "all" && !availableFilters.has(state.interestFilter)) {
+    state.interestFilter = "all";
+  }
+
+  if (elements.interestFilters) {
+    elements.interestFilters.style.display = shouldShowFilters ? "" : "none";
+  }
 
   elements.interestFilterButtons.forEach((button) => {
+    const filter = button.dataset.interestFilter;
+
     button.textContent = labels[button.dataset.interestFilter];
-    button.classList.toggle("is-active", button.dataset.interestFilter === state.interestFilter);
+    button.hidden = !shouldShowFilters || (filter !== "all" && !availableFilters.has(filter));
+    button.classList.toggle("is-active", filter === state.interestFilter);
   });
 }
 
 function renderInterestMedia(preserveScroll = false) {
-  const mediaItems = getCopy("interests.mediaItems")
+  const allMediaItems = getCopy("interests.mediaItems") || [];
+
+  if (state.interestFilter !== "all" && !allMediaItems.some((item) => item.filter === state.interestFilter)) {
+    state.interestFilter = "all";
+  }
+
+  const mediaItems = allMediaItems
     .map((item, index) => ({ ...item, index }))
     .filter((item) => (state.interestFilter === "all" ? true : item.filter === state.interestFilter));
   const active = mediaItems.find((item) => item.index === state.activeInterest) || mediaItems[0];
@@ -1463,6 +1564,21 @@ function renderInterestMedia(preserveScroll = false) {
       : elements.interestsMediaList.scrollTop
     : 0;
 
+  if (!mediaItems.length) {
+    elements.interestsMediaList.innerHTML = "";
+    elements.interestsMediaFeature.classList.remove("interests-feature-mobile-hidden");
+    elements.interestsMediaFeature.innerHTML = `
+      <div class="article-empty-state">
+        <div class="article-empty-icon">
+          ${renderIcon("auto_awesome", "text-xl")}
+        </div>
+        <h3>${getCopy("interests.emptyTitle")}</h3>
+        <p>${getCopy("interests.emptyDescription")}</p>
+      </div>
+    `;
+    return;
+  }
+
   if (active) {
     state.activeInterest = active.index;
   }
@@ -1472,7 +1588,7 @@ function renderInterestMedia(preserveScroll = false) {
       .map(
         (item) => `
           <article class="project-card about-mobile-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
-            <div class="project-visual ${item.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
+            ${renderInterestVisual(item, "project-visual aspect-[16/10] rounded-[1.3rem]")}
             <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
               <div class="flex items-start justify-between gap-4">
                 <div>
@@ -1545,7 +1661,7 @@ function renderInterestMedia(preserveScroll = false) {
 
   elements.interestsMediaFeature.innerHTML = `
     <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[23.75rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
-      <div class="article-visual ${active.visualClass} min-h-[145px] lg:min-h-full"></div>
+      ${renderInterestVisual(active, "article-visual min-h-[145px] lg:min-h-full")}
       <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-4.5">
         <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
           <span class="text-primary">${active.category}</span>

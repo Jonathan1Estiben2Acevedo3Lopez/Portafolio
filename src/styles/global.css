@@ -3031,6 +3031,9 @@ body.project-preview-open {
 
 .certificate-empty-state {
   display: grid;
+  flex: 1 0 100%;
+  min-height: 14rem;
+  align-content: center;
   justify-items: center;
   gap: 0.85rem;
   border: 1px solid rgb(var(--color-outline-variant) / 0.18);
@@ -3936,6 +3939,62 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   transform: translateY(-2px);
 }
 
+.article-empty-state {
+  display: grid;
+  min-height: 22rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.85rem;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.18);
+  border-radius: 2rem;
+  background: rgb(var(--color-surface-container-highest) / 0.68);
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+}
+
+.article-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 999px;
+  background: rgb(var(--color-primary) / 0.12);
+  color: rgb(var(--color-primary));
+}
+
+.article-empty-state h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: rgb(var(--color-on-surface));
+}
+
+.article-empty-state p {
+  max-width: 34rem;
+  color: rgb(var(--color-on-surface-variant));
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.split-feature-grid.is-empty-feature {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.split-feature-grid.is-empty-feature #articles-list {
+  display: none;
+}
+
+.split-feature-grid.is-empty-feature #article-feature {
+  grid-column: 1 / -1;
+  position: static;
+}
+
+.split-feature-grid.is-empty-feature .article-empty-state {
+  min-height: 14rem;
+}
+
 .article-visual,
 .project-visual {
   position: relative;
@@ -3949,6 +4008,29 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   content: "";
   position: absolute;
   pointer-events: none;
+}
+
+.interest-photo-visual {
+  border: 1px solid rgb(var(--color-outline-variant) / 0.15);
+  background: rgb(var(--color-background));
+}
+
+.interest-photo-visual::before {
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 48%, rgb(var(--color-background) / 0.28));
+}
+
+.interest-photo-visual::after {
+  content: none;
+}
+
+.interest-photo-image {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: 82% center;
 }
 
 .visual-control {
