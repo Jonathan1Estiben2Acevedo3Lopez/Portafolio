@@ -44,7 +44,7 @@ const profile = {
   linkedin: "https://www.linkedin.com/in/jonathan-estiben-acevedo-l%C3%B3pez-066b3226a",
   github: "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
   gitlab: "https://gitlab.com/JonathanAcevedo",
-  cvPath: "/CV_Ejemplo.pdf",
+  cvPath: "/CV_Jonathan_Acevedo.pdf",
 };
 
 const content = {
