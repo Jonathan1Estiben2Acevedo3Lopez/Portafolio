@@ -24,8 +24,8 @@ const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
 const isExternalAsset = (path) => /^(https?:)?\/\//.test(path) || path.startsWith("data:") || path.startsWith("blob:");
 const assetUrl = (path) => (path && isExternalAsset(path) ? path : path ? withBase(path) : "");
-const heroImage = defaultCopy.media?.images?.[0]?.src ?? project.previewImage;
-const heroImageAlt = defaultCopy.media?.images?.[0]?.alt ?? `Vista previa de ${defaultCopy.title}`;
+const heroImage = defaultCopy.previewImage ?? project.previewImage ?? defaultCopy.media?.images?.[0]?.src;
+const heroImageAlt = `Vista previa de ${defaultCopy.title}`;
 const dynamicModules = (defaultCopy.modulesOrder || [])
   .map((id) => ({ id, ...(defaultCopy.modules?.[id] || {}) }))
   .filter((module) => {
@@ -226,31 +226,30 @@ const youtubeEmbedUrl = youtube?.youtubeId
             </article>
           </div>
 
-          <section id="detail-process-section" class="detail-timeline-section detail-reveal glass-panel" data-detail-reveal>
-            <div class="detail-card-heading">
-              <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
-              <p id="detail-process-title" class="detail-section-label">Proceso</p>
-            </div>
-            <div id="detail-process-list" class="detail-timeline-list mt-7 grid gap-4"></div>
-          </section>
-
-        </div>
-
-        <aside class="detail-insight-rail space-y-8 lg:col-span-5">
-          <section id="detail-results-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
+          <section id="detail-results-section" class="detail-feature-card detail-reveal glass-panel" data-detail-reveal>
             <div class="detail-card-heading">
               <span class="material-symbols-outlined" aria-hidden="true">monitoring</span>
               <p id="detail-results-title" class="detail-section-label">Resultados</p>
             </div>
-            <div id="detail-results-list" class="mt-5 space-y-3"></div>
+            <p id="detail-results-body" class="mt-5 whitespace-pre-line text-base leading-8 text-on-surface-variant"></p>
           </section>
+        </div>
 
+        <aside class="detail-insight-rail space-y-8 lg:col-span-5">
           <section id="detail-stack-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
             <div class="detail-card-heading">
               <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
               <p id="detail-stack-title" class="detail-section-label">Stack</p>
             </div>
             <div id="detail-stack-list" class="mt-5 flex flex-wrap gap-3"></div>
+          </section>
+
+          <section id="detail-process-section" class="detail-timeline-section detail-reveal glass-panel" data-detail-reveal>
+            <div class="detail-card-heading">
+              <span class="material-symbols-outlined" aria-hidden="true">conversion_path</span>
+              <p id="detail-process-title" class="detail-section-label">Proceso</p>
+            </div>
+            <div id="detail-process-list" class="detail-timeline-list mt-7 grid gap-4"></div>
           </section>
 
           <section id="detail-deliverables-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
@@ -331,6 +330,11 @@ const youtubeEmbedUrl = youtube?.youtubeId
                 </article>
               ))}
             </div>
+          </section>
+
+          <section id="detail-collaborators-section" class="detail-modules-section detail-reveal glass-panel lg:col-span-12" hidden data-detail-reveal>
+            <p id="detail-collaborators-title" class="text-[0.68rem] font-black uppercase tracking-[0.2em] text-secondary">Colaboradores</p>
+            <div id="detail-collaborators-list" class="detail-collaborators-grid mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
           </section>
         </div>
       </section>
@@ -449,6 +453,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             stack: "Stack",
             deliverables: "Entregables",
             learnings: "Aprendizajes",
+            collaborators: "Colaboradores",
             liveEyebrow: "Vista interactiva",
             openLive: "Abrir en pestana nueva",
             contact: "Hablar del proyecto",
@@ -485,6 +490,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             stack: "Stack",
             deliverables: "Deliverables",
             learnings: "Learnings",
+            collaborators: "Collaborators",
             liveEyebrow: "Live preview",
             openLive: "Open in new tab",
             contact: "Discuss the project",
@@ -645,6 +651,37 @@ const youtubeEmbedUrl = youtube?.youtubeId
 
           return Array.isArray(fallbackValue) ? fallbackValue : [];
         };
+        const pickResultText = (current, fallback) => {
+          const currentValue = current?.results;
+          const fallbackValue = fallback?.results;
+
+          if (Array.isArray(currentValue) && currentValue.length > 0) {
+            return currentValue.join("\n");
+          }
+
+          if (hasText(currentValue)) {
+            return currentValue;
+          }
+
+          if (Array.isArray(fallbackValue) && fallbackValue.length > 0) {
+            return fallbackValue.join("\n");
+          }
+
+          return hasText(fallbackValue) ? fallbackValue : "";
+        };
+        const normalizeCollaborators = (detail, lang) =>
+          Array.isArray(detail.collaborators)
+            ? detail.collaborators
+                .filter((collaborator) => hasText(collaborator?.name))
+                .map((collaborator) => ({
+                  name: collaborator.name,
+                  role: pickLocalized(collaborator.role, lang, ""),
+                  photo: collaborator.photo || "",
+                  portfolioUrl: collaborator.portfolioUrl || "",
+                  githubUrl: collaborator.githubUrl || "",
+                  linkedinUrl: collaborator.linkedinUrl || "",
+                }))
+            : [];
         const defaultSectionOrder = ["images", "videos", "modules"];
         const normalizeSectionOrder = (value) => {
           const order = Array.isArray(value) ? value.filter((item) => defaultSectionOrder.includes(item)) : [];
@@ -783,7 +820,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             challenge: pickField(detailLang, detailEs, "challenge"),
             solution: pickField(detailLang, detailEs, "solution"),
             process: pickArray(detailLang, detailEs, "process"),
-            results: pickArray(detailLang, detailEs, "results"),
+            results: pickResultText(detailLang, detailEs),
             deliverables: pickArray(detailLang, detailEs, "deliverables"),
             learnings: pickArray(detailLang, detailEs, "learnings"),
             interactiveTitle: pickField(detailLang, detailEs, "interactiveTitle", title),
@@ -795,6 +832,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
                   label: pickLocalized(metric.label, lang, typeof metric.label === "string" ? metric.label : ""),
                 }))
               : [],
+            collaborators: normalizeCollaborators(detail, lang),
+            previewImage: detail.previewImage || project.previewImage || "",
             links: (Array.isArray(detail.links) ? detail.links : [])
               .filter((link) => hasText(link?.href))
               .map((link) => {
@@ -807,10 +846,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
                 };
               }),
             media: {
-              images: [
-                ...(hasText(project.previewImage) ? [{ src: project.previewImage }] : []),
-                ...(Array.isArray(media.images) ? media.images : []),
-              ]
+              images: (Array.isArray(media.images) ? media.images : [])
                 .filter((image) => hasText(image?.src))
                 .map((image, index) => ({
                   src: image.src,
@@ -985,22 +1021,15 @@ const youtubeEmbedUrl = youtube?.youtubeId
             .join("");
         };
 
-        const renderCardList = (sectionId, containerId, items = []) => {
-          const container = document.getElementById(containerId);
-          setSectionVisibility(sectionId, items.length > 0);
+        const renderResults = (value = "") => {
+          const container = document.getElementById("detail-results-body");
+          const text = Array.isArray(value) ? value.join("\n") : value;
+          setSectionVisibility("detail-results-section", hasText(text));
           if (!container) {
             return;
           }
 
-          container.innerHTML = items
-            .map(
-              (item) => `
-                <div class="detail-result-card">
-                  ${escapeHtml(item)}
-                </div>
-              `,
-            )
-            .join("");
+          container.textContent = text || "";
         };
 
         const renderPills = (items = []) => {
@@ -1040,6 +1069,57 @@ const youtubeEmbedUrl = youtube?.youtubeId
             .join("");
         };
 
+        const renderCollaborators = (items = []) => {
+          const container = document.getElementById("detail-collaborators-list");
+          setSectionVisibility("detail-collaborators-section", items.length > 0);
+          if (!container) {
+            return;
+          }
+
+          container.innerHTML = items
+            .map((collaborator) => {
+              const links = [
+                collaborator.portfolioUrl ? { href: collaborator.portfolioUrl, label: "Portfolio" } : null,
+                collaborator.githubUrl ? { href: collaborator.githubUrl, label: "GitHub" } : null,
+                collaborator.linkedinUrl ? { href: collaborator.linkedinUrl, label: "LinkedIn" } : null,
+              ].filter(Boolean);
+              const initials = collaborator.name
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part.charAt(0).toUpperCase())
+                .join("");
+
+              return `
+                <article class="detail-collaborator-card">
+                  ${
+                    collaborator.photo
+                      ? `<img src="${escapeHtml(withBase(collaborator.photo))}" alt="${escapeHtml(collaborator.name)}" loading="lazy" />`
+                      : `<span class="detail-collaborator-avatar" aria-hidden="true">${escapeHtml(initials || "C")}</span>`
+                  }
+                  <div class="min-w-0">
+                    <h3>${escapeHtml(collaborator.name)}</h3>
+                    ${collaborator.role ? `<p>${escapeHtml(collaborator.role)}</p>` : ""}
+                    ${
+                      links.length > 0
+                        ? `<div class="detail-collaborator-links">${links
+                            .map(
+                              (link) => `
+                                <a href="${escapeHtml(withBase(link.href))}" target="_blank" rel="noopener noreferrer">
+                                  ${escapeHtml(link.label)}
+                                </a>
+                              `,
+                            )
+                            .join("")}</div>`
+                        : ""
+                    }
+                  </div>
+                </article>
+              `;
+            })
+            .join("");
+        };
+
         const renderHeroVisual = (image, copy) => {
           const heroVisual = document.getElementById("detail-hero-visual");
           if (!heroVisual) {
@@ -1070,11 +1150,12 @@ const youtubeEmbedUrl = youtube?.youtubeId
         const renderImages = (images = [], copy) => {
           const grid = document.getElementById("detail-images-grid");
           setSectionVisibility("detail-images-section", images.length > 0);
+          const previewSrc = copy.previewImage || liveProjectPreviewImage || projectPreviewImage || "";
+          renderHeroVisual(previewSrc ? { src: previewSrc, alt: `${copy.title} ${labels[state.lang].imageFallback}` } : images[0], copy);
+
           if (!grid) {
             return;
           }
-
-          renderHeroVisual(images[0], copy);
 
           grid.innerHTML = images
             .map(
@@ -1345,11 +1426,11 @@ const youtubeEmbedUrl = youtube?.youtubeId
           grid.innerHTML = relatedProjectCards
             .map((item) => {
               const copy = item.locales?.[lang] || item.locales?.es || {};
-              const image = copy.media?.images?.[0]?.src || item.previewImage;
+              const image = item.previewImage || copy.previewImage || copy.media?.images?.[0]?.src;
               const visual = image
                 ? `
                   <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
-                    <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.media?.images?.[0]?.alt || copy.title)}" loading="lazy" class="project-preview-image" />
+                    <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.title)}" loading="lazy" class="project-preview-image" />
                   </div>
                 `
                 : `<div class="project-visual ${escapeHtml(item.visualClass || liveProjectVisualClass)} aspect-[16/10] rounded-[1.3rem]"></div>`;
@@ -1415,6 +1496,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           setText("detail-stack-title", label.stack);
           setText("detail-deliverables-title", label.deliverables);
           setText("detail-learnings-title", label.learnings);
+          setText("detail-collaborators-title", label.collaborators);
           setText("detail-related-title", label.related);
           setText("detail-related-link", label.viewAll);
           setText("detail-live-eyebrow", label.liveEyebrow);
@@ -1439,10 +1521,11 @@ const youtubeEmbedUrl = youtube?.youtubeId
           renderMetrics(copy.metrics);
           renderLinks(copy.links);
           renderProcess(copy.process);
-          renderCardList("detail-results-section", "detail-results-list", copy.results);
+          renderResults(copy.results);
           renderPills(copy.stack);
           renderBulletList("detail-deliverables-section", "detail-deliverables-list", copy.deliverables);
           renderBulletList("detail-learnings-section", "detail-learnings-list", copy.learnings);
+          renderCollaborators(copy.collaborators || []);
           renderImages(copy.media?.images || [], copy);
           renderVideos(copy.media?.videos || []);
           renderYoutube(copy.media || {});
@@ -1451,7 +1534,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           renderRelated(lang);
           setSectionVisibility("detail-long-description-section", Boolean(copy.longDescription));
           setNavVisibility("process", Array.isArray(copy.process) && copy.process.length > 0);
-          setNavVisibility("impact", (Array.isArray(copy.results) && copy.results.length > 0) || (Array.isArray(copy.metrics) && copy.metrics.length > 0));
+          setNavVisibility("impact", hasText(copy.results) || (Array.isArray(copy.metrics) && copy.metrics.length > 0));
           setNavVisibility(
             "visuals",
             Boolean(copy.media?.youtube?.youtubeId || copy.media?.youtube?.playlistId) ||

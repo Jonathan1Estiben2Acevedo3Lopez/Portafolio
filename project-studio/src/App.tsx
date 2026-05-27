@@ -25,16 +25,25 @@ import {
 } from "lucide-react";
 import { getSectionById, studioSections } from "./lib/project";
 import type {
+  BlogFormState,
+  CertificateFormState,
+  ContentKind,
   CreatedProject,
+  InterestFormState,
+  PickedCertificateFile,
   ProjectPreviewResult,
   ProjectExtraLink,
+  ProjectCollaborator,
   ProjectFlowStep,
   ProjectFormState,
   ProjectImage,
+  ProjectListItem,
   ProjectMetric,
   ProjectModule,
   ProjectPreviewSection,
   ProjectVideo,
+  SavedContent,
+  StudioContentItem,
   StudioSectionId,
 } from "./types";
 
@@ -84,8 +93,70 @@ const defaultProjectForm = (): ProjectFormState => ({
   flow: [],
   images: [],
   videos: [],
+  collaborators: [],
   sectionOrder: ["images", "videos", "modules"],
 });
+
+const defaultCertificateForm = (): CertificateFormState => ({
+  id: "",
+  fileName: "",
+  certificateType: "pdf",
+  mime: "application/pdf",
+  issued: currentYear,
+  title: "",
+  issuer: "Formacion",
+  tags: "PDF",
+  titleEn: "",
+  issuerEn: "Training",
+  tagsEn: "",
+});
+
+const defaultBlogForm = (): BlogFormState => ({
+  slug: "",
+  filter: "content",
+  visualClass: "visual-notes",
+  category: "Contenido",
+  date: "Mayo 2026",
+  readTime: "4 min de lectura",
+  title: "",
+  excerpt: "",
+  body: "",
+  introduction: "",
+  paragraphs: "",
+  highlights: "",
+  categoryEn: "Content",
+  dateEn: "May 2026",
+  readTimeEn: "4 min read",
+  titleEn: "",
+  excerptEn: "",
+  bodyEn: "",
+  introductionEn: "",
+  paragraphsEn: "",
+  highlightsEn: "",
+});
+
+const defaultInterestForm = (): InterestFormState => ({
+  filter: "movies",
+  visualClass: "visual-cinema",
+  category: "Peliculas",
+  title: "",
+  meta: "",
+  description: "",
+  body: "",
+  tags: "",
+  categoryEn: "Movies",
+  titleEn: "",
+  metaEn: "",
+  descriptionEn: "",
+  bodyEn: "",
+  tagsEn: "",
+});
+
+const contentSectionKinds: Partial<Record<StudioSectionId, ContentKind>> = {
+  certificates: "certificates",
+  blog: "blog",
+  interests: "interests",
+};
 
 const slugify = (value: string) =>
   value
@@ -112,7 +183,7 @@ const fieldHints = {
   challenge: "Problema principal o reto que resolviste.",
   solution: "Como resolviste el reto: decisiones, flujo, interfaz o arquitectura.",
   process: "Agrega cada paso del proceso por separado. En el preview se vera como una linea de tiempo numerada.",
-  results: "Resultados o mejoras obtenidas separados por coma.",
+  results: "Resultados o mejoras obtenidas en formato de parrafo.",
   liveUrl: "Enlace a la demo o sitio publicado. Debe empezar por https:// si es externo.",
   repoUrl: "Enlace al repositorio del proyecto, si lo quieres mostrar.",
   previewImage: "Ruta de imagen en public o URL externa. Ejemplo: /docqee-preview.png.",
@@ -125,20 +196,22 @@ const fieldHints = {
   flow: "Pasos del recorrido o proceso del proyecto. Sirve para explicar la evolucion de la solucion.",
   images: "Capturas o imagenes que apareceran en la ficha. Usa rutas de public como /captura.png.",
   videos: "Videos locales o URLs que documenten el proyecto.",
+  collaborators: "Personas que colaboraron en el proyecto. Puedes agregar foto y enlaces externos.",
   sectionOrder: "Orden en que apareceran estas secciones en el preview. Las secciones sin contenido se ocultan solas.",
   englishFallback: "Version en ingles. Si queda vacio, el portafolio usara el texto en espanol como respaldo.",
 } as const;
 
-type OptionalListKey = "extraLinks" | "metrics" | "modules" | "flow" | "images" | "videos";
+type OptionalListKey = "extraLinks" | "metrics" | "modules" | "flow" | "images" | "videos" | "collaborators";
 
-type OptionalListItem = ProjectExtraLink | ProjectMetric | ProjectModule | ProjectFlowStep | ProjectImage | ProjectVideo;
+type OptionalListItem = ProjectExtraLink | ProjectMetric | ProjectModule | ProjectFlowStep | ProjectImage | ProjectVideo | ProjectCollaborator;
 
 type ImagePickSource = "import" | "existing";
 
 type ImagePickTarget =
   | { kind: "preview" }
   | { kind: "gallery"; index: number }
-  | { kind: "videoPoster"; index: number };
+  | { kind: "videoPoster"; index: number }
+  | { kind: "collaboratorPhoto"; index: number };
 
 const optionalListItems = {
   extraLinks: (): ProjectExtraLink => ({ type: "custom", href: "", labelEs: "", labelEn: "" }),
@@ -147,6 +220,15 @@ const optionalListItems = {
   flow: (): ProjectFlowStep => ({ step: "", title: "", titleEn: "", description: "", descriptionEn: "" }),
   images: (): ProjectImage => ({ src: "", altEs: "", altEn: "", captionEs: "", captionEn: "" }),
   videos: (): ProjectVideo => ({ src: "", poster: "", titleEs: "", titleEn: "", captionEs: "", captionEn: "" }),
+  collaborators: (): ProjectCollaborator => ({
+    name: "",
+    role: "",
+    roleEn: "",
+    photo: "",
+    portfolioUrl: "",
+    githubUrl: "",
+    linkedinUrl: "",
+  }),
 };
 
 const previewSectionOptions: Array<{ id: ProjectPreviewSection; label: string; detail: string }> = [
@@ -212,6 +294,222 @@ const uniqueStackItems = (items: string[]) => {
 };
 
 const formatStackItems = (items: string[]) => uniqueStackItems(items).join(", ");
+
+const localizedValue = (value: unknown, lang: "es" | "en", fallback = "") => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const localized = record[lang];
+    const es = record.es;
+
+    return typeof localized === "string" && localized.trim()
+      ? localized
+      : typeof es === "string"
+        ? es
+        : fallback;
+  }
+
+  return fallback;
+};
+
+const textBlockValue = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === "string").join("\n");
+  }
+
+  return typeof value === "string" ? value : "";
+};
+
+const stringListValue = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+
+const normalizeProjectToForm = (project: Record<string, any>): ProjectFormState => {
+  const form = defaultProjectForm();
+  const detail = project.detail ?? {};
+  const detailEs = detail.es ?? {};
+  const detailEn = detail.en ?? {};
+  const copyEs = project.copy?.es ?? {};
+  const copyEn = project.copy?.en ?? {};
+  const links = Array.isArray(detail.links) ? detail.links : [];
+  const media = detail.media ?? {};
+
+  return {
+    ...form,
+    title: copyEs.title ?? project.slug ?? "",
+    slug: project.slug ?? "",
+    category: project.category ?? form.category,
+    year: project.year ?? form.year,
+    tag: copyEs.tag ?? form.tag,
+    accent: copyEs.accent ?? form.accent,
+    description: copyEs.description ?? "",
+    titleEn: copyEn.title ?? "",
+    tagEn: copyEn.tag ?? "",
+    accentEn: copyEn.accent ?? "",
+    descriptionEn: copyEn.description ?? "",
+    detailCategory: localizedValue(detail.category, "es", form.detailCategory),
+    detailCategoryEn: localizedValue(detail.category, "en", form.detailCategoryEn),
+    summary: detailEs.overview ?? "",
+    summaryEn: detailEn.overview ?? "",
+    overview: detailEs.longDescription ?? "",
+    overviewEn: detailEn.longDescription ?? "",
+    challenge: detailEs.challenge ?? "",
+    challengeEn: detailEn.challenge ?? "",
+    solution: detailEs.solution ?? "",
+    solutionEn: detailEn.solution ?? "",
+    process: stringListValue(detailEs.process),
+    processEn: stringListValue(detailEn.process),
+    results: textBlockValue(detailEs.results),
+    resultsEn: textBlockValue(detailEn.results),
+    stack: formatStackItems(Array.isArray(project.stack) && project.stack.length > 0 ? project.stack : Array.isArray(detail.stack) ? detail.stack : []),
+    deliverables: stringListValue(detailEs.deliverables).join(", "),
+    deliverablesEn: stringListValue(detailEn.deliverables).join(", "),
+    learnings: stringListValue(detailEs.learnings).join(", "),
+    learningsEn: stringListValue(detailEn.learnings).join(", "),
+    liveUrl: detail.liveUrl ?? project.liveUrl ?? "",
+    repoUrl: project.githubUrl ?? "",
+    previewImage: detail.previewImage ?? project.previewImage ?? "",
+    visualClass: detail.visualClass ?? project.visualClass ?? form.visualClass,
+    showInHome: project.showInHome !== false,
+    status: project.status ?? form.status,
+    featuredLevel: project.featuredLevel ?? "",
+    extraLinks: links
+      .filter((link: any) => link?.href && !["demo", "repo"].includes(link.type ?? "custom"))
+      .map((link: any) => ({
+        type: link.type ?? "custom",
+        href: link.href ?? "",
+        labelEs: localizedValue(link.label, "es", "Abrir enlace"),
+        labelEn: localizedValue(link.label, "en", ""),
+      })),
+    metrics: (Array.isArray(detail.metrics) ? detail.metrics : []).map((metric: any) => ({
+      value: metric.value ?? "",
+      label: localizedValue(metric.label, "es"),
+      labelEn: localizedValue(metric.label, "en", ""),
+    })),
+    modules: (Array.isArray(detail.modules) ? detail.modules : []).map((module: any) => ({
+      title: localizedValue(module.title, "es"),
+      titleEn: localizedValue(module.title, "en", ""),
+      description: localizedValue(module.description, "es"),
+      descriptionEn: localizedValue(module.description, "en", ""),
+    })),
+    flow: (Array.isArray(detail.flow) ? detail.flow : []).map((step: any) => ({
+      step: step.step ?? "",
+      title: localizedValue(step.title, "es"),
+      titleEn: localizedValue(step.title, "en", ""),
+      description: localizedValue(step.description, "es"),
+      descriptionEn: localizedValue(step.description, "en", ""),
+    })),
+    images: (Array.isArray(media.images) ? media.images : []).map((image: any) => ({
+      src: image.src ?? "",
+      altEs: localizedValue(image.alt, "es"),
+      altEn: localizedValue(image.alt, "en", ""),
+      captionEs: localizedValue(image.caption, "es"),
+      captionEn: localizedValue(image.caption, "en", ""),
+    })),
+    videos: (Array.isArray(media.videos) ? media.videos : []).map((video: any) => ({
+      src: video.src ?? "",
+      poster: video.poster ?? "",
+      titleEs: localizedValue(video.title, "es"),
+      titleEn: localizedValue(video.title, "en", ""),
+      captionEs: localizedValue(video.caption, "es"),
+      captionEn: localizedValue(video.caption, "en", ""),
+    })),
+    collaborators: (Array.isArray(detail.collaborators) ? detail.collaborators : []).map((collaborator: any) => ({
+      name: collaborator.name ?? "",
+      role: localizedValue(collaborator.role, "es"),
+      roleEn: localizedValue(collaborator.role, "en", ""),
+      photo: collaborator.photo ?? "",
+      portfolioUrl: collaborator.portfolioUrl ?? "",
+      githubUrl: collaborator.githubUrl ?? "",
+      linkedinUrl: collaborator.linkedinUrl ?? "",
+    })),
+    sectionOrder: Array.isArray(project.sectionOrder) && project.sectionOrder.length > 0 ? project.sectionOrder : form.sectionOrder,
+  };
+};
+
+const joinTextLines = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").join("\n") : "";
+
+const joinCommaList = (value: unknown) =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").join(", ") : "";
+
+const normalizeCertificateToForm = (certificate: Record<string, any>): CertificateFormState => {
+  const form = defaultCertificateForm();
+  const copyEs = certificate.copy?.es ?? {};
+  const copyEn = certificate.copy?.en ?? {};
+
+  return {
+    ...form,
+    id: certificate.id ?? "",
+    fileName: certificate.fileName ?? "",
+    certificateType: certificate.type ?? form.certificateType,
+    mime: certificate.mime ?? form.mime,
+    issued: certificate.issued ?? form.issued,
+    title: copyEs.title ?? "",
+    issuer: copyEs.issuer ?? form.issuer,
+    tags: joinCommaList(copyEs.tags),
+    titleEn: copyEn.title ?? "",
+    issuerEn: copyEn.issuer ?? "",
+    tagsEn: joinCommaList(copyEn.tags),
+  };
+};
+
+const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
+  const form = defaultBlogForm();
+  const copyEs = post.copy?.es ?? {};
+  const copyEn = post.copy?.en ?? {};
+
+  return {
+    ...form,
+    slug: post.slug ?? "",
+    filter: post.filter ?? form.filter,
+    visualClass: post.visualClass ?? form.visualClass,
+    category: copyEs.category ?? form.category,
+    date: copyEs.date ?? form.date,
+    readTime: copyEs.readTime ?? form.readTime,
+    title: copyEs.title ?? "",
+    excerpt: copyEs.excerpt ?? "",
+    body: copyEs.body ?? "",
+    introduction: copyEs.introduction ?? "",
+    paragraphs: joinTextLines(copyEs.paragraphs),
+    highlights: joinTextLines(copyEs.highlights),
+    categoryEn: copyEn.category ?? "",
+    dateEn: copyEn.date ?? "",
+    readTimeEn: copyEn.readTime ?? "",
+    titleEn: copyEn.title ?? "",
+    excerptEn: copyEn.excerpt ?? "",
+    bodyEn: copyEn.body ?? "",
+    introductionEn: copyEn.introduction ?? "",
+    paragraphsEn: joinTextLines(copyEn.paragraphs),
+    highlightsEn: joinTextLines(copyEn.highlights),
+  };
+};
+
+const normalizeInterestToForm = (interest: Record<string, any>): InterestFormState => {
+  const form = defaultInterestForm();
+  const copyEs = interest.copy?.es ?? {};
+  const copyEn = interest.copy?.en ?? {};
+
+  return {
+    ...form,
+    filter: interest.filter ?? form.filter,
+    visualClass: interest.visualClass ?? form.visualClass,
+    category: copyEs.category ?? form.category,
+    title: copyEs.title ?? "",
+    meta: copyEs.meta ?? "",
+    description: copyEs.description ?? "",
+    body: copyEs.body ?? "",
+    tags: joinCommaList(copyEs.tags),
+    categoryEn: copyEn.category ?? "",
+    titleEn: copyEn.title ?? "",
+    metaEn: copyEn.meta ?? "",
+    descriptionEn: copyEn.description ?? "",
+    bodyEn: copyEn.body ?? "",
+    tagsEn: joinCommaList(copyEn.tags),
+  };
+};
 
 function FieldHint({ text }: { text: string }) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -615,18 +913,90 @@ function SectionOrderControl({
 function App() {
   const [activeSection, setActiveSection] = useState<StudioSectionId>("projects");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [workspaceView, setWorkspaceView] = useState<"home" | "project-create">("home");
+  const [workspaceView, setWorkspaceView] = useState<"home" | "project-create" | "certificate-edit" | "blog-edit" | "interest-edit">("home");
   const [projectForm, setProjectForm] = useState<ProjectFormState>(() => defaultProjectForm());
+  const [certificateForm, setCertificateForm] = useState<CertificateFormState>(() => defaultCertificateForm());
+  const [blogForm, setBlogForm] = useState<BlogFormState>(() => defaultBlogForm());
+  const [interestForm, setInterestForm] = useState<InterestFormState>(() => defaultInterestForm());
   const [slugTouched, setSlugTouched] = useState(false);
+  const [blogSlugTouched, setBlogSlugTouched] = useState(false);
+  const [certificateIdTouched, setCertificateIdTouched] = useState(false);
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [editingCertificateId, setEditingCertificateId] = useState<string | null>(null);
+  const [editingBlogSlug, setEditingBlogSlug] = useState<string | null>(null);
+  const [editingInterestIndex, setEditingInterestIndex] = useState<number | null>(null);
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
+  const [contentItems, setContentItems] = useState<Record<ContentKind, StudioContentItem[]>>({
+    certificates: [],
+    blog: [],
+    interests: [],
+  });
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const [loadingContentKind, setLoadingContentKind] = useState<ContentKind | null>(null);
   const [isSavingProject, setIsSavingProject] = useState(false);
+  const [isSavingContent, setIsSavingContent] = useState(false);
   const [projectResult, setProjectResult] = useState<CreatedProject | null>(null);
   const [projectError, setProjectError] = useState("");
+  const [contentResult, setContentResult] = useState<SavedContent | null>(null);
+  const [contentError, setContentError] = useState("");
   const [imagePickMessage, setImagePickMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [isOpeningLivePreview, setIsOpeningLivePreview] = useState(false);
   const [livePreviewUrl, setLivePreviewUrl] = useState("");
   const [livePreviewMessage, setLivePreviewMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const selected = useMemo(() => getSectionById(activeSection), [activeSection]);
   const SelectedIcon = selected.icon;
+  const activeProjectCount = projects.filter((project) => project.showInHome).length;
+  const activeContentKind = contentSectionKinds[selected.id];
+  const selectedContentItems = activeContentKind ? contentItems[activeContentKind] : [];
+  const sectionMetric = selected.id === "projects"
+    ? `${activeProjectCount} activos`
+    : activeContentKind
+      ? `${selectedContentItems.length} items`
+      : selected.metric;
+  const getSectionMetric = (sectionId: StudioSectionId, fallback: string) => {
+    if (sectionId === "projects") {
+      return `${activeProjectCount} activos`;
+    }
+
+    const kind = contentSectionKinds[sectionId];
+    return kind ? `${contentItems[kind].length} items` : fallback;
+  };
+
+  const loadProjects = async () => {
+    setIsLoadingProjects(true);
+
+    try {
+      const items = await invoke<ProjectListItem[]>("list_projects");
+      setProjects(items);
+    } catch {
+      setProjects([]);
+    } finally {
+      setIsLoadingProjects(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  const loadContent = async (kind: ContentKind) => {
+    setLoadingContentKind(kind);
+
+    try {
+      const items = await invoke<StudioContentItem[]>("list_studio_content", { kind });
+      setContentItems((current) => ({ ...current, [kind]: items }));
+    } catch {
+      setContentItems((current) => ({ ...current, [kind]: [] }));
+    } finally {
+      setLoadingContentKind(null);
+    }
+  };
+
+  useEffect(() => {
+    loadContent("certificates");
+    loadContent("blog");
+    loadContent("interests");
+  }, []);
 
   useEffect(() => {
     if (!livePreviewUrl || workspaceView !== "project-create") {
@@ -672,6 +1042,59 @@ function App() {
     if (field === "slug") {
       setSlugTouched(true);
     }
+  };
+
+  const updateCertificateField = <Key extends keyof CertificateFormState>(
+    field: Key,
+    value: CertificateFormState[Key],
+  ) => {
+    setCertificateForm((current) => {
+      const next = { ...current, [field]: value };
+
+      if (field === "title" && !certificateIdTouched && typeof value === "string") {
+        next.id = slugify(value);
+      }
+
+      if (field === "id" && typeof value === "string") {
+        next.id = slugify(value);
+      }
+
+      return next;
+    });
+
+    if (field === "id") {
+      setCertificateIdTouched(true);
+    }
+  };
+
+  const updateBlogField = <Key extends keyof BlogFormState>(
+    field: Key,
+    value: BlogFormState[Key],
+  ) => {
+    setBlogForm((current) => {
+      const next = { ...current, [field]: value };
+
+      if (field === "title" && !blogSlugTouched && typeof value === "string") {
+        next.slug = slugify(value);
+      }
+
+      if (field === "slug" && typeof value === "string") {
+        next.slug = slugify(value);
+      }
+
+      return next;
+    });
+
+    if (field === "slug") {
+      setBlogSlugTouched(true);
+    }
+  };
+
+  const updateInterestField = <Key extends keyof InterestFormState>(
+    field: Key,
+    value: InterestFormState[Key],
+  ) => {
+    setInterestForm((current) => ({ ...current, [field]: value }));
   };
 
   const addOptionalItem = (listKey: OptionalListKey) => {
@@ -756,8 +1179,10 @@ function App() {
         updateProjectField("previewImage", pickedImage);
       } else if (target.kind === "gallery") {
         updateOptionalItem("images", target.index, "src", pickedImage);
-      } else {
+      } else if (target.kind === "videoPoster") {
         updateOptionalItem("videos", target.index, "poster", pickedImage);
+      } else {
+        updateOptionalItem("collaborators", target.index, "photo", pickedImage);
       }
 
       setImagePickMessage({
@@ -821,6 +1246,7 @@ function App() {
   const openProjectCreator = () => {
     setActiveSection("projects");
     setWorkspaceView("project-create");
+    setEditingSlug(null);
     setProjectError("");
     setImagePickMessage(null);
     setProjectResult(null);
@@ -828,10 +1254,93 @@ function App() {
 
   const resetProjectForm = () => {
     setProjectForm(defaultProjectForm());
+    setEditingSlug(null);
     setSlugTouched(false);
     setProjectError("");
     setImagePickMessage(null);
     setProjectResult(null);
+  };
+
+  const handleEditProject = async (slug: string) => {
+    setProjectError("");
+    setImagePickMessage(null);
+    setProjectResult(null);
+
+    try {
+      const project = await invoke<Record<string, any>>("get_project", { slug });
+      setProjectForm(normalizeProjectToForm(project));
+      setEditingSlug(slug);
+      setSlugTouched(true);
+      setActiveSection("projects");
+      setWorkspaceView("project-create");
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  const openCertificateEditor = (mode: "new" | "edit" = "new") => {
+    setActiveSection("certificates");
+    setWorkspaceView("certificate-edit");
+    setContentError("");
+    setContentResult(null);
+
+    if (mode === "new") {
+      setCertificateForm(defaultCertificateForm());
+      setEditingCertificateId(null);
+      setCertificateIdTouched(false);
+    }
+  };
+
+  const openBlogEditor = (mode: "new" | "edit" = "new") => {
+    setActiveSection("blog");
+    setWorkspaceView("blog-edit");
+    setContentError("");
+    setContentResult(null);
+
+    if (mode === "new") {
+      setBlogForm(defaultBlogForm());
+      setEditingBlogSlug(null);
+      setBlogSlugTouched(false);
+    }
+  };
+
+  const openInterestEditor = (mode: "new" | "edit" = "new") => {
+    setActiveSection("interests");
+    setWorkspaceView("interest-edit");
+    setContentError("");
+    setContentResult(null);
+
+    if (mode === "new") {
+      setInterestForm(defaultInterestForm());
+      setEditingInterestIndex(null);
+    }
+  };
+
+  const handleEditContent = async (kind: ContentKind, key: string) => {
+    setContentError("");
+    setContentResult(null);
+
+    try {
+      const item = await invoke<Record<string, any>>("get_studio_content", { kind, key });
+
+      if (kind === "certificates") {
+        setCertificateForm(normalizeCertificateToForm(item));
+        setEditingCertificateId(key);
+        setCertificateIdTouched(true);
+        openCertificateEditor("edit");
+      } else if (kind === "blog") {
+        setBlogForm(normalizeBlogToForm(item));
+        setEditingBlogSlug(key);
+        setBlogSlugTouched(true);
+        openBlogEditor("edit");
+      } else {
+        setInterestForm(normalizeInterestToForm(item));
+        setEditingInterestIndex(Number(key));
+        openInterestEditor("edit");
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    }
   };
 
   const handleSectionClick = (sectionId: StudioSectionId) => {
@@ -842,6 +1351,164 @@ function App() {
   const handleSectionAction = (action: string) => {
     if (selected.id === "projects" && action === "Nuevo proyecto") {
       openProjectCreator();
+      return;
+    }
+
+    if (selected.id === "projects" && action === "Editar proyecto") {
+      loadProjects();
+      window.setTimeout(() => {
+        document.getElementById("project-edit-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 0);
+      return;
+    }
+
+    if (selected.id === "certificates") {
+      if (action === "Subir certificado") {
+        openCertificateEditor("new");
+        return;
+      }
+
+      if (action === "Editar metadatos") {
+        loadContent("certificates");
+        return;
+      }
+    }
+
+    if (selected.id === "blog") {
+      if (action === "Nueva nota") {
+        openBlogEditor("new");
+        return;
+      }
+
+      if (action === "Editar borrador") {
+        loadContent("blog");
+        return;
+      }
+    }
+
+    if (selected.id === "interests") {
+      if (action === "Agregar item") {
+        openInterestEditor("new");
+        return;
+      }
+
+      if (action === "Ajustar etiquetas") {
+        loadContent("interests");
+      }
+    }
+  };
+
+  const pickCertificateFile = async (source: ImagePickSource) => {
+    setContentError("");
+
+    try {
+      const picked = await invoke<PickedCertificateFile | null>("pick_certificate_file", { source });
+      if (!picked) {
+        return;
+      }
+
+      setCertificateForm((current) => ({
+        ...current,
+        fileName: picked.fileName,
+        certificateType: picked.fileType,
+        mime: picked.mime,
+      }));
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    }
+  };
+
+  const handleSaveCertificate = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_certificate", {
+        existingId: editingCertificateId,
+        input: certificateForm,
+      });
+      setContentResult(result);
+      await loadContent("certificates");
+      setEditingCertificateId(result.key);
+      setCertificateIdTouched(true);
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleDeleteCertificate = async (id: string) => {
+    const confirmed = window.confirm(
+      "Esto quitara el certificado del portafolio. El archivo original se mantiene en src/certificados.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("delete_certificate", { id });
+      setContentResult(result);
+      await loadContent("certificates");
+
+      if (editingCertificateId === id) {
+        setCertificateForm(defaultCertificateForm());
+        setEditingCertificateId(null);
+        setCertificateIdTouched(false);
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleSaveBlog = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_blog_post", {
+        existingSlug: editingBlogSlug,
+        input: blogForm,
+      });
+      setContentResult(result);
+      await loadContent("blog");
+      setEditingBlogSlug(result.key);
+      setBlogSlugTouched(true);
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleSaveInterest = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_interest", {
+        existingIndex: editingInterestIndex,
+        input: interestForm,
+      });
+      setContentResult(result);
+      await loadContent("interests");
+      setEditingInterestIndex(Number(result.key));
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
     }
   };
 
@@ -853,9 +1520,13 @@ function App() {
     setIsSavingProject(true);
 
     try {
-      const result = await invoke<CreatedProject>("create_project", { input: projectForm });
+      const result = editingSlug
+        ? await invoke<CreatedProject>("update_project", { existingSlug: editingSlug, input: projectForm })
+        : await invoke<CreatedProject>("create_project", { input: projectForm });
       setProjectResult(result);
+      await loadProjects();
       setSlugTouched(false);
+      setEditingSlug(null);
       setProjectForm((current) => ({
         ...defaultProjectForm(),
         category: current.category,
@@ -870,6 +1541,46 @@ function App() {
       setProjectError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsSavingProject(false);
+    }
+  };
+
+  const editorTitle =
+    workspaceView === "project-create"
+      ? editingSlug
+        ? "Editar proyecto"
+        : "Nuevo proyecto"
+      : workspaceView === "certificate-edit"
+        ? editingCertificateId
+          ? "Editar certificado"
+          : "Nuevo certificado"
+        : workspaceView === "blog-edit"
+          ? editingBlogSlug
+            ? "Editar nota"
+            : "Nueva nota"
+          : workspaceView === "interest-edit"
+            ? editingInterestIndex !== null
+              ? "Editar interes"
+              : "Nuevo interes"
+            : "";
+  const editorEyebrow =
+    workspaceView === "project-create"
+      ? "Proyectos"
+      : workspaceView === "certificate-edit"
+        ? "Certificados"
+        : workspaceView === "blog-edit"
+          ? "Blog"
+          : workspaceView === "interest-edit"
+            ? "Intereses"
+            : "";
+  const resetCurrentEditor = () => {
+    if (workspaceView === "project-create") {
+      resetProjectForm();
+    } else if (workspaceView === "certificate-edit") {
+      openCertificateEditor("new");
+    } else if (workspaceView === "blog-edit") {
+      openBlogEditor("new");
+    } else if (workspaceView === "interest-edit") {
+      openInterestEditor("new");
     }
   };
 
@@ -922,27 +1633,29 @@ function App() {
             </div>
           </section>
         ) : (
-          <section className="creator-strip" aria-label="Crear proyecto">
+          <section className="creator-strip" aria-label="Editor de contenido">
             <button type="button" className="back-button" onClick={() => setWorkspaceView("home")}>
               <ArrowLeft size={17} strokeWidth={2.2} />
               Inicio
             </button>
             <div>
-              <p className="section-label">Proyectos</p>
-              <h2>Nuevo proyecto</h2>
+              <p className="section-label">{editorEyebrow}</p>
+              <h2>{editorTitle}</h2>
             </div>
             <div className="creator-actions">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleOpenLivePreview}
-                disabled={isOpeningLivePreview}
-                title="Abre la ficha real en el portafolio local y la mantiene sincronizada mientras escribes."
-              >
-                <ExternalLink size={16} strokeWidth={2.2} />
-                {isOpeningLivePreview ? "Abriendo..." : "Preview real"}
-              </button>
-              <button type="button" className="secondary-button" onClick={resetProjectForm}>
+              {workspaceView === "project-create" ? (
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleOpenLivePreview}
+                  disabled={isOpeningLivePreview}
+                  title="Abre la ficha real en el portafolio local y la mantiene sincronizada mientras escribes."
+                >
+                  <ExternalLink size={16} strokeWidth={2.2} />
+                  {isOpeningLivePreview ? "Abriendo..." : "Preview real"}
+                </button>
+              ) : null}
+              <button type="button" className="secondary-button" onClick={resetCurrentEditor}>
                 Limpiar
               </button>
             </div>
@@ -968,7 +1681,7 @@ function App() {
                     <span className="module-icon" aria-hidden="true">
                       <Icon size={22} strokeWidth={2.1} />
                     </span>
-                    <span className="module-metric">{section.metric}</span>
+                  <span className="module-metric">{getSectionMetric(section.id, section.metric)}</span>
                   </span>
                   <span className="module-eyebrow">{section.eyebrow}</span>
                   <span className="module-title">
@@ -997,13 +1710,104 @@ function App() {
             <div className="selection-status">
               <span>
                 <CircleDot size={16} strokeWidth={2.4} />
-                {selected.metric}
+                {sectionMetric}
               </span>
               <span>
                 <CheckCircle2 size={16} strokeWidth={2.4} />
                 {selected.detail}
               </span>
             </div>
+
+            {selected.id === "projects" ? (
+              <div className="active-projects-panel" id="project-edit-list">
+                <div className="active-projects-head">
+                  <div>
+                    <strong>Editar proyectos existentes</strong>
+                    <span>{projects.length} proyecto{projects.length === 1 ? "" : "s"} disponible{projects.length === 1 ? "" : "s"}</span>
+                  </div>
+                  <button type="button" onClick={loadProjects}>
+                    Actualizar
+                  </button>
+                </div>
+                {isLoadingProjects ? (
+                  <p className="active-projects-empty">Cargando proyectos...</p>
+                ) : projects.length === 0 ? (
+                  <p className="active-projects-empty">No hay proyectos en src/content/projects todavia.</p>
+                ) : (
+                  <div className="active-projects-list">
+                    {projects.map((project) => (
+                      <div className="active-project-row" key={project.slug}>
+                        <div>
+                          <strong>{project.title}</strong>
+                          <span>
+                            {project.year || "Sin ano"} - {project.status || "sin estado"}
+                            {project.showInHome ? " - visible en home" : " - oculto en home"}
+                          </span>
+                        </div>
+                        <button type="button" onClick={() => handleEditProject(project.slug)}>
+                          Editar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            {activeContentKind ? (
+              <div className="active-projects-panel">
+                <div className="active-projects-head">
+                  <div>
+                    <strong>
+                      {activeContentKind === "certificates"
+                        ? "Certificados disponibles"
+                        : activeContentKind === "blog"
+                          ? "Notas disponibles"
+                          : "Intereses disponibles"}
+                    </strong>
+                    <span>{selectedContentItems.length} item{selectedContentItems.length === 1 ? "" : "s"} para editar</span>
+                  </div>
+                  <button type="button" onClick={() => loadContent(activeContentKind)}>
+                    Actualizar
+                  </button>
+                </div>
+                {loadingContentKind === activeContentKind ? (
+                  <p className="active-projects-empty">Cargando contenido...</p>
+                ) : selectedContentItems.length === 0 ? (
+                  <p className="active-projects-empty">Todavia no hay contenido en este modulo.</p>
+                ) : (
+                  <div className="active-projects-list">
+                    {selectedContentItems.map((item) => (
+                      <div className="active-project-row" key={item.key}>
+                        <div>
+                          <strong>{item.title}</strong>
+                          <span>{item.subtitle} - {item.detail}</span>
+                        </div>
+                        <div className="active-project-row-actions">
+                          <button type="button" onClick={() => handleEditContent(activeContentKind, item.key)}>
+                            Editar
+                          </button>
+                          {activeContentKind === "certificates" ? (
+                            <button
+                              type="button"
+                              className="danger-action"
+                              onClick={() => handleDeleteCertificate(item.key)}
+                              disabled={isSavingContent}
+                            >
+                              Eliminar
+                            </button>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {contentError ? <p className="form-message is-error">{contentError}</p> : null}
+                {activeContentKind === "certificates" && contentResult ? (
+                  <p className="form-message is-success">Certificados actualizados. Total: {contentResult.totalItems}</p>
+                ) : null}
+              </div>
+            ) : null}
 
             <div className="action-stack" aria-label={`Acciones de ${selected.title}`}>
               {selected.actions.map((action) => (
@@ -1023,8 +1827,9 @@ function App() {
         ) : (
           <section
             className="project-creator-layout"
-            aria-label="Formulario de nuevo proyecto"
+            aria-label="Formulario de contenido"
           >
+            {workspaceView === "project-create" ? (
             <form className="project-form-panel" onSubmit={handleCreateProject}>
               <div className="form-scroll">
                 <div className="form-section-heading">
@@ -1191,6 +1996,24 @@ function App() {
                     />
                   </div>
 
+                  <div className="field field-wide">
+                    <ProcessStepsEditor
+                      hint={fieldHints.process}
+                      value={projectForm.process}
+                      onChange={(value) => updateProjectField("process", value)}
+                    />
+                  </div>
+
+                  <label className="field field-wide">
+                    <FieldLabel hint={fieldHints.results}>Resultados</FieldLabel>
+                    <textarea
+                      value={projectForm.results}
+                      onChange={(event) => updateProjectField("results", event.target.value)}
+                      placeholder="Describe el impacto, aprendizaje o resultado principal en formato de parrafo."
+                      rows={3}
+                    />
+                  </label>
+
                   <label className="field field-wide">
                     <FieldLabel hint={fieldHints.summary}>Resumen</FieldLabel>
                     <textarea
@@ -1231,22 +2054,6 @@ function App() {
                     />
                   </label>
 
-                  <div className="field field-wide">
-                    <ProcessStepsEditor
-                      hint={fieldHints.process}
-                      value={projectForm.process}
-                      onChange={(value) => updateProjectField("process", value)}
-                    />
-                  </div>
-
-                  <label className="field field-wide">
-                    <FieldLabel hint={fieldHints.results}>Resultados</FieldLabel>
-                    <input
-                      value={projectForm.results}
-                      onChange={(event) => updateProjectField("results", event.target.value)}
-                      placeholder="Mejor lectura, flujo mas rapido"
-                    />
-                  </label>
                 </div>
 
                 <div className="form-section-heading">
@@ -1261,6 +2068,28 @@ function App() {
                       value={projectForm.detailCategoryEn}
                       onChange={(event) => updateProjectField("detailCategoryEn", event.target.value)}
                       placeholder="Digital product"
+                    />
+                  </label>
+
+                  <div className="field field-wide">
+                    <ProcessStepsEditor
+                      addLabel="Add step"
+                      emptyText="Add English steps for the process timeline."
+                      hint={fieldHints.englishFallback}
+                      label="Process"
+                      placeholder="Research, prototype, development..."
+                      value={projectForm.processEn}
+                      onChange={(value) => updateProjectField("processEn", value)}
+                    />
+                  </div>
+
+                  <label className="field field-wide">
+                    <FieldLabel hint={fieldHints.englishFallback}>Results</FieldLabel>
+                    <textarea
+                      value={projectForm.resultsEn}
+                      onChange={(event) => updateProjectField("resultsEn", event.target.value)}
+                      placeholder="Describe the main impact, learning, or result as a paragraph."
+                      rows={3}
                     />
                   </label>
 
@@ -1300,26 +2129,6 @@ function App() {
                     />
                   </label>
 
-                  <div className="field field-wide">
-                    <ProcessStepsEditor
-                      addLabel="Add step"
-                      emptyText="Add English steps for the process timeline."
-                      hint={fieldHints.englishFallback}
-                      label="Process"
-                      placeholder="Research, prototype, development..."
-                      value={projectForm.processEn}
-                      onChange={(value) => updateProjectField("processEn", value)}
-                    />
-                  </div>
-
-                  <label className="field field-wide">
-                    <FieldLabel hint={fieldHints.englishFallback}>Results</FieldLabel>
-                    <input
-                      value={projectForm.resultsEn}
-                      onChange={(event) => updateProjectField("resultsEn", event.target.value)}
-                      placeholder="Better readability, faster flow"
-                    />
-                  </label>
                 </div>
 
                 <div className="form-section-heading">
@@ -1328,15 +2137,6 @@ function App() {
                 </div>
 
                 <div className="form-grid">
-                  <label className="field">
-                    <FieldLabel hint={fieldHints.liveUrl}>URL demo</FieldLabel>
-                    <input
-                      value={projectForm.liveUrl}
-                      onChange={(event) => updateProjectField("liveUrl", event.target.value)}
-                      placeholder="https://..."
-                    />
-                  </label>
-
                   <label className="field">
                     <FieldLabel hint={fieldHints.repoUrl}>Repositorio</FieldLabel>
                     <input
@@ -1412,7 +2212,7 @@ function App() {
                     <div className="optional-group-head">
                       <div>
                         <FieldLabel hint={fieldHints.metrics}>Metricas</FieldLabel>
-                        <p>Resultados numericos o indicadores visibles en la ficha.</p>
+                        <p>Indicadores visibles en la ficha: pueden ser numeros, frases cortas o valores mixtos.</p>
                       </div>
                       <button type="button" className="add-row-button" onClick={() => addOptionalItem("metrics")}>
                         <Plus size={16} strokeWidth={2.2} />
@@ -1438,11 +2238,11 @@ function App() {
                             </div>
                             <div className="optional-item-grid">
                               <label className="field">
-                                <span className="compact-label">Valor</span>
+                                <span className="compact-label">Valor o texto</span>
                                 <input
                                   value={metric.value}
                                   onChange={(event) => updateOptionalItem("metrics", index, "value", event.target.value)}
-                                  placeholder="+35%"
+                                  placeholder="+35%, MVP listo, 4 modulos"
                                 />
                               </label>
                               <label className="field">
@@ -1540,7 +2340,7 @@ function App() {
                     <div className="optional-group-head">
                       <div>
                         <FieldLabel hint={fieldHints.images}>Imagenes</FieldLabel>
-                        <p>Capturas, mockups o imagenes del proyecto.</p>
+                        <p>Alt ES describe la imagen para accesibilidad. Caption ES es el texto visible debajo de la imagen.</p>
                       </div>
                       <button type="button" className="add-row-button" onClick={() => addOptionalItem("images")}>
                         <Plus size={16} strokeWidth={2.2} />
@@ -1845,6 +2645,118 @@ function App() {
                       </div>
                     )}
                   </div>
+
+                  <div className="optional-group">
+                    <div className="optional-group-head">
+                      <div>
+                        <FieldLabel hint={fieldHints.collaborators}>Colaboradores</FieldLabel>
+                        <p>Agrega personas del equipo con foto y enlaces opcionales.</p>
+                      </div>
+                      <button type="button" className="add-row-button" onClick={() => addOptionalItem("collaborators")}>
+                        <Plus size={16} strokeWidth={2.2} />
+                        Agregar
+                      </button>
+                    </div>
+                    {projectForm.collaborators.length === 0 ? (
+                      <p className="optional-empty">Sin colaboradores adicionales.</p>
+                    ) : (
+                      <div className="optional-list">
+                        {projectForm.collaborators.map((collaborator, index) => (
+                          <div className="optional-item" key={`collaborator-${index}`}>
+                            <div className="optional-item-head">
+                              <strong>Colaborador {index + 1}</strong>
+                              <OptionalItemActions
+                                canMoveUp={index > 0}
+                                canMoveDown={index < projectForm.collaborators.length - 1}
+                                onMoveUp={() => moveOptionalItem("collaborators", index, -1)}
+                                onMoveDown={() => moveOptionalItem("collaborators", index, 1)}
+                                onRemove={() => removeOptionalItem("collaborators", index)}
+                                removeLabel={`Quitar colaborador ${index + 1}`}
+                              />
+                            </div>
+                            <div className="optional-item-grid">
+                              <label className="field">
+                                <span className="compact-label">Nombre</span>
+                                <input
+                                  value={collaborator.name}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "name", event.target.value)}
+                                  placeholder="Nombre del colaborador"
+                                />
+                              </label>
+                              <label className="field">
+                                <span className="compact-label">Rol ES</span>
+                                <input
+                                  value={collaborator.role}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "role", event.target.value)}
+                                  placeholder="Frontend, diseno, backend..."
+                                />
+                              </label>
+                              <label className="field">
+                                <span className="compact-label">Rol EN</span>
+                                <input
+                                  value={collaborator.roleEn}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "roleEn", event.target.value)}
+                                  placeholder="Frontend, design, backend..."
+                                />
+                              </label>
+                              <div className="field">
+                                <span className="compact-label">Foto</span>
+                                <div className="media-picker-row">
+                                  <input
+                                    value={collaborator.photo}
+                                    onChange={(event) => updateOptionalItem("collaborators", index, "photo", event.target.value)}
+                                    placeholder="/colaborador.png o https://..."
+                                  />
+                                  {renderImagePickerActions({ kind: "collaboratorPhoto", index })}
+                                </div>
+                              </div>
+                              <label className="field">
+                                <span className="compact-label">Portfolio</span>
+                                <input
+                                  value={collaborator.portfolioUrl}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "portfolioUrl", event.target.value)}
+                                  placeholder="https://..."
+                                />
+                              </label>
+                              <label className="field">
+                                <span className="compact-label">GitHub</span>
+                                <input
+                                  value={collaborator.githubUrl}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "githubUrl", event.target.value)}
+                                  placeholder="https://github.com/..."
+                                />
+                              </label>
+                              <label className="field">
+                                <span className="compact-label">LinkedIn</span>
+                                <input
+                                  value={collaborator.linkedinUrl}
+                                  onChange={(event) => updateOptionalItem("collaborators", index, "linkedinUrl", event.target.value)}
+                                  placeholder="https://linkedin.com/in/..."
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="optional-group">
+                    <div className="optional-group-head">
+                      <div>
+                        <FieldLabel hint={fieldHints.liveUrl}>Demo en vivo</FieldLabel>
+                        <p>Enlace opcional para mostrar la demo interactiva al final de la ficha.</p>
+                      </div>
+                    </div>
+                    <label className="field field-wide">
+                      <span className="compact-label">URL demo</span>
+                      <input
+                        value={projectForm.liveUrl}
+                        onChange={(event) => updateProjectField("liveUrl", event.target.value)}
+                        placeholder="https://..."
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 {imagePickMessage && (
@@ -1856,7 +2768,7 @@ function App() {
                 {projectError && <p className="form-message is-error">{projectError}</p>}
                 {projectResult && (
                   <div className="form-message is-success">
-                    <strong>Proyecto creado: {projectResult.slug}</strong>
+                    <strong>Proyecto guardado: {projectResult.slug}</strong>
                     <span>Total: {projectResult.totalProjects}</span>
                   </div>
                 )}
@@ -1868,10 +2780,351 @@ function App() {
                 </button>
                 <button type="submit" className="primary-button" disabled={isSavingProject}>
                   <Save size={17} strokeWidth={2.2} />
-                  {isSavingProject ? "Creando..." : "Crear proyecto"}
+                  {isSavingProject ? (editingSlug ? "Guardando..." : "Creando...") : editingSlug ? "Guardar cambios" : "Crear proyecto"}
                 </button>
               </div>
             </form>
+            ) : workspaceView === "certificate-edit" ? (
+              <form className="project-form-panel" onSubmit={handleSaveCertificate}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">Certificado</span>
+                    <h3>Archivo y metadatos</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Titulo ES</span>
+                      <input
+                        value={certificateForm.title}
+                        onChange={(event) => updateCertificateField("title", event.target.value)}
+                        placeholder="Certificado profesional"
+                        required
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">ID / slug</span>
+                      <input
+                        value={certificateForm.id}
+                        onChange={(event) => updateCertificateField("id", event.target.value)}
+                        placeholder="certificado-profesional"
+                        required
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Archivo</span>
+                      <div className="media-picker-row">
+                        <input
+                          value={certificateForm.fileName}
+                          onChange={(event) => updateCertificateField("fileName", event.target.value)}
+                          placeholder="certificado.pdf"
+                          required
+                        />
+                        <div className="media-picker-actions">
+                          <button type="button" className="media-picker-button" onClick={() => pickCertificateFile("import")}>
+                            <ImagePlus size={15} strokeWidth={2.2} />
+                            Importar
+                          </button>
+                          <button type="button" className="media-picker-button" onClick={() => pickCertificateFile("existing")}>
+                            <FolderOpen size={15} strokeWidth={2.2} />
+                            Existente
+                          </button>
+                        </div>
+                      </div>
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Tipo</span>
+                      <input
+                        value={certificateForm.certificateType}
+                        onChange={(event) => updateCertificateField("certificateType", event.target.value)}
+                        placeholder="pdf o image"
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">MIME</span>
+                      <input
+                        value={certificateForm.mime}
+                        onChange={(event) => updateCertificateField("mime", event.target.value)}
+                        placeholder="application/pdf"
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Emisor ES</span>
+                      <input
+                        value={certificateForm.issuer}
+                        onChange={(event) => updateCertificateField("issuer", event.target.value)}
+                        placeholder="Formacion"
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Fecha</span>
+                      <input
+                        value={certificateForm.issued}
+                        onChange={(event) => updateCertificateField("issued", event.target.value)}
+                        placeholder="2026"
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Tags ES</span>
+                      <input
+                        value={certificateForm.tags}
+                        onChange={(event) => updateCertificateField("tags", event.target.value)}
+                        placeholder="PDF, Profesional"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Version en ingles</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Title EN</span>
+                      <input value={certificateForm.titleEn} onChange={(event) => updateCertificateField("titleEn", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Issuer EN</span>
+                      <input value={certificateForm.issuerEn} onChange={(event) => updateCertificateField("issuerEn", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Tags EN</span>
+                      <input value={certificateForm.tagsEn} onChange={(event) => updateCertificateField("tagsEn", event.target.value)} />
+                    </label>
+                  </div>
+
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>Certificado guardado: {contentResult.key}</strong>
+                      <span>Total: {contentResult.totalItems}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={() => openCertificateEditor("new")}>Limpiar</button>
+                  {editingCertificateId ? (
+                    <button
+                      type="button"
+                      className="secondary-button danger-action"
+                      onClick={() => handleDeleteCertificate(editingCertificateId)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar certificado"}
+                  </button>
+                </div>
+              </form>
+            ) : workspaceView === "blog-edit" ? (
+              <form className="project-form-panel" onSubmit={handleSaveBlog}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">Blog</span>
+                    <h3>Nota y detalle</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Titulo ES</span>
+                      <input value={blogForm.title} onChange={(event) => updateBlogField("title", event.target.value)} required />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Slug</span>
+                      <input value={blogForm.slug} onChange={(event) => updateBlogField("slug", event.target.value)} required />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Categoria ES</span>
+                      <input value={blogForm.category} onChange={(event) => updateBlogField("category", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Filtro</span>
+                      <input value={blogForm.filter} onChange={(event) => updateBlogField("filter", event.target.value)} placeholder="web, design, content" />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Fecha ES</span>
+                      <input value={blogForm.date} onChange={(event) => updateBlogField("date", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Lectura ES</span>
+                      <input value={blogForm.readTime} onChange={(event) => updateBlogField("readTime", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Visual class</span>
+                      <input value={blogForm.visualClass} onChange={(event) => updateBlogField("visualClass", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Extracto ES</span>
+                      <textarea value={blogForm.excerpt} onChange={(event) => updateBlogField("excerpt", event.target.value)} rows={3} required />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Cuerpo corto ES</span>
+                      <textarea value={blogForm.body} onChange={(event) => updateBlogField("body", event.target.value)} rows={4} required />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Introduccion ES</span>
+                      <textarea value={blogForm.introduction} onChange={(event) => updateBlogField("introduction", event.target.value)} rows={4} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Parrafos ES</span>
+                      <textarea value={blogForm.paragraphs} onChange={(event) => updateBlogField("paragraphs", event.target.value)} rows={7} placeholder="Un parrafo por linea" />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Highlights ES</span>
+                      <textarea value={blogForm.highlights} onChange={(event) => updateBlogField("highlights", event.target.value)} rows={4} placeholder="Un punto por linea" />
+                    </label>
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Version en ingles</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Title EN</span>
+                      <input value={blogForm.titleEn} onChange={(event) => updateBlogField("titleEn", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Category EN</span>
+                      <input value={blogForm.categoryEn} onChange={(event) => updateBlogField("categoryEn", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Date EN</span>
+                      <input value={blogForm.dateEn} onChange={(event) => updateBlogField("dateEn", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Read time EN</span>
+                      <input value={blogForm.readTimeEn} onChange={(event) => updateBlogField("readTimeEn", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Excerpt EN</span>
+                      <textarea value={blogForm.excerptEn} onChange={(event) => updateBlogField("excerptEn", event.target.value)} rows={3} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Body EN</span>
+                      <textarea value={blogForm.bodyEn} onChange={(event) => updateBlogField("bodyEn", event.target.value)} rows={4} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Introduction EN</span>
+                      <textarea value={blogForm.introductionEn} onChange={(event) => updateBlogField("introductionEn", event.target.value)} rows={4} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Paragraphs EN</span>
+                      <textarea value={blogForm.paragraphsEn} onChange={(event) => updateBlogField("paragraphsEn", event.target.value)} rows={7} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Highlights EN</span>
+                      <textarea value={blogForm.highlightsEn} onChange={(event) => updateBlogField("highlightsEn", event.target.value)} rows={4} />
+                    </label>
+                  </div>
+
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>Nota guardada: {contentResult.key}</strong>
+                      <span>Total: {contentResult.totalItems}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={() => openBlogEditor("new")}>Limpiar</button>
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar nota"}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form className="project-form-panel" onSubmit={handleSaveInterest}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">Intereses</span>
+                    <h3>Referencia personal</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Titulo ES</span>
+                      <input value={interestForm.title} onChange={(event) => updateInterestField("title", event.target.value)} required />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Filtro</span>
+                      <input value={interestForm.filter} onChange={(event) => updateInterestField("filter", event.target.value)} placeholder="movies, series, anime, books, games" />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Categoria ES</span>
+                      <input value={interestForm.category} onChange={(event) => updateInterestField("category", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Visual class</span>
+                      <input value={interestForm.visualClass} onChange={(event) => updateInterestField("visualClass", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Meta ES</span>
+                      <input value={interestForm.meta} onChange={(event) => updateInterestField("meta", event.target.value)} placeholder="Serie / estructura narrativa" />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Descripcion ES</span>
+                      <textarea value={interestForm.description} onChange={(event) => updateInterestField("description", event.target.value)} rows={3} required />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Cuerpo ES</span>
+                      <textarea value={interestForm.body} onChange={(event) => updateInterestField("body", event.target.value)} rows={5} required />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Tags ES</span>
+                      <input value={interestForm.tags} onChange={(event) => updateInterestField("tags", event.target.value)} placeholder="Color, Ritmo, Sistema" />
+                    </label>
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Version en ingles</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Title EN</span>
+                      <input value={interestForm.titleEn} onChange={(event) => updateInterestField("titleEn", event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Category EN</span>
+                      <input value={interestForm.categoryEn} onChange={(event) => updateInterestField("categoryEn", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Meta EN</span>
+                      <input value={interestForm.metaEn} onChange={(event) => updateInterestField("metaEn", event.target.value)} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Description EN</span>
+                      <textarea value={interestForm.descriptionEn} onChange={(event) => updateInterestField("descriptionEn", event.target.value)} rows={3} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Body EN</span>
+                      <textarea value={interestForm.bodyEn} onChange={(event) => updateInterestField("bodyEn", event.target.value)} rows={5} />
+                    </label>
+                    <label className="field field-wide">
+                      <span className="compact-label">Tags EN</span>
+                      <input value={interestForm.tagsEn} onChange={(event) => updateInterestField("tagsEn", event.target.value)} />
+                    </label>
+                  </div>
+
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>Interes guardado: {contentResult.key}</strong>
+                      <span>Total: {contentResult.totalItems}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={() => openInterestEditor("new")}>Limpiar</button>
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar interes"}
+                  </button>
+                </div>
+              </form>
+            )}
           </section>
         )}
       </div>

@@ -86,6 +86,40 @@ function pickArray(current, fallback, key) {
   return Array.isArray(fallbackValue) ? fallbackValue : [];
 }
 
+function pickResultText(current, fallback) {
+  const currentValue = current?.results;
+  const fallbackValue = fallback?.results;
+
+  if (Array.isArray(currentValue) && currentValue.length > 0) {
+    return currentValue.join("\n");
+  }
+
+  if (hasText(currentValue)) {
+    return currentValue;
+  }
+
+  if (Array.isArray(fallbackValue) && fallbackValue.length > 0) {
+    return fallbackValue.join("\n");
+  }
+
+  return hasText(fallbackValue) ? fallbackValue : "";
+}
+
+function normalizeCollaborators(detail, lang) {
+  return Array.isArray(detail.collaborators)
+    ? detail.collaborators
+        .filter((collaborator) => hasText(collaborator?.name))
+        .map((collaborator) => ({
+          name: collaborator.name,
+          role: pickLocalized(collaborator.role, lang, ""),
+          photo: collaborator.photo ?? "",
+          portfolioUrl: collaborator.portfolioUrl ?? "",
+          githubUrl: collaborator.githubUrl ?? "",
+          linkedinUrl: collaborator.linkedinUrl ?? "",
+        }))
+    : [];
+}
+
 function normalizeLinks(detail, project, lang) {
   const liveUrl = detail.liveUrl ?? project.liveUrl;
   const links = Array.isArray(detail.links) ? detail.links : [];
@@ -120,8 +154,7 @@ function normalizeMedia(project, detail, lang, title) {
   const projectImages = gallery
     .map((image) => (typeof image === "string" ? { src: image } : image))
     .filter((image) => hasText(image?.src));
-  const coverImage = hasText(projectMedia.cover) ? [{ src: projectMedia.cover }] : [];
-  const normalizedImages = images.length > 0 ? images : [...coverImage, ...projectImages];
+  const normalizedImages = images.length > 0 ? images : projectImages;
   const videos = Array.isArray(media.videos) ? media.videos : [];
   const projectVideo = projectMedia.video?.youtubeId || projectMedia.video?.playlistId || projectMedia.video?.url ? [projectMedia.video] : [];
   const youtubeSource = projectMedia.video?.youtubeId || projectMedia.video?.playlistId ? projectMedia.video : media.video;
@@ -278,7 +311,7 @@ function buildLocale(project, lang) {
     challenge: pickField(detailLang, detailEs, "challenge"),
     solution: pickField(detailLang, detailEs, "solution"),
     process: pickArray(detailLang, detailEs, "process"),
-    results: pickArray(detailLang, detailEs, "results"),
+    results: pickResultText(detailLang, detailEs),
     deliverables: pickArray(detailLang, detailEs, "deliverables"),
     learnings: pickArray(detailLang, detailEs, "learnings"),
     interactiveTitle: pickField(detailLang, detailEs, "interactiveTitle", `${title}`),
@@ -290,7 +323,9 @@ function buildLocale(project, lang) {
           label: pickLocalized(metric.label, lang, metric.label ?? ""),
         }))
       : [],
+    collaborators: normalizeCollaborators(detail, lang),
     links: normalizeLinks(detail, project, lang),
+    previewImage: detail.previewImage ?? project.previewImage ?? project.media?.cover,
     media: normalizeMedia(project, detail, lang, title),
     modules: normalizeModules(project, lang),
     modulesOrder: normalizeModulesOrder(project),
@@ -310,7 +345,7 @@ function buildProjectDetail(project) {
     ...project,
     ...defaultLocale,
     locales,
-    previewImage: detail.previewImage ?? project.previewImage,
+    previewImage: detail.previewImage ?? project.previewImage ?? project.media?.cover,
     visualClass: detail.visualClass ?? project.visualClass,
     liveUrl: detail.liveUrl ?? project.liveUrl,
     githubUrl: project.githubUrl,

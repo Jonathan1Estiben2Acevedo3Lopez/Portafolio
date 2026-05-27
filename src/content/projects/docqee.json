@@ -19,6 +19,7 @@
       "en": "Web",
       "es": "Web"
     },
+    "collaborators": [],
     "en": {
       "challenge": "Docqee addresses the difficulty dental students face in finding volunteer patients, replacing an informal and poorly traceable process with an organized platform that connects patients and students within a supervised university environment.",
       "deliverables": [],
@@ -34,28 +35,7 @@
         "Service Integration",
         "Prototype Validation"
       ],
-      "results": [
-        "Docqee became a functional prototype of a web platform designed to organize the connection between volunteer patients and dental students in supervised university clinical practices. Based on surveys conducted with students and potential patients",
-        "the system requirements were defined",
-        "a web architecture was designed with modules for the platform administrator",
-        "university administrator",
-        "student",
-        "and patient",
-        "and features such as profiles",
-        "student search",
-        "requests",
-        "appointments",
-        "chat",
-        "notifications",
-        "and ratings were developed. In addition",
-        "the prototype was validated through automated end-to-end tests",
-        "achieving 71 approved cases out of 71 executed",
-        "as well as a usability evaluation with 12 dental students",
-        "who positively rated the student module. Overall",
-        "the project demonstrated that the platform can serve as a functional foundation to make the interaction between patients and students clearer",
-        "more organized",
-        "and more traceable within a supervised academic environment."
-      ],
+      "results": "Docqee became a functional prototype of a web platform designed to organize the connection between volunteer patients and dental students in supervised university clinical practices. Based on surveys conducted with students and potential patients, the system requirements were defined, a web architecture was designed with modules for the platform administrator, university administrator, student, and patient, and features such as profiles, student search, requests, appointments, chat, notifications, and ratings were developed. In addition, the prototype was validated through automated end-to-end tests, achieving 71 approved cases out of 71 executed, as well as a usability evaluation with 12 dental students, who positively rated the student module. Overall, the project demonstrated that the platform can serve as a functional foundation to make the interaction between patients and students clearer, more organized, and more traceable within a supervised academic environment.",
       "solution": "Docqee offers an organized platform to connect volunteer patients with dental students, integrating search, requests, appointments, chat, ratings, and institutional management within a supervised university environment.",
       "summary": "Docqee is a web platform that facilitates the connection between volunteer patients and dental students in supervised university clinical practices."
     },
@@ -74,25 +54,7 @@
         "Integración de servicios",
         "Validación del prototipo"
       ],
-      "results": [
-        "Docqee logró consolidarse como un prototipo funcional de plataforma web para organizar la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas. A partir de encuestas aplicadas a estudiantes y posibles pacientes",
-        "se definieron los requerimientos del sistema",
-        "se diseñó una arquitectura web con módulos para administrador de plataforma",
-        "administrador universitario",
-        "estudiante y paciente",
-        "y se construyeron funcionalidades como perfiles",
-        "búsqueda de estudiantes",
-        "solicitudes",
-        "citas",
-        "chat",
-        "notificaciones y valoraciones. Además",
-        "el prototipo fue validado mediante pruebas automatizadas end-to-end",
-        "logrando 71 casos aprobados de 71 ejecutados",
-        "y una evaluación de usabilidad con 12 estudiantes de odontología",
-        "quienes valoraron favorablemente el módulo de estudiantes. En conjunto",
-        "el proyecto demostró que la plataforma puede servir como una base funcional para hacer más claro",
-        "organizado y trazable el contacto entre pacientes y estudiantes dentro de un entorno académico supervisado."
-      ],
+      "results": "Docqee logró consolidarse como un prototipo funcional de plataforma web para organizar la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas. A partir de encuestas aplicadas a estudiantes y posibles pacientes, se definieron los requerimientos del sistema, se diseñó una arquitectura web con módulos para administrador de plataforma, administrador universitario, estudiante y paciente, y se construyeron funcionalidades como perfiles, búsqueda de estudiantes, solicitudes, citas, chat, notificaciones y valoraciones. Además, el prototipo fue validado mediante pruebas automatizadas end-to-end, logrando 71 casos aprobados de 71 ejecutados, y una evaluación de usabilidad con 12 estudiantes de odontología, quienes valoraron favorablemente el módulo de estudiantes. En conjunto, el proyecto demostró que la plataforma puede servir como una base funcional para hacer más claro, organizado y trazable el contacto entre pacientes y estudiantes dentro de un entorno académico supervisado.",
       "solution": "Docqee ofrece una plataforma organizada para conectar pacientes voluntarios con estudiantes de odontología, integrando búsqueda, solicitudes, citas, chat, valoraciones y gestión institucional en un entorno universitario supervisado.",
       "summary": "Docqee es una plataforma web que facilita la vinculación entre pacientes voluntarios y estudiantes de odontología en prácticas clínicas universitarias supervisadas."
     },
@@ -243,6 +205,7 @@
         }
       }
     ],
+    "previewImage": "/project-assets/docqee/captura-de-pantalla-2026-05-24-094147-1.png",
     "sectionOrder": [
       "modules",
       "images",
@@ -335,7 +298,7 @@
     "studio-module-4"
   ],
   "order": 10,
-  "previewImage": "/project-assets/docqee/docqee-preview-2026.png",
+  "previewImage": "/project-assets/docqee/captura-de-pantalla-2026-05-24-094147-1.png",
   "sectionOrder": [
     "modules",
     "images",

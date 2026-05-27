@@ -5,10 +5,20 @@ pub fn run() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       commands::studio_status,
+      commands::list_projects,
+      commands::get_project,
+      commands::list_studio_content,
+      commands::get_studio_content,
       commands::pick_project_image,
+      commands::pick_certificate_file,
       commands::write_project_preview,
       commands::open_project_preview,
-      commands::create_project
+      commands::create_project,
+      commands::update_project,
+      commands::save_certificate,
+      commands::delete_certificate,
+      commands::save_blog_post,
+      commands::save_interest
     ])
     .run(tauri::generate_context!())
     .expect("error while running Project Studio");

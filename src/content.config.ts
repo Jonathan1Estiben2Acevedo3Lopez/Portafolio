@@ -16,6 +16,8 @@ const optionalLocalizedStringSchema = z.object({
 });
 
 const localizedStringSchema = z.union([z.string().min(1), optionalLocalizedStringSchema]);
+const optionalTextBlockSchema = z.union([z.string(), z.array(z.string())]).default("");
+const optionalTextBlockSchemaOptional = z.union([z.string(), z.array(z.string())]).optional();
 
 const optionalUrlSchema = z.union([z.string().url(), z.literal("")]).optional();
 
@@ -28,7 +30,7 @@ const detailLanguageSchema = z.object({
   challenge: z.string().min(1),
   solution: z.string().min(1),
   process: z.array(z.string()).default([]),
-  results: z.array(z.string()).default([]),
+  results: optionalTextBlockSchema,
   deliverables: z.array(z.string()).default([]),
   learnings: z.array(z.string()).default([]),
   interactiveTitle: z.string().optional(),
@@ -44,7 +46,7 @@ const optionalDetailLanguageSchema = z.object({
   challenge: z.string().optional(),
   solution: z.string().optional(),
   process: z.array(z.string()).optional(),
-  results: z.array(z.string()).optional(),
+  results: optionalTextBlockSchemaOptional,
   deliverables: z.array(z.string()).optional(),
   learnings: z.array(z.string()).optional(),
   interactiveTitle: z.string().optional(),
@@ -76,6 +78,18 @@ const detailSchema = z.object({
         step: z.string().min(1),
         title: localizedStringSchema,
         description: localizedStringSchema,
+      }),
+    )
+    .default([]),
+  collaborators: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        role: localizedStringSchema.optional(),
+        photo: z.string().optional(),
+        portfolioUrl: z.string().optional(),
+        githubUrl: z.string().optional(),
+        linkedinUrl: z.string().optional(),
       }),
     )
     .default([]),

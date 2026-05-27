@@ -46,6 +46,16 @@ export interface ProjectFlowStep {
   descriptionEn: string;
 }
 
+export interface ProjectCollaborator {
+  name: string;
+  role: string;
+  roleEn: string;
+  photo: string;
+  portfolioUrl: string;
+  githubUrl: string;
+  linkedinUrl: string;
+}
+
 export interface ProjectImage {
   src: string;
   altEs: string;
@@ -107,6 +117,7 @@ export interface ProjectFormState {
   flow: ProjectFlowStep[];
   images: ProjectImage[];
   videos: ProjectVideo[];
+  collaborators: ProjectCollaborator[];
   sectionOrder: ProjectPreviewSection[];
 }
 
@@ -120,4 +131,90 @@ export interface CreatedProject {
 export interface ProjectPreviewResult {
   url: string;
   filePath: string;
+}
+
+export interface ProjectListItem {
+  slug: string;
+  title: string;
+  year: string;
+  status: string;
+  showInHome: boolean;
+  filePath: string;
+}
+
+export type ContentKind = "certificates" | "blog" | "interests";
+
+export interface StudioContentItem {
+  key: string;
+  title: string;
+  subtitle: string;
+  detail: string;
+  filePath: string;
+}
+
+export interface SavedContent {
+  key: string;
+  filePath: string;
+  totalItems: number;
+}
+
+export interface PickedCertificateFile {
+  fileName: string;
+  fileType: string;
+  mime: string;
+}
+
+export interface CertificateFormState {
+  id: string;
+  fileName: string;
+  certificateType: string;
+  mime: string;
+  issued: string;
+  title: string;
+  issuer: string;
+  tags: string;
+  titleEn: string;
+  issuerEn: string;
+  tagsEn: string;
+}
+
+export interface BlogFormState {
+  slug: string;
+  filter: string;
+  visualClass: string;
+  category: string;
+  date: string;
+  readTime: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  introduction: string;
+  paragraphs: string;
+  highlights: string;
+  categoryEn: string;
+  dateEn: string;
+  readTimeEn: string;
+  titleEn: string;
+  excerptEn: string;
+  bodyEn: string;
+  introductionEn: string;
+  paragraphsEn: string;
+  highlightsEn: string;
+}
+
+export interface InterestFormState {
+  filter: string;
+  visualClass: string;
+  category: string;
+  title: string;
+  meta: string;
+  description: string;
+  body: string;
+  tags: string;
+  categoryEn: string;
+  titleEn: string;
+  metaEn: string;
+  descriptionEn: string;
+  bodyEn: string;
+  tagsEn: string;
 }

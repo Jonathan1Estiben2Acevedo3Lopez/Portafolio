@@ -11,7 +11,7 @@ export const studioSections: StudioSection[] = [
     detail: "Sincronizable con src/data/projects.generated.json",
     accent: "cyan",
     icon: Boxes,
-    actions: ["Nuevo proyecto", "Ordenar destacados", "Revisar enlaces"],
+    actions: ["Nuevo proyecto", "Editar proyecto", "Ordenar destacados", "Revisar enlaces"],
   },
   {
     id: "certificates",

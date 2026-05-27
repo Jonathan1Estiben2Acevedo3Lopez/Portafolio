@@ -476,7 +476,8 @@ h1 {
   display: flex;
   min-height: 100%;
   padding: 18px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   flex-direction: column;
   border-radius: 8px;
   background:
@@ -572,6 +573,105 @@ h1 {
   border-color: rgb(var(--accent) / 0.58);
   color: rgb(var(--accent));
   transform: translateX(2px);
+}
+
+.active-projects-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  border: 1px solid rgb(var(--color-outline) / 0.24);
+  border-radius: 8px;
+  background: rgb(var(--color-background) / 0.18);
+  padding: 12px;
+}
+
+.active-projects-head,
+.active-project-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.active-projects-head strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.active-projects-head span {
+  display: block;
+  margin-top: 3px;
+  color: rgb(var(--color-on-muted));
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.active-projects-head button,
+.active-project-row button {
+  border: 1px solid rgb(var(--accent) / 0.34);
+  border-radius: 8px;
+  color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.1);
+  cursor: pointer;
+  padding: 7px 9px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.active-projects-list {
+  display: grid;
+  gap: 8px;
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.active-project-row {
+  border: 1px solid rgb(var(--color-outline) / 0.2);
+  border-radius: 8px;
+  background: rgb(var(--color-surface-raised) / 0.32);
+  padding: 9px;
+}
+
+.active-project-row div {
+  min-width: 0;
+}
+
+.active-project-row-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.active-project-row strong,
+.active-project-row span {
+  display: block;
+}
+
+.active-project-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.84rem;
+}
+
+.active-project-row span,
+.active-projects-empty {
+  color: rgb(var(--color-on-muted));
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.active-projects-empty {
+  margin: 0;
+}
+
+.active-project-row button.danger-action,
+.secondary-button.danger-action {
+  border-color: rgb(var(--color-error) / 0.36);
+  color: rgb(var(--color-error));
+  background: rgb(var(--color-error) / 0.1);
 }
 
 .accent-cyan {

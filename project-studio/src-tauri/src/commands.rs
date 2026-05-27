@@ -12,6 +12,7 @@ use std::{
 use std::os::windows::process::CommandExt;
 
 const IMAGE_EXTENSIONS: &[&str] = &["png", "jpg", "jpeg", "webp", "gif", "svg"];
+const CERTIFICATE_EXTENSIONS: &[&str] = &["pdf", "png", "jpg", "jpeg", "webp"];
 const PREVIEW_SLUG: &str = "studio-preview";
 const PREVIEW_PORT: u16 = 4321;
 #[cfg(target_os = "windows")]
@@ -77,6 +78,18 @@ pub struct ProjectVideoInput {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ProjectCollaboratorInput {
+  name: String,
+  role: Option<String>,
+  role_en: Option<String>,
+  photo: Option<String>,
+  portfolio_url: Option<String>,
+  github_url: Option<String>,
+  linkedin_url: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateProjectInput {
   title: String,
   slug: String,
@@ -130,6 +143,8 @@ pub struct CreateProjectInput {
   #[serde(default)]
   videos: Vec<ProjectVideoInput>,
   #[serde(default)]
+  collaborators: Vec<ProjectCollaboratorInput>,
+  #[serde(default)]
   section_order: Vec<String>,
 }
 
@@ -149,9 +164,152 @@ pub struct ProjectPreviewResult {
   file_path: String,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectListItem {
+  slug: String,
+  title: String,
+  year: String,
+  status: String,
+  show_in_home: bool,
+  file_path: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StudioContentItem {
+  key: String,
+  title: String,
+  subtitle: String,
+  detail: String,
+  file_path: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SavedContent {
+  key: String,
+  file_path: String,
+  total_items: usize,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PickedCertificateFile {
+  file_name: String,
+  file_type: String,
+  mime: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CertificateInput {
+  id: String,
+  file_name: String,
+  certificate_type: String,
+  mime: String,
+  issued: String,
+  title: String,
+  issuer: String,
+  tags: String,
+  title_en: Option<String>,
+  issuer_en: Option<String>,
+  tags_en: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BlogInput {
+  slug: String,
+  filter: String,
+  visual_class: String,
+  category: String,
+  date: String,
+  read_time: String,
+  title: String,
+  excerpt: String,
+  body: String,
+  introduction: String,
+  paragraphs: String,
+  highlights: String,
+  category_en: Option<String>,
+  date_en: Option<String>,
+  read_time_en: Option<String>,
+  title_en: Option<String>,
+  excerpt_en: Option<String>,
+  body_en: Option<String>,
+  introduction_en: Option<String>,
+  paragraphs_en: Option<String>,
+  highlights_en: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InterestInput {
+  filter: String,
+  visual_class: String,
+  category: String,
+  title: String,
+  meta: String,
+  description: String,
+  body: String,
+  tags: String,
+  category_en: Option<String>,
+  title_en: Option<String>,
+  meta_en: Option<String>,
+  description_en: Option<String>,
+  body_en: Option<String>,
+  tags_en: Option<String>,
+}
+
 #[tauri::command]
 pub fn studio_status() -> &'static str {
   "ready"
+}
+
+#[tauri::command]
+pub fn list_projects() -> Result<Vec<ProjectListItem>, String> {
+  let root_dir = portfolio_root()?;
+  let projects_dir = root_dir.join("src").join("content").join("projects");
+  let projects = read_project_values(&projects_dir)?;
+
+  Ok(
+    projects
+      .into_iter()
+      .filter_map(|project| {
+        let slug = project.get("slug")?.as_str()?.to_string();
+        let title = project
+          .pointer("/copy/es/title")
+          .and_then(Value::as_str)
+          .unwrap_or(slug.as_str())
+          .to_string();
+        let year = project.get("year").and_then(Value::as_str).unwrap_or("").to_string();
+        let status = project.get("status").and_then(Value::as_str).unwrap_or("completed").to_string();
+        let show_in_home = project.get("showInHome").and_then(Value::as_bool).unwrap_or(true);
+        let file_path = display_path(&projects_dir.join(format!("{slug}.json")));
+
+        Some(ProjectListItem {
+          slug,
+          title,
+          year,
+          status,
+          show_in_home,
+          file_path,
+        })
+      })
+      .collect(),
+  )
+}
+
+#[tauri::command]
+pub fn get_project(slug: String) -> Result<Value, String> {
+  let root_dir = portfolio_root()?;
+  let projects_dir = root_dir.join("src").join("content").join("projects");
+  let slug = slugify(&slug);
+  let file_path = projects_dir.join(format!("{slug}.json"));
+  let content = fs::read_to_string(&file_path).map_err(|error| format!("{}: {error}", display_path(&file_path)))?;
+
+  serde_json::from_str(&content).map_err(|error| format!("{}: {error}", display_path(&file_path)))
 }
 
 #[tauri::command]
@@ -187,6 +345,203 @@ pub fn pick_project_image(source: String, slug: Option<String>) -> Result<Option
   }
 
   Err("Origen de imagen no valido.".to_string())
+}
+
+#[tauri::command]
+pub fn list_studio_content(kind: String) -> Result<Vec<StudioContentItem>, String> {
+  let root_dir = portfolio_root()?;
+  let kind = kind.trim();
+  let file_path = studio_content_file(&root_dir, kind)?;
+  let items = read_json_array(&file_path)?;
+
+  Ok(
+    items
+      .iter()
+      .enumerate()
+      .map(|(index, item)| studio_content_item(kind, item, index, &file_path))
+      .collect(),
+  )
+}
+
+#[tauri::command]
+pub fn get_studio_content(kind: String, key: String) -> Result<Value, String> {
+  let root_dir = portfolio_root()?;
+  let kind = kind.trim();
+  let file_path = studio_content_file(&root_dir, kind)?;
+  let items = read_json_array(&file_path)?;
+  let key = key.trim();
+
+  match kind {
+    "certificates" => items
+      .into_iter()
+      .find(|item| item.get("id").and_then(Value::as_str) == Some(key))
+      .ok_or_else(|| format!("No se encontro el certificado \"{key}\".")),
+    "blog" => items
+      .into_iter()
+      .find(|item| item.get("slug").and_then(Value::as_str) == Some(key))
+      .ok_or_else(|| format!("No se encontro la nota \"{key}\".")),
+    "interests" => {
+      let index = key.parse::<usize>().map_err(|_| "Indice de interes no valido.".to_string())?;
+      items
+        .into_iter()
+        .nth(index)
+        .ok_or_else(|| format!("No se encontro el interes #{index}."))
+    }
+    _ => Err("Modulo no soportado.".to_string()),
+  }
+}
+
+#[tauri::command]
+pub fn pick_certificate_file(source: String) -> Result<Option<PickedCertificateFile>, String> {
+  let source = source.trim().to_lowercase();
+  let root_dir = portfolio_root()?;
+  let certificates_dir = root_dir.join("src").join("certificados");
+  fs::create_dir_all(&certificates_dir).map_err(|error| error.to_string())?;
+
+  let mut dialog = rfd::FileDialog::new().add_filter("Certificados", CERTIFICATE_EXTENSIONS);
+  if source == "existing" {
+    dialog = dialog.set_directory(&certificates_dir);
+  }
+
+  let Some(selected_path) = dialog.pick_file() else {
+    return Ok(None);
+  };
+
+  if !is_certificate_file(&selected_path) {
+    return Err("Selecciona un PDF o una imagen valida: PDF, PNG, JPG o WEBP.".to_string());
+  }
+
+  let final_path = if source == "existing" && is_inside_dir(&certificates_dir, &selected_path)? {
+    selected_path
+  } else if source == "import" || source == "existing" {
+    copy_certificate_to_dir(&certificates_dir, &selected_path)?
+  } else {
+    return Err("Origen de certificado no valido.".to_string());
+  };
+
+  let file_name = final_path
+    .file_name()
+    .and_then(|name| name.to_str())
+    .ok_or_else(|| "No se pudo leer el nombre del archivo.".to_string())?
+    .to_string();
+  let (file_type, mime) = certificate_type_and_mime(&file_name);
+
+  Ok(Some(PickedCertificateFile {
+    file_name,
+    file_type,
+    mime,
+  }))
+}
+
+#[tauri::command]
+pub fn save_certificate(existing_id: Option<String>, input: CertificateInput) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "certificates")?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&input.id, "El ID del certificado es obligatorio.")?);
+
+  if id.is_empty() {
+    return Err("El ID del certificado no puede quedar vacio.".to_string());
+  }
+
+  let existing_id = existing_id.as_deref().map(str::trim).filter(|value| !value.is_empty());
+  if items.iter().any(|item| {
+    item.get("id").and_then(Value::as_str) == Some(id.as_str())
+      && existing_id != Some(id.as_str())
+  }) {
+    return Err(format!("Ya existe un certificado con el ID \"{id}\"."));
+  }
+
+  let certificate = build_certificate_value(&input, &id)?;
+  upsert_by_field(&mut items, "id", existing_id, &id, certificate)?;
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn delete_certificate(id: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "certificates")?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&id, "El ID del certificado es obligatorio.")?);
+  let original_len = items.len();
+
+  items.retain(|item| item.get("id").and_then(Value::as_str) != Some(id.as_str()));
+
+  if items.len() == original_len {
+    return Err(format!("No se encontro el certificado \"{id}\"."));
+  }
+
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn save_blog_post(existing_slug: Option<String>, input: BlogInput) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "blog")?;
+  let mut items = read_json_array(&file_path)?;
+  let slug = slugify(&clean_required(&input.slug, "El slug de la nota es obligatorio.")?);
+
+  if slug.is_empty() {
+    return Err("El slug de la nota no puede quedar vacio.".to_string());
+  }
+
+  let existing_slug = existing_slug.as_deref().map(str::trim).filter(|value| !value.is_empty());
+  if items.iter().any(|item| {
+    item.get("slug").and_then(Value::as_str) == Some(slug.as_str())
+      && existing_slug != Some(slug.as_str())
+  }) {
+    return Err(format!("Ya existe una nota con el slug \"{slug}\"."));
+  }
+
+  let post = build_blog_value(&input, &slug)?;
+  upsert_by_field(&mut items, "slug", existing_slug, &slug, post)?;
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key: slug,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn save_interest(existing_index: Option<usize>, input: InterestInput) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "interests")?;
+  let mut items = read_json_array(&file_path)?;
+  let title = clean_required(&input.title, "El titulo del interes es obligatorio.")?;
+  let interest = build_interest_value(&input, &title)?;
+
+  let key = if let Some(index) = existing_index {
+    if index >= items.len() {
+      return Err(format!("No existe el interes #{index}."));
+    }
+    items[index] = interest;
+    index.to_string()
+  } else {
+    items.push(interest);
+    (items.len() - 1).to_string()
+  };
+
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
 }
 
 #[tauri::command]
@@ -273,6 +628,66 @@ pub fn create_project(input: CreateProjectInput) -> Result<CreatedProject, Strin
   })
 }
 
+#[tauri::command]
+pub fn update_project(existing_slug: String, input: CreateProjectInput) -> Result<CreatedProject, String> {
+  let root_dir = portfolio_root()?;
+  let projects_dir = root_dir.join("src").join("content").join("projects");
+  let generated_file = root_dir
+    .join("src")
+    .join("data")
+    .join("projects.generated.json");
+
+  fs::create_dir_all(&projects_dir).map_err(|error| error.to_string())?;
+
+  let existing_slug = slugify(&existing_slug);
+  let old_file_path = projects_dir.join(format!("{existing_slug}.json"));
+  if !old_file_path.exists() {
+    return Err(format!("No existe un proyecto con el slug \"{existing_slug}\"."));
+  }
+
+  let slug = slugify(&clean_required(&input.slug, "El slug es obligatorio.")?);
+  if slug.is_empty() {
+    return Err("El slug no puede quedar vacio.".to_string());
+  }
+
+  let file_path = projects_dir.join(format!("{slug}.json"));
+  if slug != existing_slug && file_path.exists() {
+    return Err(format!("Ya existe un proyecto con el slug \"{slug}\"."));
+  }
+
+  let existing_projects = read_project_values(&projects_dir)?;
+  let existing_project = existing_projects
+    .iter()
+    .find(|project| project.get("slug").and_then(Value::as_str) == Some(existing_slug.as_str()))
+    .ok_or_else(|| format!("No se encontro el proyecto \"{existing_slug}\"."))?;
+  let order = existing_project
+    .get("order")
+    .and_then(Value::as_i64)
+    .unwrap_or(10);
+  let project = build_project_value(&input, &slug, order, false)?;
+
+  write_json_file(&file_path, &project)?;
+  if slug != existing_slug {
+    fs::remove_file(&old_file_path).map_err(|error| error.to_string())?;
+  }
+
+  let mut all_projects = existing_projects
+    .into_iter()
+    .filter(|project| project.get("slug").and_then(Value::as_str) != Some(existing_slug.as_str()))
+    .collect::<Vec<_>>();
+  all_projects.push(project);
+  sort_projects(&mut all_projects);
+  fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
+  write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
+
+  Ok(CreatedProject {
+    slug,
+    file_path: display_path(&file_path),
+    generated_path: display_path(&generated_file),
+    total_projects: all_projects.len(),
+  })
+}
+
 fn portfolio_root() -> Result<PathBuf, String> {
   Path::new(env!("CARGO_MANIFEST_DIR"))
     .parent()
@@ -294,6 +709,285 @@ fn public_project_preview_file(root_dir: &Path) -> PathBuf {
 
 fn project_preview_url() -> String {
   format!("http://127.0.0.1:{PREVIEW_PORT}/proyectos/{PREVIEW_SLUG}/")
+}
+
+fn studio_content_file(root_dir: &Path, kind: &str) -> Result<PathBuf, String> {
+  let file_name = match kind {
+    "certificates" => "certificates.json",
+    "blog" => "blog.json",
+    "interests" => "interests.json",
+    _ => return Err("Modulo no soportado.".to_string()),
+  };
+
+  Ok(root_dir.join("src").join("data").join(file_name))
+}
+
+fn studio_content_item(kind: &str, item: &Value, index: usize, file_path: &Path) -> StudioContentItem {
+  let copy_es = item.pointer("/copy/es").unwrap_or(&Value::Null);
+  let title = copy_es
+    .get("title")
+    .and_then(Value::as_str)
+    .unwrap_or("Sin titulo")
+    .to_string();
+
+  let (key, subtitle, detail) = match kind {
+    "certificates" => (
+      item.get("id")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .to_string(),
+      copy_es
+        .get("issuer")
+        .and_then(Value::as_str)
+        .unwrap_or("Sin emisor")
+        .to_string(),
+      format!(
+        "{} - {}",
+        item.get("issued").and_then(Value::as_str).unwrap_or("Sin fecha"),
+        item.get("fileName").and_then(Value::as_str).unwrap_or("Sin archivo")
+      ),
+    ),
+    "blog" => (
+      item.get("slug")
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .to_string(),
+      copy_es
+        .get("date")
+        .and_then(Value::as_str)
+        .unwrap_or("Sin fecha")
+        .to_string(),
+      copy_es
+        .get("category")
+        .and_then(Value::as_str)
+        .unwrap_or("Sin categoria")
+        .to_string(),
+    ),
+    "interests" => (
+      index.to_string(),
+      copy_es
+        .get("meta")
+        .and_then(Value::as_str)
+        .unwrap_or("Sin meta")
+        .to_string(),
+      copy_es
+        .get("category")
+        .and_then(Value::as_str)
+        .unwrap_or("Sin categoria")
+        .to_string(),
+    ),
+    _ => ("".to_string(), "".to_string(), "".to_string()),
+  };
+
+  StudioContentItem {
+    key,
+    title,
+    subtitle,
+    detail,
+    file_path: display_path(file_path),
+  }
+}
+
+fn read_json_array(path: &Path) -> Result<Vec<Value>, String> {
+  if !path.exists() {
+    return Ok(Vec::new());
+  }
+
+  let content = fs::read_to_string(path).map_err(|error| format!("{}: {error}", display_path(path)))?;
+  serde_json::from_str::<Vec<Value>>(&content).map_err(|error| format!("{}: {error}", display_path(path)))
+}
+
+fn write_json_array(path: &Path, items: &[Value]) -> Result<(), String> {
+  fs::create_dir_all(path.parent().unwrap()).map_err(|error| error.to_string())?;
+  write_json_file(path, &Value::Array(items.to_vec()))
+}
+
+fn upsert_by_field(
+  items: &mut Vec<Value>,
+  field: &str,
+  existing_key: Option<&str>,
+  new_key: &str,
+  value: Value,
+) -> Result<(), String> {
+  if let Some(existing_key) = existing_key {
+    if let Some(index) = items
+      .iter()
+      .position(|item| item.get(field).and_then(Value::as_str) == Some(existing_key))
+    {
+      items[index] = value;
+      return Ok(());
+    }
+
+    return Err(format!("No se encontro el elemento \"{existing_key}\"."));
+  }
+
+  if items
+    .iter()
+    .any(|item| item.get(field).and_then(Value::as_str) == Some(new_key))
+  {
+    return Err(format!("Ya existe un elemento con la clave \"{new_key}\"."));
+  }
+
+  items.push(value);
+  Ok(())
+}
+
+fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, String> {
+  let file_name = clean_required(&input.file_name, "El archivo del certificado es obligatorio.")?;
+  let title = clean_required(&input.title, "El titulo del certificado es obligatorio.")?;
+  let issuer = fallback(&input.issuer, "Formacion");
+  let title_en = optional_or(&input.title_en, &title);
+  let issuer_en = optional_or(&input.issuer_en, &issuer);
+  let tags = parse_list(&input.tags);
+  let tags_en = {
+    let parsed = parse_list(input.tags_en.as_deref().unwrap_or(""));
+    if parsed.is_empty() {
+      tags.clone()
+    } else {
+      parsed
+    }
+  };
+  let (detected_type, detected_mime) = certificate_type_and_mime(&file_name);
+  let certificate_type = clean_optional(Some(input.certificate_type.as_str())).unwrap_or(detected_type);
+  let mime = clean_optional(Some(input.mime.as_str())).unwrap_or(detected_mime);
+
+  Ok(json!({
+    "id": id,
+    "fileName": file_name,
+    "type": certificate_type,
+    "mime": mime,
+    "issued": fallback(&input.issued, "2026"),
+    "copy": {
+      "es": {
+        "title": title,
+        "issuer": issuer,
+        "tags": tags
+      },
+      "en": {
+        "title": title_en,
+        "issuer": issuer_en,
+        "tags": tags_en
+      }
+    }
+  }))
+}
+
+fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
+  let title = clean_required(&input.title, "El titulo de la nota es obligatorio.")?;
+  let excerpt = clean_required(&input.excerpt, "El extracto de la nota es obligatorio.")?;
+  let body = clean_required(&input.body, "El cuerpo corto de la nota es obligatorio.")?;
+  let category = fallback(&input.category, "Contenido");
+  let date = fallback(&input.date, "2026");
+  let read_time = fallback(&input.read_time, "4 min de lectura");
+  let introduction = fallback(&input.introduction, &body);
+  let paragraphs = paragraphs_from_text(&input.paragraphs);
+  let highlights = paragraphs_from_text(&input.highlights);
+  let title_en = optional_or(&input.title_en, &title);
+  let excerpt_en = optional_or(&input.excerpt_en, &excerpt);
+  let body_en = optional_or(&input.body_en, &body);
+  let category_en = optional_or(&input.category_en, &category);
+  let date_en = optional_or(&input.date_en, &date);
+  let read_time_en = optional_or(&input.read_time_en, &read_time);
+  let introduction_en = optional_or(&input.introduction_en, &introduction);
+  let paragraphs_en = {
+    let parsed = paragraphs_from_text(input.paragraphs_en.as_deref().unwrap_or(""));
+    if parsed.is_empty() {
+      paragraphs.clone()
+    } else {
+      parsed
+    }
+  };
+  let highlights_en = {
+    let parsed = paragraphs_from_text(input.highlights_en.as_deref().unwrap_or(""));
+    if parsed.is_empty() {
+      highlights.clone()
+    } else {
+      parsed
+    }
+  };
+
+  Ok(json!({
+    "slug": slug,
+    "filter": fallback(&input.filter, "content"),
+    "visualClass": fallback(&input.visual_class, "visual-notes"),
+    "copy": {
+      "es": {
+        "category": category,
+        "date": date,
+        "readTime": read_time,
+        "title": title,
+        "excerpt": excerpt,
+        "body": body,
+        "introduction": introduction,
+        "paragraphs": paragraphs,
+        "highlights": highlights
+      },
+      "en": {
+        "category": category_en,
+        "date": date_en,
+        "readTime": read_time_en,
+        "title": title_en,
+        "excerpt": excerpt_en,
+        "body": body_en,
+        "introduction": introduction_en,
+        "paragraphs": paragraphs_en,
+        "highlights": highlights_en
+      }
+    }
+  }))
+}
+
+fn build_interest_value(input: &InterestInput, title: &str) -> Result<Value, String> {
+  let category = fallback(&input.category, "Intereses");
+  let meta = fallback(&input.meta, "Referencia");
+  let description = clean_required(&input.description, "La descripcion del interes es obligatoria.")?;
+  let body = clean_required(&input.body, "El cuerpo del interes es obligatorio.")?;
+  let tags = parse_list(&input.tags);
+  let title_en = optional_or(&input.title_en, title);
+  let category_en = optional_or(&input.category_en, &category);
+  let meta_en = optional_or(&input.meta_en, &meta);
+  let description_en = optional_or(&input.description_en, &description);
+  let body_en = optional_or(&input.body_en, &body);
+  let tags_en = {
+    let parsed = parse_list(input.tags_en.as_deref().unwrap_or(""));
+    if parsed.is_empty() {
+      tags.clone()
+    } else {
+      parsed
+    }
+  };
+
+  Ok(json!({
+    "filter": fallback(&input.filter, "movies"),
+    "visualClass": fallback(&input.visual_class, "visual-cinema"),
+    "copy": {
+      "es": {
+        "category": category,
+        "title": title,
+        "meta": meta,
+        "description": description,
+        "body": body,
+        "tags": tags
+      },
+      "en": {
+        "category": category_en,
+        "title": title_en,
+        "meta": meta_en,
+        "description": description_en,
+        "body": body_en,
+        "tags": tags_en
+      }
+    }
+  }))
+}
+
+fn paragraphs_from_text(value: &str) -> Vec<String> {
+  value
+    .lines()
+    .map(str::trim)
+    .filter(|line| !line.is_empty())
+    .map(ToString::to_string)
+    .collect()
 }
 
 fn build_project_value(
@@ -414,6 +1108,7 @@ fn build_project_value(
   let (dynamic_modules, modules_order) = project_dynamic_modules(&input.modules, &input.flow);
   let images = project_images(&input.images, &title);
   let videos = project_videos(&input.videos, &title);
+  let collaborators = project_collaborators(&input.collaborators);
   let process_steps = clean_string_list(&input.process);
   let process_steps_en = {
     let cleaned = clean_string_list(&input.process_en);
@@ -459,6 +1154,7 @@ fn build_project_value(
       "metrics": metrics,
       "modules": modules,
       "flow": flow,
+      "collaborators": collaborators,
       "links": links,
       "media": {
         "images": images,
@@ -471,7 +1167,7 @@ fn build_project_value(
         "challenge": challenge,
         "solution": solution,
         "process": process_steps.clone(),
-        "results": parse_list(input.results.as_deref().unwrap_or("")),
+        "results": clean_optional(input.results.as_deref()).unwrap_or_default(),
         "deliverables": parse_list(input.deliverables.as_deref().unwrap_or("")),
         "learnings": parse_list(input.learnings.as_deref().unwrap_or(""))
       },
@@ -482,7 +1178,7 @@ fn build_project_value(
         "challenge": challenge_en,
         "solution": solution_en,
         "process": process_steps_en,
-        "results": parse_list(&optional_or(&input.results_en, input.results.as_deref().unwrap_or(""))),
+        "results": optional_or(&input.results_en, input.results.as_deref().unwrap_or("")),
         "deliverables": parse_list(&optional_or(&input.deliverables_en, input.deliverables.as_deref().unwrap_or(""))),
         "learnings": parse_list(&optional_or(&input.learnings_en, input.learnings.as_deref().unwrap_or("")))
       }
@@ -500,6 +1196,7 @@ fn build_project_value(
 
   if let Some(image) = preview_image {
     project["previewImage"] = json!(image);
+    project["detail"]["previewImage"] = json!(image);
   }
 
   if !input.show_in_home || is_preview {
@@ -602,6 +1299,18 @@ fn is_image_file(path: &Path) -> bool {
     .unwrap_or(false)
 }
 
+fn is_certificate_file(path: &Path) -> bool {
+  path
+    .extension()
+    .and_then(|extension| extension.to_str())
+    .map(|extension| {
+      CERTIFICATE_EXTENSIONS
+        .iter()
+        .any(|allowed| extension.eq_ignore_ascii_case(allowed))
+    })
+    .unwrap_or(false)
+}
+
 fn copy_image_to_assets(public_dir: &Path, source_path: &Path, slug: Option<&str>) -> Result<String, String> {
   let folder = slug
     .map(slugify)
@@ -626,6 +1335,47 @@ fn copy_image_to_assets(public_dir: &Path, source_path: &Path, slug: Option<&str
   fs::copy(source_path, &destination).map_err(|error| error.to_string())?;
   public_url_for_path(public_dir, &destination)?
     .ok_or_else(|| "No se pudo generar la ruta publica de la imagen.".to_string())
+}
+
+fn copy_certificate_to_dir(certificates_dir: &Path, source_path: &Path) -> Result<PathBuf, String> {
+  fs::create_dir_all(certificates_dir).map_err(|error| error.to_string())?;
+  let stem = source_path
+    .file_stem()
+    .and_then(|value| value.to_str())
+    .map(slugify)
+    .filter(|value| !value.is_empty())
+    .unwrap_or_else(|| "certificado".to_string());
+  let extension = source_path
+    .extension()
+    .and_then(|value| value.to_str())
+    .map(|value| value.to_lowercase())
+    .ok_or_else(|| "El archivo seleccionado no tiene extension.".to_string())?;
+  let destination = unique_asset_path(certificates_dir, &stem, &extension);
+
+  fs::copy(source_path, &destination).map_err(|error| error.to_string())?;
+  Ok(destination)
+}
+
+fn certificate_type_and_mime(file_name: &str) -> (String, String) {
+  let extension = Path::new(file_name)
+    .extension()
+    .and_then(|value| value.to_str())
+    .unwrap_or("")
+    .to_lowercase();
+
+  match extension.as_str() {
+    "pdf" => ("pdf".to_string(), "application/pdf".to_string()),
+    "png" => ("image".to_string(), "image/png".to_string()),
+    "jpg" | "jpeg" => ("image".to_string(), "image/jpeg".to_string()),
+    "webp" => ("image".to_string(), "image/webp".to_string()),
+    _ => ("file".to_string(), "application/octet-stream".to_string()),
+  }
+}
+
+fn is_inside_dir(parent: &Path, child: &Path) -> Result<bool, String> {
+  let parent = fs::canonicalize(parent).map_err(|error| error.to_string())?;
+  let child = fs::canonicalize(child).map_err(|error| error.to_string())?;
+  Ok(child.starts_with(parent))
 }
 
 fn unique_asset_path(assets_dir: &Path, stem: &str, extension: &str) -> PathBuf {
@@ -664,6 +1414,9 @@ fn public_url_for_path(public_dir: &Path, path: &Path) -> Result<Option<String>,
 
 fn read_project_values(projects_dir: &Path) -> Result<Vec<Value>, String> {
   let mut projects = Vec::new();
+  if !projects_dir.exists() {
+    return Ok(projects);
+  }
 
   for entry in fs::read_dir(projects_dir).map_err(|error| error.to_string())? {
     let entry = entry.map_err(|error| error.to_string())?;
@@ -982,6 +1735,44 @@ fn project_videos(videos: &[ProjectVideoInput], title: &str) -> Vec<Value> {
           "es": caption_es,
           "en": caption_en
         });
+      }
+
+      Some(value)
+    })
+    .collect()
+}
+
+fn project_collaborators(collaborators: &[ProjectCollaboratorInput]) -> Vec<Value> {
+  collaborators
+    .iter()
+    .filter_map(|collaborator| {
+      let name = clean_optional(Some(collaborator.name.as_str()))?;
+      let mut value = json!({
+        "name": name
+      });
+
+      if let Some(role_es) = clean_optional(collaborator.role.as_deref()) {
+        let role_en = optional_or(&collaborator.role_en, &role_es);
+        value["role"] = json!({
+          "es": role_es,
+          "en": role_en
+        });
+      }
+
+      if let Some(photo) = clean_optional(collaborator.photo.as_deref()) {
+        value["photo"] = json!(photo);
+      }
+
+      if let Some(url) = clean_optional(collaborator.portfolio_url.as_deref()) {
+        value["portfolioUrl"] = json!(url);
+      }
+
+      if let Some(url) = clean_optional(collaborator.github_url.as_deref()) {
+        value["githubUrl"] = json!(url);
+      }
+
+      if let Some(url) = clean_optional(collaborator.linkedin_url.as_deref()) {
+        value["linkedinUrl"] = json!(url);
       }
 
       Some(value)
