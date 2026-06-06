@@ -17,6 +17,8 @@ pub fn run() {
       commands::update_project,
       commands::save_certificate,
       commands::delete_certificate,
+      commands::save_about_item,
+      commands::delete_about_item,
       commands::save_blog_post,
       commands::save_interest
     ])

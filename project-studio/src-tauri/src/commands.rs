@@ -182,6 +182,7 @@ pub struct StudioContentItem {
   title: String,
   subtitle: String,
   detail: String,
+  status: String,
   file_path: String,
 }
 
@@ -203,12 +204,32 @@ pub struct PickedCertificateFile {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AboutInput {
+  group: String,
+  period: String,
+  title: String,
+  institution: String,
+  detail: String,
+  skills: String,
+  stack: String,
+  focus: String,
+  detail_placement: String,
+  title_en: Option<String>,
+  institution_en: Option<String>,
+  detail_en: Option<String>,
+  skills_en: Option<String>,
+  focus_en: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CertificateInput {
   id: String,
   file_name: String,
   certificate_type: String,
   mime: String,
   issued: String,
+  status: String,
   title: String,
   issuer: String,
   tags: String,
@@ -351,6 +372,11 @@ pub fn pick_project_image(source: String, slug: Option<String>) -> Result<Option
 pub fn list_studio_content(kind: String) -> Result<Vec<StudioContentItem>, String> {
   let root_dir = portfolio_root()?;
   let kind = kind.trim();
+
+  if kind == "about" {
+    return list_about_items(&root_dir);
+  }
+
   let file_path = studio_content_file(&root_dir, kind)?;
   let items = read_json_array(&file_path)?;
 
@@ -367,6 +393,11 @@ pub fn list_studio_content(kind: String) -> Result<Vec<StudioContentItem>, Strin
 pub fn get_studio_content(kind: String, key: String) -> Result<Value, String> {
   let root_dir = portfolio_root()?;
   let kind = kind.trim();
+
+  if kind == "about" {
+    return get_about_item(&root_dir, &key);
+  }
+
   let file_path = studio_content_file(&root_dir, kind)?;
   let items = read_json_array(&file_path)?;
   let key = key.trim();
@@ -483,6 +514,64 @@ pub fn delete_certificate(id: String) -> Result<SavedContent, String> {
     key: id,
     file_path: display_path(&file_path),
     total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn save_about_item(existing_key: Option<String>, input: AboutInput) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = about_file(&root_dir);
+  let mut about = read_json_value(&file_path)?;
+  let group = about_group_key(&input.group)?;
+  let item_es = build_about_item_value(&input, "es")?;
+  let item_en = build_about_item_value(&input, "en")?;
+  let saved_key;
+
+  if let Some(existing_key) = existing_key.as_deref().map(str::trim).filter(|value| !value.is_empty()) {
+    let (old_group, old_index) = parse_about_key(existing_key)?;
+
+    if old_group == group {
+      replace_about_item(&mut about, "es", &group, old_index, item_es)?;
+      replace_about_item(&mut about, "en", &group, old_index, item_en)?;
+      saved_key = format!("{group}:{old_index}");
+    } else {
+      remove_about_item_at(&mut about, "es", &old_group, old_index)?;
+      remove_about_item_at(&mut about, "en", &old_group, old_index)?;
+      let new_index = push_about_item(&mut about, "es", &group, item_es)?;
+      push_about_item(&mut about, "en", &group, item_en)?;
+      saved_key = format!("{group}:{new_index}");
+    }
+  } else {
+    let new_index = push_about_item(&mut about, "es", &group, item_es)?;
+    push_about_item(&mut about, "en", &group, item_en)?;
+    saved_key = format!("{group}:{new_index}");
+  }
+
+  write_json_file(&file_path, &about)?;
+  let total_items = count_about_items(&about);
+
+  Ok(SavedContent {
+    key: saved_key,
+    file_path: display_path(&file_path),
+    total_items,
+  })
+}
+
+#[tauri::command]
+pub fn delete_about_item(key: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = about_file(&root_dir);
+  let mut about = read_json_value(&file_path)?;
+  let (group, index) = parse_about_key(&key)?;
+
+  remove_about_item_at(&mut about, "es", &group, index)?;
+  remove_about_item_at(&mut about, "en", &group, index)?;
+  write_json_file(&file_path, &about)?;
+
+  Ok(SavedContent {
+    key,
+    file_path: display_path(&file_path),
+    total_items: count_about_items(&about),
   })
 }
 
@@ -711,6 +800,190 @@ fn project_preview_url() -> String {
   format!("http://127.0.0.1:{PREVIEW_PORT}/proyectos/{PREVIEW_SLUG}/")
 }
 
+fn about_file(root_dir: &Path) -> PathBuf {
+  root_dir.join("src").join("data").join("about.json")
+}
+
+fn list_about_items(root_dir: &Path) -> Result<Vec<StudioContentItem>, String> {
+  let file_path = about_file(root_dir);
+  let about = read_json_value(&file_path)?;
+  let mut items = Vec::new();
+
+  for group in ["education", "work"] {
+    let subtitle = about_group_title(&about, "es", group);
+
+    for (index, item) in about_group_items(&about, "es", group).iter().enumerate() {
+      items.push(StudioContentItem {
+        key: format!("{group}:{index}"),
+        title: about_item_title(item),
+        subtitle: subtitle.clone(),
+        detail: item
+          .get("period")
+          .and_then(Value::as_str)
+          .unwrap_or("Sin periodo")
+          .to_string(),
+        status: String::new(),
+        file_path: display_path(&file_path),
+      });
+    }
+  }
+
+  Ok(items)
+}
+
+fn get_about_item(root_dir: &Path, key: &str) -> Result<Value, String> {
+  let file_path = about_file(root_dir);
+  let about = read_json_value(&file_path)?;
+  let (group, index) = parse_about_key(key)?;
+  let es_items = about_group_items(&about, "es", &group);
+  let en_items = about_group_items(&about, "en", &group);
+  let es = es_items
+    .get(index)
+    .cloned()
+    .ok_or_else(|| format!("No se encontro la entrada \"{key}\"."))?;
+  let en = en_items.get(index).cloned().unwrap_or_else(|| es.clone());
+
+  Ok(json!({
+    "group": group,
+    "es": es,
+    "en": en
+  }))
+}
+
+fn about_group_key(value: &str) -> Result<String, String> {
+  match value.trim().to_lowercase().as_str() {
+    "education" | "school" | "academic" | "formacion" | "formacion-academica" => {
+      Ok("education".to_string())
+    }
+    "work" | "experience" | "laboral" | "experiencia" | "experiencia-laboral" => {
+      Ok("work".to_string())
+    }
+    _ => Err("Grupo de Sobre mi no soportado.".to_string()),
+  }
+}
+
+fn about_group_icon(group: &str) -> Result<&'static str, String> {
+  match group {
+    "education" => Ok("school"),
+    "work" => Ok("work"),
+    _ => Err("Grupo de Sobre mi no soportado.".to_string()),
+  }
+}
+
+fn parse_about_key(key: &str) -> Result<(String, usize), String> {
+  let (group, index) = key
+    .trim()
+    .split_once(':')
+    .ok_or_else(|| "Clave de Sobre mi no valida.".to_string())?;
+  let group = about_group_key(group)?;
+  let index = index
+    .parse::<usize>()
+    .map_err(|_| "Indice de Sobre mi no valido.".to_string())?;
+
+  Ok((group, index))
+}
+
+fn about_group_title(about: &Value, lang: &str, group: &str) -> String {
+  let icon = about_group_icon(group).unwrap_or("");
+
+  about
+    .pointer(&format!("/copy/{lang}/groups"))
+    .and_then(Value::as_array)
+    .and_then(|groups| {
+      groups
+        .iter()
+        .find(|item| item.get("icon").and_then(Value::as_str) == Some(icon))
+    })
+    .and_then(|item| item.get("title"))
+    .and_then(Value::as_str)
+    .unwrap_or(if group == "education" {
+      "Formacion academica"
+    } else {
+      "Experiencia laboral"
+    })
+    .to_string()
+}
+
+fn about_group_items(about: &Value, lang: &str, group: &str) -> Vec<Value> {
+  let icon = about_group_icon(group).unwrap_or("");
+
+  about
+    .pointer(&format!("/copy/{lang}/groups"))
+    .and_then(Value::as_array)
+    .and_then(|groups| {
+      groups
+        .iter()
+        .find(|item| item.get("icon").and_then(Value::as_str) == Some(icon))
+    })
+    .and_then(|item| item.get("items"))
+    .and_then(Value::as_array)
+    .cloned()
+    .unwrap_or_default()
+}
+
+fn about_group_items_mut<'a>(about: &'a mut Value, lang: &str, group: &str) -> Result<&'a mut Vec<Value>, String> {
+  let icon = about_group_icon(group)?;
+  let groups = about
+    .pointer_mut(&format!("/copy/{lang}/groups"))
+    .and_then(Value::as_array_mut)
+    .ok_or_else(|| format!("No se encontraron grupos de Sobre mi para {lang}."))?;
+  let group_value = groups
+    .iter_mut()
+    .find(|item| item.get("icon").and_then(Value::as_str) == Some(icon))
+    .ok_or_else(|| format!("No se encontro el grupo {group} en Sobre mi."))?;
+
+  if group_value.get("items").is_none() {
+    group_value["items"] = json!([]);
+  }
+
+  group_value
+    .get_mut("items")
+    .and_then(Value::as_array_mut)
+    .ok_or_else(|| format!("El grupo {group} no tiene una lista editable."))
+}
+
+fn about_item_title(item: &Value) -> String {
+  item
+    .get("title")
+    .and_then(Value::as_str)
+    .or_else(|| item.get("institution").and_then(Value::as_str))
+    .unwrap_or("Sin titulo")
+    .to_string()
+}
+
+fn count_about_items(about: &Value) -> usize {
+  about_group_items(about, "es", "education").len() + about_group_items(about, "es", "work").len()
+}
+
+fn push_about_item(about: &mut Value, lang: &str, group: &str, item: Value) -> Result<usize, String> {
+  let items = about_group_items_mut(about, lang, group)?;
+  items.push(item);
+
+  Ok(items.len() - 1)
+}
+
+fn replace_about_item(about: &mut Value, lang: &str, group: &str, index: usize, item: Value) -> Result<(), String> {
+  let items = about_group_items_mut(about, lang, group)?;
+
+  if index >= items.len() {
+    return Err(format!("No existe la entrada #{index} de Sobre mi."));
+  }
+
+  items[index] = item;
+  Ok(())
+}
+
+fn remove_about_item_at(about: &mut Value, lang: &str, group: &str, index: usize) -> Result<(), String> {
+  let items = about_group_items_mut(about, lang, group)?;
+
+  if index >= items.len() {
+    return Err(format!("No existe la entrada #{index} de Sobre mi."));
+  }
+
+  items.remove(index);
+  Ok(())
+}
+
 fn studio_content_file(root_dir: &Path, kind: &str) -> Result<PathBuf, String> {
   let file_name = match kind {
     "certificates" => "certificates.json",
@@ -784,6 +1057,11 @@ fn studio_content_item(kind: &str, item: &Value, index: usize, file_path: &Path)
     title,
     subtitle,
     detail,
+    status: item
+      .get("status")
+      .and_then(Value::as_str)
+      .unwrap_or("")
+      .to_string(),
     file_path: display_path(file_path),
   }
 }
@@ -795,6 +1073,11 @@ fn read_json_array(path: &Path) -> Result<Vec<Value>, String> {
 
   let content = fs::read_to_string(path).map_err(|error| format!("{}: {error}", display_path(path)))?;
   serde_json::from_str::<Vec<Value>>(&content).map_err(|error| format!("{}: {error}", display_path(path)))
+}
+
+fn read_json_value(path: &Path) -> Result<Value, String> {
+  let content = fs::read_to_string(path).map_err(|error| format!("{}: {error}", display_path(path)))?;
+  serde_json::from_str::<Value>(&content).map_err(|error| format!("{}: {error}", display_path(path)))
 }
 
 fn write_json_array(path: &Path, items: &[Value]) -> Result<(), String> {
@@ -832,6 +1115,83 @@ fn upsert_by_field(
   Ok(())
 }
 
+fn build_about_item_value(input: &AboutInput, lang: &str) -> Result<Value, String> {
+  let group = about_group_key(&input.group)?;
+  let period = fallback(&input.period, "2026");
+  let title = localized_field(lang, &input.title, &input.title_en);
+  let institution = localized_field(lang, &input.institution, &input.institution_en);
+  let detail = localized_field(lang, &input.detail, &input.detail_en);
+  let skills = localized_list(lang, &input.skills, &input.skills_en);
+  let focus = localized_list(lang, &input.focus, &input.focus_en);
+  let stack = parse_list(&input.stack);
+  let mut item = Map::new();
+
+  item.insert("period".to_string(), json!(period));
+
+  if group == "education" {
+    if title.trim().is_empty() && institution.trim().is_empty() {
+      return Err("La entrada de formacion necesita titulo o institucion.".to_string());
+    }
+
+    insert_optional_string(&mut item, "institution", &institution);
+    insert_optional_string(&mut item, "title", &title);
+    insert_optional_string(&mut item, "detail", &detail);
+
+    if !skills.is_empty() {
+      item.insert("skills".to_string(), json!(skills));
+    }
+  } else {
+    let title = clean_required(&title, "La experiencia necesita un titulo.")?;
+    item.insert("title".to_string(), json!(title));
+    insert_optional_string(&mut item, "description", &detail);
+
+    if !stack.is_empty() {
+      item.insert("stack".to_string(), json!(stack));
+    }
+
+    if !focus.is_empty() {
+      item.insert("focus".to_string(), json!(focus));
+    }
+
+    if !skills.is_empty() {
+      item.insert("skills".to_string(), json!(skills));
+    }
+
+    if input.detail_placement.trim() == "right" {
+      item.insert("detailPlacement".to_string(), json!("right"));
+    }
+  }
+
+  Ok(Value::Object(item))
+}
+
+fn insert_optional_string(item: &mut Map<String, Value>, key: &str, value: &str) {
+  if let Some(value) = clean_optional(Some(value)) {
+    item.insert(key.to_string(), json!(value));
+  }
+}
+
+fn localized_field(lang: &str, value_es: &str, value_en: &Option<String>) -> String {
+  if lang == "en" {
+    optional_or(value_en, value_es)
+  } else {
+    value_es.trim().to_string()
+  }
+}
+
+fn localized_list(lang: &str, value_es: &str, value_en: &Option<String>) -> Vec<String> {
+  if lang == "en" {
+    let parsed = parse_list(value_en.as_deref().unwrap_or(""));
+    if parsed.is_empty() {
+      parse_list(value_es)
+    } else {
+      parsed
+    }
+  } else {
+    parse_list(value_es)
+  }
+}
+
 fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, String> {
   let file_name = clean_required(&input.file_name, "El archivo del certificado es obligatorio.")?;
   let title = clean_required(&input.title, "El titulo del certificado es obligatorio.")?;
@@ -850,6 +1210,7 @@ fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, 
   let (detected_type, detected_mime) = certificate_type_and_mime(&file_name);
   let certificate_type = clean_optional(Some(input.certificate_type.as_str())).unwrap_or(detected_type);
   let mime = clean_optional(Some(input.mime.as_str())).unwrap_or(detected_mime);
+  let status = clean_optional(Some(input.status.as_str())).unwrap_or_else(|| "completed".to_string());
 
   Ok(json!({
     "id": id,
@@ -857,6 +1218,7 @@ fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, 
     "type": certificate_type,
     "mime": mime,
     "issued": fallback(&input.issued, "2026"),
+    "status": status,
     "copy": {
       "es": {
         "title": title,

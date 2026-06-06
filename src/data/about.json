@@ -1,160 +1,228 @@
 {
   "copy": {
-    "es": {
-      "title": "Sobre mí",
-      "subtitle": "Formación académica, recorrido universitario y experiencia laboral.",
-      "groups": [
-        {
-          "title": "Formación académica",
-          "icon": "school",
-          "items": [
-            {
-              "institution": "Gimnasio Campestre Los Arrayanes",
-              "period": "2020",
-              "detail": "Bachillerato"
-            },
-            {
-              "period": "2020",
-              "title": "Voluntariado médico - Operación Sonrisa",
-              "description": "Apoyo en jornadas médicas para niños con labio fisurado y paladar hendido en La Guajira.",
-              "skills": ["Trabajo en equipo", "Comunicación", "Adaptabilidad"]
-            },
-            {
-              "institution": "Universidad Católica de Colombia",
-              "period": "2021",
-              "detail": "Pregrado - Ingeniería de Sistemas y Computación"
-            }
-          ]
-        },
-        {
-          "title": "Experiencia laboral",
-          "icon": "work",
-          "items": [
-            {
-              "period": "2026",
-              "title": "Desarrollador Full Stack - Docqee",
-              "category": "Software - Proyecto de grado",
-              "description": "Desarrollo de plataforma web para prácticas clínicas universitarias supervisadas.",
-              "stack": ["React", "NestJS", "PostgreSQL", "Prisma"],
-              "focus": ["Arquitectura modular", "APIs REST", "Full Stack"],
-              "skills": [],
-              "detailPlacement": "right"
-            },
-            {
-              "period": "2026",
-              "title": "Apoyo al desarrollo Android - Gluvi",
-              "category": "Software - Salud digital colaborativa",
-              "description": "Apoyo en el desarrollo de Gluvi, una app Android informativa de salud creada en colaboración con la Universidad Católica de Colombia, el Tecnológico de Monterrey y la University of Florida.",
-              "stack": ["Android", "Kotlin", "Jetpack Compose", "GitLab"],
-              "focus": [],
-              "skills": []
-            },
-            {
-              "period": "2025",
-              "title": "Mantenimiento exterior residencial - Canadá",
-              "category": "Trabajo internacional",
-              "description": "Trabajo operativo en mantenimiento exterior residencial.",
-              "focus": [],
-              "skills": ["Disciplina", "Adaptabilidad", "Responsabilidad"]
-            },
-            {
-              "period": "2024",
-              "title": "Distribución y logística - Almacenes",
-              "category": "Logística - Operaciones",
-              "description": "Apoyo en organización, reparto y entrega de productos.",
-              "focus": ["Logística", "Distribución", "Organización"],
-              "skills": ["Responsabilidad", "Gestión del tiempo", "Trabajo en equipo"],
-              "detailPlacement": "right"
-            },
-            {
-              "period": "2021",
-              "title": "Atención al cliente y caja - Licorera",
-              "category": "Atención al cliente",
-              "description": "Experiencia en atención al cliente y manejo de caja.",
-              "focus": [],
-              "skills": ["Comunicación", "Responsabilidad", "Organización"]
-            }
-          ]
-        }
-      ]
-    },
     "en": {
-      "title": "About me",
-      "subtitle": "Academic background, university path and work experience.",
       "groups": [
         {
-          "title": "Academic background",
           "icon": "school",
           "items": [
             {
+              "detail": "High school diploma",
               "institution": "Gimnasio Campestre Los Arrayanes",
-              "period": "2020",
-              "detail": "High school diploma"
+              "period": "2020"
             },
             {
-              "period": "2020",
-              "title": "Medical volunteering - Operation Smile",
               "description": "Support during medical sessions for children with cleft lip and palate in La Guajira.",
-              "skills": ["Teamwork", "Communication", "Adaptability"]
+              "period": "2020",
+              "skills": [
+                "Teamwork",
+                "Communication",
+                "Adaptability"
+              ],
+              "title": "Medical volunteering - Operation Smile"
             },
             {
+              "detail": "Bachelor's degree - Systems and Computer Engineering",
               "institution": "Universidad Católica de Colombia",
-              "period": "2021",
-              "detail": "Bachelor's degree - Systems and Computer Engineering"
+              "period": "2021"
             }
-          ]
+          ],
+          "title": "Academic background"
         },
         {
-          "title": "Work experience",
           "icon": "work",
           "items": [
             {
-              "period": "2026",
-              "title": "Full Stack Developer - Docqee",
               "category": "Software - Degree project",
               "description": "Development of a web platform for supervised university clinical practice.",
-              "stack": ["React", "NestJS", "PostgreSQL", "Prisma"],
-              "focus": ["Modular architecture", "REST APIs", "Full Stack"],
+              "detailPlacement": "right",
+              "focus": [
+                "Modular architecture",
+                "REST APIs",
+                "Full Stack"
+              ],
+              "period": "2026",
               "skills": [],
-              "detailPlacement": "right"
+              "stack": [
+                "React",
+                "NestJS",
+                "PostgreSQL",
+                "Prisma"
+              ],
+              "title": "Full Stack Developer - Docqee"
             },
             {
-              "period": "2026",
-              "title": "Android Development Support - Gluvi",
               "category": "Software - Collaborative digital health",
               "description": "Support in the development of Gluvi, an informational Android health app created in collaboration with Universidad Católica de Colombia, Tecnológico de Monterrey and the University of Florida.",
-              "stack": ["Android", "Kotlin", "Jetpack Compose", "GitLab"],
               "focus": [],
-              "skills": []
+              "period": "2026",
+              "skills": [],
+              "stack": [
+                "Android",
+                "Kotlin",
+                "Jetpack Compose",
+                "GitLab"
+              ],
+              "title": "Android Development Support - Gluvi"
             },
             {
-              "period": "2025",
-              "title": "Residential exterior maintenance - Canada",
               "category": "International work",
               "description": "Operational work in residential exterior maintenance.",
               "focus": [],
-              "skills": ["Discipline", "Adaptability", "Responsibility"]
+              "period": "2025",
+              "skills": [
+                "Discipline",
+                "Adaptability",
+                "Responsibility"
+              ],
+              "title": "Residential exterior maintenance - Canada"
             },
             {
-              "period": "2024",
-              "title": "Distribution and logistics - Warehouses",
               "category": "Logistics - Operations",
               "description": "Support in organizing, dispatching and delivering products.",
-              "focus": ["Logistics", "Distribution", "Organization"],
-              "skills": ["Responsibility", "Time management", "Teamwork"],
-              "detailPlacement": "right"
+              "detailPlacement": "right",
+              "focus": [
+                "Logistics",
+                "Distribution",
+                "Organization"
+              ],
+              "period": "2024",
+              "skills": [
+                "Responsibility",
+                "Time management",
+                "Teamwork"
+              ],
+              "title": "Distribution and logistics - Warehouses"
             },
             {
-              "period": "2021",
-              "title": "Customer service and cashier - Liquor store",
               "category": "Customer service",
               "description": "Experience in customer service and cash handling.",
               "focus": [],
-              "skills": ["Communication", "Responsibility", "Organization"]
+              "period": "2021",
+              "skills": [
+                "Communication",
+                "Responsibility",
+                "Organization"
+              ],
+              "title": "Customer service and cashier - Liquor store"
             }
-          ]
+          ],
+          "title": "Work experience"
         }
-      ]
+      ],
+      "subtitle": "Academic background, university path and work experience.",
+      "title": "About me"
+    },
+    "es": {
+      "groups": [
+        {
+          "icon": "school",
+          "items": [
+            {
+              "detail": "Bachillerato",
+              "institution": "Gimnasio Campestre Los Arrayanes",
+              "period": "2020"
+            },
+            {
+              "description": "Apoyo en jornadas médicas para niños con labio fisurado y paladar hendido en La Guajira.",
+              "period": "2020",
+              "skills": [
+                "Trabajo en equipo",
+                "Comunicación",
+                "Adaptabilidad"
+              ],
+              "title": "Voluntariado médico - Operación Sonrisa"
+            },
+            {
+              "detail": "Pregrado - Ingeniería de Sistemas y Computación",
+              "institution": "Universidad Católica de Colombia",
+              "period": "2021"
+            }
+          ],
+          "title": "Formación académica"
+        },
+        {
+          "icon": "work",
+          "items": [
+            {
+              "category": "Software - Proyecto de grado",
+              "description": "Desarrollo de plataforma web para prácticas clínicas universitarias supervisadas.",
+              "detailPlacement": "right",
+              "focus": [
+                "Arquitectura modular",
+                "APIs REST",
+                "Full Stack"
+              ],
+              "period": "2026",
+              "skills": [],
+              "stack": [
+                "React",
+                "NestJS",
+                "PostgreSQL",
+                "Prisma"
+              ],
+              "title": "Desarrollador Full Stack - Docqee"
+            },
+            {
+              "category": "Software - Salud digital colaborativa",
+              "description": "Apoyo en el desarrollo de Gluvi, una app Android informativa de salud creada en colaboración con la Universidad Católica de Colombia, el Tecnológico de Monterrey y la University of Florida.",
+              "focus": [],
+              "period": "2026",
+              "skills": [],
+              "stack": [
+                "Android",
+                "Kotlin",
+                "Jetpack Compose",
+                "GitLab"
+              ],
+              "title": "Apoyo al desarrollo Android - Gluvi"
+            },
+            {
+              "category": "Trabajo internacional",
+              "description": "Trabajo operativo en mantenimiento exterior residencial.",
+              "focus": [],
+              "period": "2025",
+              "skills": [
+                "Disciplina",
+                "Adaptabilidad",
+                "Responsabilidad"
+              ],
+              "title": "Mantenimiento exterior residencial - Canadá"
+            },
+            {
+              "category": "Logística - Operaciones",
+              "description": "Apoyo en organización, reparto y entrega de productos.",
+              "detailPlacement": "right",
+              "focus": [
+                "Logística",
+                "Distribución",
+                "Organización"
+              ],
+              "period": "2024",
+              "skills": [
+                "Responsabilidad",
+                "Gestión del tiempo",
+                "Trabajo en equipo"
+              ],
+              "title": "Distribución y logística - Almacenes"
+            },
+            {
+              "category": "Atención al cliente",
+              "description": "Experiencia en atención al cliente y manejo de caja.",
+              "focus": [],
+              "period": "2021",
+              "skills": [
+                "Comunicación",
+                "Responsabilidad",
+                "Organización"
+              ],
+              "title": "Atención al cliente y caja - Licorera"
+            }
+          ],
+          "title": "Experiencia laboral"
+        }
+      ],
+      "subtitle": "Formación académica, recorrido universitario y experiencia laboral.",
+      "title": "Sobre mí"
     }
   }
 }

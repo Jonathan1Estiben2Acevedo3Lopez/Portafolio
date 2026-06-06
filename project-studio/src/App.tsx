@@ -9,7 +9,6 @@ import {
   ChevronRight,
   ChevronUp,
   CircleDot,
-  Clock3,
   ExternalLink,
   FolderOpen,
   FolderCog,
@@ -18,13 +17,14 @@ import {
   Moon,
   Plus,
   Save,
-  ShieldCheck,
   Sun,
   Trash2,
   X,
 } from "lucide-react";
 import { getSectionById, studioSections } from "./lib/project";
 import type {
+  AboutFormState,
+  AboutGroupKind,
   BlogFormState,
   CertificateFormState,
   ContentKind,
@@ -103,6 +103,7 @@ const defaultCertificateForm = (): CertificateFormState => ({
   certificateType: "pdf",
   mime: "application/pdf",
   issued: currentYear,
+  status: "completed",
   title: "",
   issuer: "Formacion",
   tags: "PDF",
@@ -152,10 +153,72 @@ const defaultInterestForm = (): InterestFormState => ({
   tagsEn: "",
 });
 
+const defaultAboutForm = (group: AboutGroupKind = "education"): AboutFormState => ({
+  group,
+  period: currentYear,
+  title: "",
+  institution: "",
+  detail: "",
+  skills: "",
+  stack: "",
+  focus: "",
+  detailPlacement: "",
+  titleEn: "",
+  institutionEn: "",
+  detailEn: "",
+  skillsEn: "",
+  focusEn: "",
+});
+
 const contentSectionKinds: Partial<Record<StudioSectionId, ContentKind>> = {
+  about: "about",
   certificates: "certificates",
   blog: "blog",
   interests: "interests",
+};
+
+const completedStatuses = new Set([
+  "completed",
+  "complete",
+  "done",
+  "finished",
+  "published",
+  "terminado",
+  "terminada",
+  "completado",
+  "completada",
+  "finalizado",
+  "finalizada",
+  "publicado",
+  "publicada",
+]);
+
+const developmentStatuses = new Set([
+  "in-progress",
+  "in progress",
+  "progress",
+  "pending",
+  "wip",
+  "draft",
+  "concept",
+  "concepto",
+  "planned",
+  "en-progreso",
+  "en progreso",
+  "en-desarrollo",
+  "en desarrollo",
+  "pendiente",
+  "por terminar",
+]);
+
+const isDevelopmentStatus = (value: string | null | undefined) => {
+  const status = String(value || "").trim().toLowerCase();
+
+  if (!status) {
+    return false;
+  }
+
+  return developmentStatuses.has(status) || !completedStatuses.has(status);
 };
 
 const slugify = (value: string) =>
@@ -447,6 +510,7 @@ const normalizeCertificateToForm = (certificate: Record<string, any>): Certifica
     certificateType: certificate.type ?? form.certificateType,
     mime: certificate.mime ?? form.mime,
     issued: certificate.issued ?? form.issued,
+    status: certificate.status ?? form.status,
     title: copyEs.title ?? "",
     issuer: copyEs.issuer ?? form.issuer,
     tags: joinCommaList(copyEs.tags),
@@ -508,6 +572,31 @@ const normalizeInterestToForm = (interest: Record<string, any>): InterestFormSta
     descriptionEn: copyEn.description ?? "",
     bodyEn: copyEn.body ?? "",
     tagsEn: joinCommaList(copyEn.tags),
+  };
+};
+
+const normalizeAboutToForm = (entry: Record<string, any>): AboutFormState => {
+  const group: AboutGroupKind = entry.group === "work" ? "work" : "education";
+  const form = defaultAboutForm(group);
+  const es = entry.es ?? {};
+  const en = entry.en ?? {};
+
+  return {
+    ...form,
+    group,
+    period: es.period ?? form.period,
+    title: es.title ?? "",
+    institution: es.institution ?? "",
+    detail: group === "work" ? es.description ?? es.detail ?? "" : es.detail ?? "",
+    skills: joinCommaList(es.skills),
+    stack: joinCommaList(es.stack),
+    focus: joinCommaList(es.focus),
+    detailPlacement: es.detailPlacement ?? "",
+    titleEn: en.title ?? "",
+    institutionEn: en.institution ?? "",
+    detailEn: group === "work" ? en.description ?? en.detail ?? "" : en.detail ?? "",
+    skillsEn: joinCommaList(en.skills),
+    focusEn: joinCommaList(en.focus),
   };
 };
 
@@ -911,10 +1000,13 @@ function SectionOrderControl({
 }
 
 function App() {
-  const [activeSection, setActiveSection] = useState<StudioSectionId>("projects");
+  const [activeSection, setActiveSection] = useState<StudioSectionId>("about");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [workspaceView, setWorkspaceView] = useState<"home" | "project-create" | "certificate-edit" | "blog-edit" | "interest-edit">("home");
+  const [workspaceView, setWorkspaceView] = useState<
+    "home" | "section-detail" | "project-create" | "about-edit" | "certificate-edit" | "blog-edit" | "interest-edit"
+  >("home");
   const [projectForm, setProjectForm] = useState<ProjectFormState>(() => defaultProjectForm());
+  const [aboutForm, setAboutForm] = useState<AboutFormState>(() => defaultAboutForm());
   const [certificateForm, setCertificateForm] = useState<CertificateFormState>(() => defaultCertificateForm());
   const [blogForm, setBlogForm] = useState<BlogFormState>(() => defaultBlogForm());
   const [interestForm, setInterestForm] = useState<InterestFormState>(() => defaultInterestForm());
@@ -922,11 +1014,13 @@ function App() {
   const [blogSlugTouched, setBlogSlugTouched] = useState(false);
   const [certificateIdTouched, setCertificateIdTouched] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [editingAboutKey, setEditingAboutKey] = useState<string | null>(null);
   const [editingCertificateId, setEditingCertificateId] = useState<string | null>(null);
   const [editingBlogSlug, setEditingBlogSlug] = useState<string | null>(null);
   const [editingInterestIndex, setEditingInterestIndex] = useState<number | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [contentItems, setContentItems] = useState<Record<ContentKind, StudioContentItem[]>>({
+    about: [],
     certificates: [],
     blog: [],
     interests: [],
@@ -946,16 +1040,27 @@ function App() {
   const selected = useMemo(() => getSectionById(activeSection), [activeSection]);
   const SelectedIcon = selected.icon;
   const activeProjectCount = projects.filter((project) => project.showInHome).length;
+  const developmentProjects = projects.filter((project) => isDevelopmentStatus(project.status));
+  const developmentCertificates = contentItems.certificates.filter((certificate) => isDevelopmentStatus(certificate.status));
+  const developmentItemCount = developmentProjects.length + developmentCertificates.length;
   const activeContentKind = contentSectionKinds[selected.id];
   const selectedContentItems = activeContentKind ? contentItems[activeContentKind] : [];
+  const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
+  const aboutWorkItems = contentItems.about.filter((item) => item.key.startsWith("work:"));
   const sectionMetric = selected.id === "projects"
     ? `${activeProjectCount} activos`
+    : selected.id === "development"
+      ? `${developmentItemCount} en progreso`
     : activeContentKind
       ? `${selectedContentItems.length} items`
       : selected.metric;
   const getSectionMetric = (sectionId: StudioSectionId, fallback: string) => {
     if (sectionId === "projects") {
       return `${activeProjectCount} activos`;
+    }
+
+    if (sectionId === "development") {
+      return `${developmentItemCount} en progreso`;
     }
 
     const kind = contentSectionKinds[sectionId];
@@ -993,6 +1098,7 @@ function App() {
   };
 
   useEffect(() => {
+    loadContent("about");
     loadContent("certificates");
     loadContent("blog");
     loadContent("interests");
@@ -1042,6 +1148,23 @@ function App() {
     if (field === "slug") {
       setSlugTouched(true);
     }
+  };
+
+  const updateAboutField = <Key extends keyof AboutFormState>(
+    field: Key,
+    value: AboutFormState[Key],
+  ) => {
+    setAboutForm((current) => {
+      if (field !== "group") {
+        return { ...current, [field]: value };
+      }
+
+      const group = value as AboutGroupKind;
+      return {
+        ...current,
+        group,
+      };
+    });
   };
 
   const updateCertificateField = <Key extends keyof CertificateFormState>(
@@ -1278,6 +1401,18 @@ function App() {
     }
   };
 
+  const openAboutEditor = (mode: "new" | "edit" = "new", group: AboutGroupKind = "education") => {
+    setActiveSection("about");
+    setWorkspaceView("about-edit");
+    setContentError("");
+    setContentResult(null);
+
+    if (mode === "new") {
+      setAboutForm(defaultAboutForm(group));
+      setEditingAboutKey(null);
+    }
+  };
+
   const openCertificateEditor = (mode: "new" | "edit" = "new") => {
     setActiveSection("certificates");
     setWorkspaceView("certificate-edit");
@@ -1323,7 +1458,11 @@ function App() {
     try {
       const item = await invoke<Record<string, any>>("get_studio_content", { kind, key });
 
-      if (kind === "certificates") {
+      if (kind === "about") {
+        setAboutForm(normalizeAboutToForm(item));
+        setEditingAboutKey(key);
+        openAboutEditor("edit");
+      } else if (kind === "certificates") {
         setCertificateForm(normalizeCertificateToForm(item));
         setEditingCertificateId(key);
         setCertificateIdTouched(true);
@@ -1345,10 +1484,40 @@ function App() {
 
   const handleSectionClick = (sectionId: StudioSectionId) => {
     setActiveSection(sectionId);
-    setWorkspaceView("home");
+    setWorkspaceView("section-detail");
   };
 
   const handleSectionAction = (action: string) => {
+    if (selected.id === "development") {
+      if (action === "Nuevo proyecto en desarrollo") {
+        setProjectForm({ ...defaultProjectForm(), status: "in-progress", showInHome: false });
+        setActiveSection("development");
+        setWorkspaceView("project-create");
+        setEditingSlug(null);
+        setSlugTouched(false);
+        setProjectError("");
+        setImagePickMessage(null);
+        setProjectResult(null);
+        return;
+      }
+
+      if (action === "Editar proyectos") {
+        loadProjects();
+        window.setTimeout(() => {
+          document.getElementById("development-work-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 0);
+        return;
+      }
+
+      if (action === "Editar certificados") {
+        loadContent("certificates");
+        window.setTimeout(() => {
+          document.getElementById("development-work-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 0);
+        return;
+      }
+    }
+
     if (selected.id === "projects" && action === "Nuevo proyecto") {
       openProjectCreator();
       return;
@@ -1360,6 +1529,23 @@ function App() {
         document.getElementById("project-edit-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }, 0);
       return;
+    }
+
+    if (selected.id === "about") {
+      if (action === "Agregar formacion") {
+        openAboutEditor("new", "education");
+        return;
+      }
+
+      if (action === "Agregar experiencia") {
+        openAboutEditor("new", "work");
+        return;
+      }
+
+      if (action === "Editar entradas") {
+        loadContent("about");
+        return;
+      }
     }
 
     if (selected.id === "certificates") {
@@ -1395,6 +1581,53 @@ function App() {
       if (action === "Ajustar etiquetas") {
         loadContent("interests");
       }
+    }
+  };
+
+  const handleSaveAbout = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_about_item", {
+        existingKey: editingAboutKey,
+        input: aboutForm,
+      });
+      setContentResult(result);
+      await loadContent("about");
+      setEditingAboutKey(result.key);
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleDeleteAbout = async (key: string) => {
+    const confirmed = window.confirm("Esto quitara la entrada de Sobre mi del portafolio.");
+    if (!confirmed) {
+      return;
+    }
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("delete_about_item", { key });
+      setContentResult(result);
+      await loadContent("about");
+
+      if (editingAboutKey === key) {
+        setAboutForm(defaultAboutForm());
+        setEditingAboutKey(null);
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
     }
   };
 
@@ -1545,10 +1778,18 @@ function App() {
   };
 
   const editorTitle =
-    workspaceView === "project-create"
+    workspaceView === "section-detail"
+      ? selected.title
+      : workspaceView === "project-create"
       ? editingSlug
         ? "Editar proyecto"
         : "Nuevo proyecto"
+      : workspaceView === "about-edit"
+        ? editingAboutKey
+          ? "Editar Sobre mi"
+          : aboutForm.group === "work"
+            ? "Nueva experiencia"
+            : "Nueva formacion"
       : workspaceView === "certificate-edit"
         ? editingCertificateId
           ? "Editar certificado"
@@ -1563,8 +1804,12 @@ function App() {
               : "Nuevo interes"
             : "";
   const editorEyebrow =
-    workspaceView === "project-create"
+    workspaceView === "section-detail"
+      ? selected.eyebrow
+      : workspaceView === "project-create"
       ? "Proyectos"
+      : workspaceView === "about-edit"
+        ? "Sobre mi"
       : workspaceView === "certificate-edit"
         ? "Certificados"
         : workspaceView === "blog-edit"
@@ -1575,6 +1820,8 @@ function App() {
   const resetCurrentEditor = () => {
     if (workspaceView === "project-create") {
       resetProjectForm();
+    } else if (workspaceView === "about-edit") {
+      openAboutEditor("new", aboutForm.group);
     } else if (workspaceView === "certificate-edit") {
       openCertificateEditor("new");
     } else if (workspaceView === "blog-edit") {
@@ -1583,6 +1830,248 @@ function App() {
       openInterestEditor("new");
     }
   };
+
+  const selectedModuleDetail = (
+    <div className="module-card-detail" aria-live="polite">
+      <div className="selection-status">
+        <span>
+          <CircleDot size={16} strokeWidth={2.4} />
+          {sectionMetric}
+        </span>
+        <span>
+          <CheckCircle2 size={16} strokeWidth={2.4} />
+          {selected.detail}
+        </span>
+      </div>
+
+      {selected.id === "development" ? (
+        <div className="active-projects-panel" id="development-work-list">
+          <div className="active-projects-head">
+            <div>
+              <strong>Contenido en desarrollo</strong>
+              <span>
+                {developmentProjects.length} proyecto{developmentProjects.length === 1 ? "" : "s"} y{" "}
+                {developmentCertificates.length} certificado{developmentCertificates.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loadProjects();
+                loadContent("certificates");
+              }}
+            >
+              Actualizar
+            </button>
+          </div>
+
+          {developmentItemCount === 0 ? (
+            <p className="active-projects-empty">
+              No hay elementos marcados como en progreso todavia. Usa estados como in-progress, pending, draft o en progreso.
+            </p>
+          ) : (
+            <div className="active-projects-list">
+              {developmentProjects.map((project) => (
+                <div className="active-project-row" key={`project-${project.slug}`}>
+                  <div>
+                    <strong>{project.title}</strong>
+                    <span>Proyecto - {project.year || "Sin ano"} - {project.status || "sin estado"}</span>
+                  </div>
+                  <button type="button" onClick={() => handleEditProject(project.slug)}>
+                    Editar
+                  </button>
+                </div>
+              ))}
+
+              {developmentCertificates.map((certificate) => (
+                <div className="active-project-row" key={`certificate-${certificate.key}`}>
+                  <div>
+                    <strong>{certificate.title}</strong>
+                    <span>Certificado - {certificate.status || "sin estado"} - {certificate.detail}</span>
+                  </div>
+                  <button type="button" onClick={() => handleEditContent("certificates", certificate.key)}>
+                    Editar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {selected.id === "about" ? (
+        <div className="about-content-blocks">
+          {[
+            { title: "Formacion academica", items: aboutEducationItems, group: "education" as AboutGroupKind },
+            { title: "Experiencia laboral", items: aboutWorkItems, group: "work" as AboutGroupKind },
+          ].map((block) => (
+            <div className="active-projects-panel about-content-block" key={block.group}>
+              <div className="active-projects-head">
+                <div>
+                  <strong>{block.title}</strong>
+                  <span>{block.items.length} entrada{block.items.length === 1 ? "" : "s"}</span>
+                </div>
+                <button type="button" onClick={() => openAboutEditor("new", block.group)}>
+                  Agregar
+                </button>
+              </div>
+              {loadingContentKind === "about" ? (
+                <p className="active-projects-empty">Cargando contenido...</p>
+              ) : block.items.length === 0 ? (
+                <p className="active-projects-empty">Todavia no hay entradas en este bloque.</p>
+              ) : (
+                <div className="active-projects-list">
+                  {block.items.map((item) => (
+                    <div className="active-project-row" key={item.key}>
+                      <div>
+                        <strong>{item.title}</strong>
+                        <span>{item.subtitle} - {item.detail}</span>
+                      </div>
+                      <div className="active-project-row-actions">
+                        <button type="button" onClick={() => handleEditContent("about", item.key)}>
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          className="danger-action"
+                          onClick={() => handleDeleteAbout(item.key)}
+                          disabled={isSavingContent}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {contentError ? <p className="form-message is-error about-content-message">{contentError}</p> : null}
+          {contentResult ? (
+            <p className="form-message is-success about-content-message">Contenido actualizado. Total: {contentResult.totalItems}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {selected.id === "projects" ? (
+        <div className="active-projects-panel" id="project-edit-list">
+          <div className="active-projects-head">
+            <div>
+              <strong>Editar proyectos existentes</strong>
+              <span>{projects.length} proyecto{projects.length === 1 ? "" : "s"} disponible{projects.length === 1 ? "" : "s"}</span>
+            </div>
+            <button type="button" onClick={loadProjects}>
+              Actualizar
+            </button>
+          </div>
+          {isLoadingProjects ? (
+            <p className="active-projects-empty">Cargando proyectos...</p>
+          ) : projects.length === 0 ? (
+            <p className="active-projects-empty">No hay proyectos en src/content/projects todavia.</p>
+          ) : (
+            <div className="active-projects-list">
+              {projects.map((project) => (
+                <div className="active-project-row" key={project.slug}>
+                  <div>
+                    <strong>{project.title}</strong>
+                    <span>
+                      {project.year || "Sin ano"} - {project.status || "sin estado"}
+                      {project.showInHome ? " - visible en home" : " - oculto en home"}
+                    </span>
+                  </div>
+                  <button type="button" onClick={() => handleEditProject(project.slug)}>
+                    Editar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {activeContentKind && selected.id !== "about" ? (
+        <div className="active-projects-panel">
+          <div className="active-projects-head">
+            <div>
+              <strong>
+                {activeContentKind === "about"
+                  ? "Entradas de Sobre mi"
+                  : activeContentKind === "certificates"
+                    ? "Certificados disponibles"
+                    : activeContentKind === "blog"
+                      ? "Notas disponibles"
+                      : "Intereses disponibles"}
+              </strong>
+              <span>{selectedContentItems.length} item{selectedContentItems.length === 1 ? "" : "s"} para editar</span>
+            </div>
+            <button type="button" onClick={() => loadContent(activeContentKind)}>
+              Actualizar
+            </button>
+          </div>
+          {loadingContentKind === activeContentKind ? (
+            <p className="active-projects-empty">Cargando contenido...</p>
+          ) : selectedContentItems.length === 0 ? (
+            <p className="active-projects-empty">Todavia no hay contenido en este modulo.</p>
+          ) : (
+            <div className="active-projects-list">
+              {selectedContentItems.map((item) => (
+                <div className="active-project-row" key={item.key}>
+                  <div>
+                    <strong>{item.title}</strong>
+                    <span>{item.subtitle} - {item.detail}</span>
+                  </div>
+                  <div className="active-project-row-actions">
+                    <button type="button" onClick={() => handleEditContent(activeContentKind, item.key)}>
+                      Editar
+                    </button>
+                    {activeContentKind === "about" ? (
+                      <button
+                        type="button"
+                        className="danger-action"
+                        onClick={() => handleDeleteAbout(item.key)}
+                        disabled={isSavingContent}
+                      >
+                        Eliminar
+                      </button>
+                    ) : activeContentKind === "certificates" ? (
+                      <button
+                        type="button"
+                        className="danger-action"
+                        onClick={() => handleDeleteCertificate(item.key)}
+                        disabled={isSavingContent}
+                      >
+                        Eliminar
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {contentError ? <p className="form-message is-error">{contentError}</p> : null}
+          {(activeContentKind === "about" || activeContentKind === "certificates") && contentResult ? (
+            <p className="form-message is-success">Contenido actualizado. Total: {contentResult.totalItems}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {selected.id !== "about" ? (
+        <div className="action-stack" aria-label={`Acciones de ${selected.title}`}>
+          {selected.actions.map((action) => (
+            <button
+              type="button"
+              key={action}
+              className="action-row"
+              onClick={() => handleSectionAction(action)}
+            >
+              <span>{action}</span>
+              <ArrowRight size={17} strokeWidth={2.2} />
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
 
   return (
     <main className={`studio-app ${theme}`} data-theme={theme}>
@@ -1600,10 +2089,6 @@ function App() {
           </div>
 
           <div className="topbar-actions">
-            <span className="privacy-pill">
-              <ShieldCheck size={16} strokeWidth={2.2} />
-              Solo escritorio
-            </span>
             <button
               type="button"
               className="icon-button"
@@ -1616,23 +2101,7 @@ function App() {
           </div>
         </header>
 
-        {workspaceView === "home" ? (
-          <section className="intro-panel" aria-labelledby="studio-title">
-            <div className="intro-copy">
-              <span className="section-label">Inicio</span>
-              <h2 id="studio-title">Elige el modulo del portafolio que vas a gestionar.</h2>
-            </div>
-            <div className="session-card">
-              <span className="session-icon" aria-hidden="true">
-                <Clock3 size={18} strokeWidth={2.2} />
-              </span>
-              <div>
-                <p>Sesion privada</p>
-                <strong>Archivos locales</strong>
-              </div>
-            </div>
-          </section>
-        ) : (
+        {workspaceView !== "home" ? (
           <section className="creator-strip" aria-label="Editor de contenido">
             <button type="button" className="back-button" onClick={() => setWorkspaceView("home")}>
               <ArrowLeft size={17} strokeWidth={2.2} />
@@ -1655,174 +2124,66 @@ function App() {
                   {isOpeningLivePreview ? "Abriendo..." : "Preview real"}
                 </button>
               ) : null}
-              <button type="button" className="secondary-button" onClick={resetCurrentEditor}>
-                Limpiar
-              </button>
+              {workspaceView !== "section-detail" ? (
+                <button type="button" className="secondary-button" onClick={resetCurrentEditor}>
+                  Limpiar
+                </button>
+              ) : null}
             </div>
           </section>
-        )}
+        ) : null}
 
         {workspaceView === "home" ? (
           <section className="workspace" aria-label="Modulos de gestion">
-          <div className="module-grid">
-            {studioSections.map((section) => {
-              const Icon = section.icon;
-              const isActive = section.id === activeSection;
+            <div className="module-grid">
+              {studioSections.map((section) => {
+                const Icon = section.icon;
+                const isActive = false;
 
-              return (
-                <button
-                  type="button"
-                  key={section.id}
-                  className={`module-card accent-${section.accent}${isActive ? " is-active" : ""}`}
-                  onClick={() => handleSectionClick(section.id)}
-                  aria-pressed={isActive}
-                >
-                  <span className="module-card-top">
-                    <span className="module-icon" aria-hidden="true">
-                      <Icon size={22} strokeWidth={2.1} />
-                    </span>
-                  <span className="module-metric">{getSectionMetric(section.id, section.metric)}</span>
-                  </span>
-                  <span className="module-eyebrow">{section.eyebrow}</span>
-                  <span className="module-title">
-                    {section.title}
-                    <ChevronRight size={18} strokeWidth={2.3} />
-                  </span>
-                  <span className="module-description">{section.description}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <aside className={`selection-panel accent-${selected.accent}`} aria-live="polite">
-            <div className="selection-head">
-              <span className="selection-icon" aria-hidden="true">
-                <SelectedIcon size={28} strokeWidth={2.1} />
-              </span>
-              <div>
-                <p>{selected.eyebrow}</p>
-                <h3>{selected.title}</h3>
-              </div>
+                return (
+                  <article
+                    key={section.id}
+                    className={`module-card accent-${section.accent}${isActive ? " is-active" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className="module-card-select"
+                      onClick={() => handleSectionClick(section.id)}
+                      aria-pressed={isActive}
+                    >
+                      <span className="module-card-top">
+                        <span className="module-icon" aria-hidden="true">
+                          <Icon size={22} strokeWidth={2.1} />
+                        </span>
+                        <span className="module-metric">{getSectionMetric(section.id, section.metric)}</span>
+                      </span>
+                      <span className="module-eyebrow">{section.eyebrow}</span>
+                      <span className="module-title">
+                        {section.title}
+                        <ChevronRight size={18} strokeWidth={2.3} />
+                      </span>
+                      <span className="module-description">{section.description}</span>
+                    </button>
+                  </article>
+                );
+              })}
             </div>
-
-            <p className="selection-copy">{selected.description}</p>
-
-            <div className="selection-status">
-              <span>
-                <CircleDot size={16} strokeWidth={2.4} />
-                {sectionMetric}
-              </span>
-              <span>
-                <CheckCircle2 size={16} strokeWidth={2.4} />
-                {selected.detail}
-              </span>
-            </div>
-
-            {selected.id === "projects" ? (
-              <div className="active-projects-panel" id="project-edit-list">
-                <div className="active-projects-head">
-                  <div>
-                    <strong>Editar proyectos existentes</strong>
-                    <span>{projects.length} proyecto{projects.length === 1 ? "" : "s"} disponible{projects.length === 1 ? "" : "s"}</span>
-                  </div>
-                  <button type="button" onClick={loadProjects}>
-                    Actualizar
-                  </button>
+          </section>
+        ) : workspaceView === "section-detail" ? (
+          <section className="module-detail-layout" aria-label={`Gestion de ${selected.title}`}>
+            <section className={`module-detail-panel accent-${selected.accent}`} aria-live="polite">
+              <div className="module-detail-panel-head">
+                <span className="selection-icon" aria-hidden="true">
+                  <SelectedIcon size={28} strokeWidth={2.1} />
+                </span>
+                <div>
+                  <p>{selected.eyebrow}</p>
+                  <h3>{selected.title}</h3>
                 </div>
-                {isLoadingProjects ? (
-                  <p className="active-projects-empty">Cargando proyectos...</p>
-                ) : projects.length === 0 ? (
-                  <p className="active-projects-empty">No hay proyectos en src/content/projects todavia.</p>
-                ) : (
-                  <div className="active-projects-list">
-                    {projects.map((project) => (
-                      <div className="active-project-row" key={project.slug}>
-                        <div>
-                          <strong>{project.title}</strong>
-                          <span>
-                            {project.year || "Sin ano"} - {project.status || "sin estado"}
-                            {project.showInHome ? " - visible en home" : " - oculto en home"}
-                          </span>
-                        </div>
-                        <button type="button" onClick={() => handleEditProject(project.slug)}>
-                          Editar
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            ) : null}
-
-            {activeContentKind ? (
-              <div className="active-projects-panel">
-                <div className="active-projects-head">
-                  <div>
-                    <strong>
-                      {activeContentKind === "certificates"
-                        ? "Certificados disponibles"
-                        : activeContentKind === "blog"
-                          ? "Notas disponibles"
-                          : "Intereses disponibles"}
-                    </strong>
-                    <span>{selectedContentItems.length} item{selectedContentItems.length === 1 ? "" : "s"} para editar</span>
-                  </div>
-                  <button type="button" onClick={() => loadContent(activeContentKind)}>
-                    Actualizar
-                  </button>
-                </div>
-                {loadingContentKind === activeContentKind ? (
-                  <p className="active-projects-empty">Cargando contenido...</p>
-                ) : selectedContentItems.length === 0 ? (
-                  <p className="active-projects-empty">Todavia no hay contenido en este modulo.</p>
-                ) : (
-                  <div className="active-projects-list">
-                    {selectedContentItems.map((item) => (
-                      <div className="active-project-row" key={item.key}>
-                        <div>
-                          <strong>{item.title}</strong>
-                          <span>{item.subtitle} - {item.detail}</span>
-                        </div>
-                        <div className="active-project-row-actions">
-                          <button type="button" onClick={() => handleEditContent(activeContentKind, item.key)}>
-                            Editar
-                          </button>
-                          {activeContentKind === "certificates" ? (
-                            <button
-                              type="button"
-                              className="danger-action"
-                              onClick={() => handleDeleteCertificate(item.key)}
-                              disabled={isSavingContent}
-                            >
-                              Eliminar
-                            </button>
-                          ) : null}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {contentError ? <p className="form-message is-error">{contentError}</p> : null}
-                {activeContentKind === "certificates" && contentResult ? (
-                  <p className="form-message is-success">Certificados actualizados. Total: {contentResult.totalItems}</p>
-                ) : null}
-              </div>
-            ) : null}
-
-            <div className="action-stack" aria-label={`Acciones de ${selected.title}`}>
-              {selected.actions.map((action) => (
-                <button
-                  type="button"
-                  key={action}
-                  className="action-row"
-                  onClick={() => handleSectionAction(action)}
-                >
-                  <span>{action}</span>
-                  <ArrowRight size={17} strokeWidth={2.2} />
-                </button>
-              ))}
-            </div>
-          </aside>
+              {selected.id !== "about" ? <p className="selection-copy">{selected.description}</p> : null}
+              {selectedModuleDetail}
+            </section>
           </section>
         ) : (
           <section
@@ -2784,6 +3145,225 @@ function App() {
                 </button>
               </div>
             </form>
+            ) : workspaceView === "about-edit" ? (
+              <form className="project-form-panel" onSubmit={handleSaveAbout}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">Sobre mi</span>
+                    <h3>{aboutForm.group === "work" ? "Experiencia laboral" : "Formacion academica"}</h3>
+                  </div>
+
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Apartado</span>
+                      <select
+                        value={aboutForm.group}
+                        onChange={(event) => updateAboutField("group", event.target.value as AboutGroupKind)}
+                      >
+                        <option value="education">Formacion academica</option>
+                        <option value="work">Experiencia laboral</option>
+                      </select>
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Periodo</span>
+                      <input
+                        value={aboutForm.period}
+                        onChange={(event) => updateAboutField("period", event.target.value)}
+                        placeholder={currentYear}
+                        required
+                      />
+                    </label>
+
+                    {aboutForm.group === "education" ? (
+                      <>
+                        <label className="field">
+                          <span className="compact-label">Institucion ES</span>
+                          <input
+                            value={aboutForm.institution}
+                            onChange={(event) => updateAboutField("institution", event.target.value)}
+                            placeholder="Universidad Catolica de Colombia"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="compact-label">Titulo ES</span>
+                          <input
+                            value={aboutForm.title}
+                            onChange={(event) => updateAboutField("title", event.target.value)}
+                            placeholder="Voluntariado medico"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Detalle ES</span>
+                          <input
+                            value={aboutForm.detail}
+                            onChange={(event) => updateAboutField("detail", event.target.value)}
+                            placeholder="Pregrado - Ingenieria de Sistemas y Computacion"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Habilidades ES</span>
+                          <input
+                            value={aboutForm.skills}
+                            onChange={(event) => updateAboutField("skills", event.target.value)}
+                            placeholder="Trabajo en equipo, Comunicacion, Adaptabilidad"
+                          />
+                        </label>
+                      </>
+                    ) : (
+                      <>
+                        <label className="field field-wide">
+                          <span className="compact-label">Titulo ES</span>
+                          <input
+                            value={aboutForm.title}
+                            onChange={(event) => updateAboutField("title", event.target.value)}
+                            placeholder="Desarrollador Full Stack - Docqee"
+                            required
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Detalle ES</span>
+                          <textarea
+                            value={aboutForm.detail}
+                            onChange={(event) => updateAboutField("detail", event.target.value)}
+                            rows={3}
+                            placeholder="Describe responsabilidades, contexto o aporte principal."
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="compact-label">Posicion visual</span>
+                          <select
+                            value={aboutForm.detailPlacement}
+                            onChange={(event) => updateAboutField("detailPlacement", event.target.value)}
+                          >
+                            <option value="">Automatico</option>
+                            <option value="right">A la derecha</option>
+                          </select>
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Stack</span>
+                          <input
+                            value={aboutForm.stack}
+                            onChange={(event) => updateAboutField("stack", event.target.value)}
+                            placeholder="React, NestJS, PostgreSQL"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Enfoque ES</span>
+                          <input
+                            value={aboutForm.focus}
+                            onChange={(event) => updateAboutField("focus", event.target.value)}
+                            placeholder="Arquitectura modular, APIs REST, Full Stack"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Habilidades ES</span>
+                          <input
+                            value={aboutForm.skills}
+                            onChange={(event) => updateAboutField("skills", event.target.value)}
+                            placeholder="Responsabilidad, Gestion del tiempo"
+                          />
+                        </label>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Version en ingles</h3>
+                  </div>
+
+                  <div className="form-grid">
+                    {aboutForm.group === "education" ? (
+                      <>
+                        <label className="field">
+                          <span className="compact-label">Institution EN</span>
+                          <input
+                            value={aboutForm.institutionEn}
+                            onChange={(event) => updateAboutField("institutionEn", event.target.value)}
+                            placeholder="Catholic University of Colombia"
+                          />
+                        </label>
+                        <label className="field">
+                          <span className="compact-label">Title EN</span>
+                          <input
+                            value={aboutForm.titleEn}
+                            onChange={(event) => updateAboutField("titleEn", event.target.value)}
+                            placeholder="Medical volunteering"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Detail EN</span>
+                          <input
+                            value={aboutForm.detailEn}
+                            onChange={(event) => updateAboutField("detailEn", event.target.value)}
+                          />
+                        </label>
+                      </>
+                    ) : (
+                      <label className="field field-wide">
+                        <span className="compact-label">Title EN</span>
+                        <input
+                          value={aboutForm.titleEn}
+                          onChange={(event) => updateAboutField("titleEn", event.target.value)}
+                          placeholder="Full Stack Developer - Docqee"
+                        />
+                      </label>
+                    )}
+                    {aboutForm.group === "work" ? (
+                      <label className="field field-wide">
+                        <span className="compact-label">Detail EN</span>
+                        <textarea
+                          value={aboutForm.detailEn}
+                          onChange={(event) => updateAboutField("detailEn", event.target.value)}
+                          rows={3}
+                        />
+                      </label>
+                    ) : null}
+                    {aboutForm.group === "work" ? (
+                      <label className="field field-wide">
+                        <span className="compact-label">Focus EN</span>
+                        <input
+                          value={aboutForm.focusEn}
+                          onChange={(event) => updateAboutField("focusEn", event.target.value)}
+                        />
+                      </label>
+                    ) : null}
+                    <label className="field field-wide">
+                      <span className="compact-label">Skills EN</span>
+                      <input
+                        value={aboutForm.skillsEn}
+                        onChange={(event) => updateAboutField("skillsEn", event.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>Sobre mi actualizado: {contentResult.key}</strong>
+                      <span>Total: {contentResult.totalItems}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={() => openAboutEditor("new", aboutForm.group)}>Limpiar</button>
+                  {editingAboutKey ? (
+                    <button
+                      type="button"
+                      className="secondary-button danger-action"
+                      onClick={() => handleDeleteAbout(editingAboutKey)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar entrada"}
+                  </button>
+                </div>
+              </form>
             ) : workspaceView === "certificate-edit" ? (
               <form className="project-form-panel" onSubmit={handleSaveCertificate}>
                 <div className="form-scroll">
@@ -2861,6 +3441,14 @@ function App() {
                         value={certificateForm.issued}
                         onChange={(event) => updateCertificateField("issued", event.target.value)}
                         placeholder="2026"
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Estado</span>
+                      <input
+                        value={certificateForm.status}
+                        onChange={(event) => updateCertificateField("status", event.target.value)}
+                        placeholder="completed o in-progress"
                       />
                     </label>
                     <label className="field field-wide">

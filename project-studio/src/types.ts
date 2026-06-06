@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-export type StudioSectionId = "projects" | "certificates" | "blog" | "interests";
+export type StudioSectionId = "about" | "development" | "projects" | "certificates" | "blog" | "interests";
 
 export type StudioAccent = "cyan" | "violet" | "rose" | "mint";
 
@@ -142,13 +142,16 @@ export interface ProjectListItem {
   filePath: string;
 }
 
-export type ContentKind = "certificates" | "blog" | "interests";
+export type ContentKind = "about" | "certificates" | "blog" | "interests";
+
+export type AboutGroupKind = "education" | "work";
 
 export interface StudioContentItem {
   key: string;
   title: string;
   subtitle: string;
   detail: string;
+  status?: string;
   filePath: string;
 }
 
@@ -164,12 +167,30 @@ export interface PickedCertificateFile {
   mime: string;
 }
 
+export interface AboutFormState {
+  group: AboutGroupKind;
+  period: string;
+  title: string;
+  institution: string;
+  detail: string;
+  skills: string;
+  stack: string;
+  focus: string;
+  detailPlacement: string;
+  titleEn: string;
+  institutionEn: string;
+  detailEn: string;
+  skillsEn: string;
+  focusEn: string;
+}
+
 export interface CertificateFormState {
   id: string;
   fileName: string;
   certificateType: string;
   mime: string;
   issued: string;
+  status: string;
   title: string;
   issuer: string;
   tags: string;

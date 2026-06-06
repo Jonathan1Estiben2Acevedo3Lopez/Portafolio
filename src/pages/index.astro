@@ -104,6 +104,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
         <div class="hidden items-center gap-3 lg:flex xl:gap-6">
           <a class="nav-link" href="#home" data-i18n="nav.home">Inicio</a>
           <a class="nav-link" href="#about" data-i18n="nav.about">Sobre mí</a>
+          <a class="nav-link" href="#development" data-i18n="nav.development">En desarrollo</a>
           <a class="nav-link" href="#projects" data-i18n="nav.projects">Proyectos</a>
           <a class="nav-link" href="#certificates" data-i18n="nav.certificates">Certificados</a>
           <a class="nav-link" href="#insights" data-i18n="nav.insights">Blog</a>
@@ -170,6 +171,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
           <div class="flex flex-col gap-4">
             <a class="mobile-link" href="#home" data-i18n="nav.home">Inicio</a>
             <a class="mobile-link" href="#about" data-i18n="nav.about">Sobre mí</a>
+            <a class="mobile-link" href="#development" data-i18n="nav.development">En desarrollo</a>
             <a class="mobile-link" href="#projects" data-i18n="nav.projects">Proyectos</a>
             <a class="mobile-link" href="#certificates" data-i18n="nav.certificates">Certificados</a>
             <a class="mobile-link" href="#insights" data-i18n="nav.insights">Blog</a>
@@ -334,6 +336,21 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
           </div>
 
           <div id="about-profile-grid" class="grid gap-4 lg:grid-cols-2 lg:gap-5"></div>
+        </div>
+      </section>
+
+      <section id="development" class="border-y border-outline-variant/10 bg-surface-container-low/35 px-6 py-16 lg:px-8 lg:py-20">
+        <div class="site-shell site-shell--main mx-auto max-w-7xl" data-section-anchor>
+          <div class="mb-9 flex flex-col gap-3 lg:mb-10 lg:max-w-[42rem]">
+            <h2 class="text-4xl font-bold tracking-tight text-on-surface sm:text-5xl" data-i18n="development.title">
+              En desarrollo
+            </h2>
+            <p class="max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base" data-i18n="development.subtitle">
+              Proyectos y certificados en los que estoy trabajando antes de publicarlos como terminados.
+            </p>
+          </div>
+
+          <div id="development-grid" class="development-grid custom-scrollbar"></div>
         </div>
       </section>
 

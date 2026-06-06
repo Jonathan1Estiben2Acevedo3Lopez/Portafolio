@@ -54,6 +54,7 @@ const content = {
     },
     nav: {
       home: "Inicio",
+      development: "En desarrollo",
       projects: "Proyectos",
       certificates: "Certificados",
       insights: "Blog",
@@ -106,6 +107,17 @@ const content = {
         "research-project": "Investigacion",
       },
       items: getLocalizedItems(projectCards, "es"),
+    },
+    development: {
+      title: "En desarrollo",
+      subtitle: "Proyectos y certificados en los que estoy trabajando antes de publicarlos como terminados.",
+      projectLabel: "Proyecto en progreso",
+      certificateLabel: "Certificado en progreso",
+      statusFallback: "En progreso",
+      detailCta: "Ver ficha",
+      certificateCta: "Pendiente",
+      emptyTitle: "Nada publicado en desarrollo por ahora",
+      emptyDescription: "Aqui aparecera lo que este en proceso: proyectos con estado pendiente o en progreso y certificados que aun no esten terminados.",
     },
     certificates: {
       title: "Certificados",
@@ -172,6 +184,7 @@ const content = {
     },
     nav: {
       home: "Home",
+      development: "In development",
       projects: "Projects",
       certificates: "Certificates",
       insights: "Blog",
@@ -224,6 +237,17 @@ const content = {
         "research-project": "Research project",
       },
       items: getLocalizedItems(projectCards, "en"),
+    },
+    development: {
+      title: "In development",
+      subtitle: "Projects and certificates I am working on before publishing them as finished.",
+      projectLabel: "Project in progress",
+      certificateLabel: "Certificate in progress",
+      statusFallback: "In progress",
+      detailCta: "View case",
+      certificateCta: "Pending",
+      emptyTitle: "Nothing published in development yet",
+      emptyDescription: "This section will show work in progress: projects with pending or in-progress status and certificates that are not finished yet.",
     },
     certificates: {
       title: "Certificates",
@@ -332,6 +356,7 @@ const elements = {
   heroSecondaryButton: document.getElementById("hero-secondary-button"),
   heroMascotField: document.getElementById("hero-mascot-field"),
   heroMascots: document.querySelectorAll("[data-hero-mascot]"),
+  developmentGrid: document.getElementById("development-grid"),
   projectsGrid: document.getElementById("projects-grid"),
   projectFilters: document.getElementById("project-filters"),
   certificatesGrid: document.getElementById("certificates-grid"),
@@ -362,7 +387,7 @@ const elements = {
   header: document.querySelector("header"),
 };
 
-const sectionIds = ["home", "about", "projects", "certificates", "insights", "interests", "contact"];
+const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
@@ -569,11 +594,13 @@ function applyStaticCopy() {
   renderHeroLinks();
   renderFilters();
   renderAboutProfile();
+  renderDevelopment();
   renderCertificates();
   renderArticleFilters();
   renderInterestFilters();
 
   if (state.deferredSectionsReady) {
+    renderDevelopment();
     renderProjects();
     renderCertificates();
     renderArticles();
@@ -836,6 +863,171 @@ function buildCertificateViewerUrl(item) {
   });
 
   return withBase(`/certificados/ver/?${params.toString()}`);
+}
+
+const completedStatuses = new Set([
+  "completed",
+  "complete",
+  "done",
+  "finished",
+  "published",
+  "terminado",
+  "terminada",
+  "completado",
+  "completada",
+  "finalizado",
+  "finalizada",
+  "publicado",
+  "publicada",
+]);
+
+const developmentStatuses = new Set([
+  "in-progress",
+  "in progress",
+  "progress",
+  "pending",
+  "wip",
+  "draft",
+  "concept",
+  "concepto",
+  "planned",
+  "en-progreso",
+  "en progreso",
+  "en-desarrollo",
+  "en desarrollo",
+  "pendiente",
+  "por terminar",
+]);
+
+function normalizeStatus(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
+}
+
+function hasDevelopmentStatus(value) {
+  const status = normalizeStatus(value);
+
+  if (!status) {
+    return false;
+  }
+
+  return developmentStatuses.has(status) || !completedStatuses.has(status);
+}
+
+function formatDevelopmentStatus(value, fallback) {
+  const status = normalizeStatus(value);
+
+  if (!status || developmentStatuses.has(status)) {
+    return fallback;
+  }
+
+  return status.replace(/[-_]+/g, " ");
+}
+
+function isDevelopmentProject(item) {
+  if (item.showInDevelopment === false) {
+    return false;
+  }
+
+  return item.showInDevelopment === true || item.inDevelopment === true || hasDevelopmentStatus(item.status);
+}
+
+function isDevelopmentCertificate(item) {
+  if (item.showInDevelopment === false) {
+    return false;
+  }
+
+  return (
+    item.showInDevelopment === true ||
+    item.inDevelopment === true ||
+    hasDevelopmentStatus(item.status || item.state || item.phase) ||
+    (!getCertificateSourceId(item) && Boolean(item.title))
+  );
+}
+
+function renderDevelopment() {
+  if (!elements.developmentGrid) {
+    return;
+  }
+
+  const labels = getCopy("development");
+  const projectCopy = getCopy("projects");
+  const projects = sortProjectsForHome(getCopy("projects.items") || []).filter(isDevelopmentProject);
+  const certificates = (getCopy("certificates.items") || []).filter(isDevelopmentCertificate);
+  const projectCardsHtml = projects.map((item) => {
+    const detailHref = withBase(item.href || `/proyectos/${item.slug}`);
+    const imageAlt = `${projectCopy.imageAlt}: ${item.title}`;
+    const status = formatDevelopmentStatus(item.status, labels.statusFallback);
+
+    return `
+      <article class="development-card development-card--project overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+        ${renderProjectVisual(item, imageAlt)}
+        <div class="development-card-body px-1.5 pb-1 pt-4">
+          <div class="development-card-heading">
+            <span class="development-card-label">${labels.projectLabel}</span>
+            ${renderIcon("north_east", "text-primary")}
+          </div>
+          <h3 class="mt-2 font-headline text-[1.42rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
+          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+          <div class="development-card-meta">
+            <span>${status}</span>
+            ${item.year ? `<span>${item.year}</span>` : ""}
+          </div>
+          <a class="development-card-action" href="${detailHref}">
+            ${labels.detailCta}
+          </a>
+        </div>
+      </article>
+    `;
+  });
+  const certificateCardsHtml = certificates.map((item) => {
+    const hasFile = Boolean(getCertificateSourceId(item));
+    const viewerUrl = hasFile ? buildCertificateViewerUrl(item) : "";
+    const status = formatDevelopmentStatus(item.status || item.state || item.phase, labels.statusFallback);
+
+    return `
+      <article class="development-card development-card--certificate overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+        <div class="development-certificate-visual rounded-[1.3rem]">
+          ${renderCertificatePreview(item)}
+          <span class="development-card-badge">${renderIcon("workspace_premium", "text-base")}</span>
+        </div>
+        <div class="development-card-body px-1.5 pb-1 pt-4">
+          <div class="development-card-heading">
+            <span class="development-card-label">${labels.certificateLabel}</span>
+            ${renderIcon("shield_check", "text-secondary")}
+          </div>
+          <h3 class="mt-2 font-headline text-[1.42rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
+          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.issuer || labels.certificateLabel}</p>
+          <div class="development-card-meta">
+            <span>${status}</span>
+            ${item.issued ? `<span>${item.issued}</span>` : ""}
+          </div>
+          ${
+            hasFile
+              ? `<a class="development-card-action" href="${viewerUrl}">${labels.certificateCta}</a>`
+              : `<span class="development-card-action is-disabled" aria-disabled="true">${labels.certificateCta}</span>`
+          }
+        </div>
+      </article>
+    `;
+  });
+  const cards = [...projectCardsHtml, ...certificateCardsHtml];
+
+  if (!cards.length) {
+    elements.developmentGrid.innerHTML = `
+      <div class="development-empty-state">
+        <div class="development-empty-icon">
+          ${renderIcon("workspace_premium", "text-xl")}
+        </div>
+        <h3>${labels.emptyTitle}</h3>
+        <p>${labels.emptyDescription}</p>
+      </div>
+    `;
+    return;
+  }
+
+  elements.developmentGrid.innerHTML = cards.join("");
 }
 
 function renderCertificatePreview(item) {
@@ -1361,7 +1553,18 @@ function renderAboutAcademicTimeline(group) {
         <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
       </div>
 
-      <div class="about-git-timeline mt-6" aria-label="${group.title}">
+      <div class="about-git-scroll-controls" aria-label="Navegar formacion academica">
+        <button type="button" class="about-git-scroll-arrow about-git-scroll-arrow--prev" aria-label="Ver formacion anterior" data-about-academic-scroll-prev>
+          ${renderIcon("arrow_forward", "text-base")}
+        </button>
+        <button type="button" class="about-git-scroll-arrow" aria-label="Ver mas formacion academica" data-about-academic-scroll-next>
+          ${renderIcon("arrow_forward", "text-base")}
+        </button>
+      </div>
+
+      <div class="about-git-scroll-shell">
+        <div class="about-git-scroll custom-scrollbar" aria-label="${group.title}" data-about-academic-scroll>
+        <div class="about-git-timeline mt-6">
         ${group.items
           .map((item) => {
             const hasDetail = Boolean(item.detail || item.description || item.skills?.length);
@@ -1406,6 +1609,8 @@ function renderAboutAcademicTimeline(group) {
             `;
           })
           .join("")}
+          </div>
+        </div>
       </div>
     </article>
   `;
@@ -1464,11 +1669,11 @@ function renderAboutWorkTimeline(group) {
                 <div class="about-work-summary">
                   <p class="about-work-date">${item.period}</p>
                   <h4>${item.title}</h4>
-                  <p class="about-work-category">${item.category}</p>
+                  ${item.category ? `<p class="about-work-category">${item.category}</p>` : ""}
                 </div>
 
                 <div class="about-work-detail">
-                  <p class="about-work-description">${item.description}</p>
+                  ${item.description ? `<p class="about-work-description">${item.description}</p>` : ""}
                   ${renderAboutWorkStack(item.stack)}
                   ${renderAboutWorkList("Enfoque", item.focus)}
                   ${renderAboutWorkList("Habilidades", item.skills)}
@@ -1504,6 +1709,64 @@ function renderAboutProfile() {
     .join("");
 
   elements.aboutProfileGrid.innerHTML = groupCards;
+  wireAboutAcademicScrollHints();
+}
+
+function updateAboutAcademicScrollHint(scrollArea) {
+  const shell = scrollArea.closest(".about-git-scroll-shell");
+  const card = scrollArea.closest(".about-git-card");
+
+  if (!shell || !card) {
+    return;
+  }
+
+  const overflowMode = window.getComputedStyle(scrollArea).overflowX;
+  const maxScrollLeft = Math.max(scrollArea.scrollWidth - scrollArea.clientWidth, 0);
+  const hasOverflow = overflowMode !== "visible" && maxScrollLeft > 8;
+  const isAtStart = !hasOverflow || scrollArea.scrollLeft <= 8;
+  const isAtEnd = !hasOverflow || scrollArea.scrollLeft >= maxScrollLeft - 8;
+  const previousArrow = card.querySelector("[data-about-academic-scroll-prev]");
+  const nextArrow = card.querySelector("[data-about-academic-scroll-next]");
+
+  [shell, card].forEach((element) => {
+    element.classList.toggle("has-overflow", hasOverflow);
+    element.classList.toggle("is-at-start", isAtStart);
+    element.classList.toggle("is-at-end", isAtEnd);
+    element.classList.toggle("is-scrolled", scrollArea.scrollLeft > 4);
+    element.classList.toggle("can-scroll-prev", hasOverflow && !isAtStart);
+    element.classList.toggle("can-scroll-next", hasOverflow && !isAtEnd);
+  });
+
+  if (previousArrow instanceof HTMLButtonElement) {
+    previousArrow.disabled = !hasOverflow || isAtStart;
+  }
+
+  if (nextArrow instanceof HTMLButtonElement) {
+    nextArrow.disabled = !hasOverflow || isAtEnd;
+  }
+}
+
+function updateAboutAcademicScrollHints() {
+  elements.aboutProfileGrid?.querySelectorAll("[data-about-academic-scroll]").forEach(updateAboutAcademicScrollHint);
+}
+
+function wireAboutAcademicScrollHints() {
+  elements.aboutProfileGrid?.querySelectorAll("[data-about-academic-scroll]").forEach((scrollArea) => {
+    const card = scrollArea.closest(".about-git-card");
+    const previousArrow = card?.querySelector("[data-about-academic-scroll-prev]");
+    const nextArrow = card?.querySelector("[data-about-academic-scroll-next]");
+    const scrollByStep = (direction) => {
+      scrollArea.scrollBy({
+        left: Math.max(scrollArea.clientWidth * 0.72, 260) * direction,
+        behavior: "smooth",
+      });
+    };
+
+    previousArrow?.addEventListener("click", () => scrollByStep(-1));
+    nextArrow?.addEventListener("click", () => scrollByStep(1));
+    scrollArea.addEventListener("scroll", () => updateAboutAcademicScrollHint(scrollArea), { passive: true });
+    window.requestAnimationFrame(() => updateAboutAcademicScrollHint(scrollArea));
+  });
 }
 
 function setAboutAcademicItemOpen(item, open) {
@@ -1849,6 +2112,7 @@ let sectionMetricsFrame = null;
 let deferredSectionsFrame = null;
 
 function renderDeferredSections() {
+  renderDevelopment();
   renderProjects();
   renderCertificates();
   renderArticles();
@@ -2163,7 +2427,8 @@ function wireEvents() {
   });
 
   elements.aboutProfileGrid?.addEventListener("click", (event) => {
-    const academicItem = event.target.closest("[data-academic-toggle]");
+    const target = event.target instanceof Element ? event.target : null;
+    const academicItem = target?.closest("[data-academic-toggle]");
 
     if (academicItem) {
       toggleAboutAcademicItem(academicItem);
@@ -2241,11 +2506,13 @@ function wireEvents() {
       renderInterestMedia(true);
     }
 
+    updateAboutAcademicScrollHints();
     queueSectionMetricsRefresh();
   });
 
   window.addEventListener("load", queueSectionMetricsRefresh, { once: true });
   document.fonts?.ready?.then(() => {
+    updateAboutAcademicScrollHints();
     queueSectionMetricsRefresh();
   });
 

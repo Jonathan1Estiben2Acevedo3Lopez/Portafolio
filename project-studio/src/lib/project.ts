@@ -1,7 +1,29 @@
-import { BookOpenText, Boxes, FileBadge2, Sparkles } from "lucide-react";
+import { BookOpenText, Boxes, FileBadge2, Rocket, Sparkles, UserRound } from "lucide-react";
 import type { StudioSection } from "../types";
 
 export const studioSections: StudioSection[] = [
+  {
+    id: "about",
+    title: "Sobre mi",
+    eyebrow: "Perfil",
+    description: "Edita formacion academica y experiencia laboral desde el archivo Sobre mi.",
+    metric: "0 entradas",
+    detail: "Contenido base en src/data/about.json",
+    accent: "mint",
+    icon: UserRound,
+    actions: ["Agregar formacion", "Agregar experiencia", "Editar entradas"],
+  },
+  {
+    id: "development",
+    title: "En desarrollo",
+    eyebrow: "Trabajo activo",
+    description: "Revisa y prepara proyectos o certificados que aun no estan terminados.",
+    metric: "0 en progreso",
+    detail: "Se alimenta de proyectos y certificados con estado pendiente o en progreso",
+    accent: "cyan",
+    icon: Rocket,
+    actions: ["Nuevo proyecto en desarrollo", "Editar proyectos", "Editar certificados"],
+  },
   {
     id: "projects",
     title: "Proyectos",
