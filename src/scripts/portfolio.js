@@ -405,14 +405,7 @@ const elements = {
 };
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
-const sectionScrollNudges = {
-  about: 64,
-  certificates: 56,
-  development: 70,
-  insights: 56,
-  interests: 56,
-  projects: 56,
-};
+const sectionScrollNudges = {};
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
@@ -1615,10 +1608,17 @@ function renderAboutStandardGroup(group) {
 }
 
 function renderAboutAcademicTimeline(group) {
-  const visibleCount = Math.min(Math.max(group.items.length || 1, 1), 4);
+  const itemCount = Math.max(group.items.length || 1, 1);
+  const visibleCount = itemCount === 1 ? 1 : 4;
+  const trackWidth = itemCount > visibleCount
+    ? `max(${itemCount * 15}rem, ${(itemCount / visibleCount) * 100}%)`
+    : `max(100%, ${itemCount * 15}rem)`;
+  const nodeWidth = itemCount > visibleCount
+    ? `max(15rem, ${100 / itemCount}%)`
+    : `max(15rem, ${100 / visibleCount}%)`;
 
   return `
-    <article class="about-git-card lg:col-span-2" style="--about-academic-visible-count: ${visibleCount}">
+    <article class="about-git-card lg:col-span-2" style="--about-academic-visible-count: ${visibleCount}; --about-academic-count: ${itemCount}; --about-academic-track-width: ${trackWidth}; --about-academic-node-width: ${nodeWidth}">
       <div class="about-git-heading">
         <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-secondary/20 bg-secondary/10 text-secondary">
           ${renderIcon(group.icon, "text-[1.15rem]")}
@@ -1718,6 +1718,15 @@ function renderAboutWorkStack(stack = []) {
 }
 
 function renderAboutWorkTimeline(group) {
+  const itemCount = Math.max(group.items.length || 1, 1);
+  const visibleCount = itemCount === 1 ? 1 : 4;
+  const trackWidth = itemCount > visibleCount
+    ? `max(${itemCount * 17}rem, ${(itemCount / visibleCount) * 100}%)`
+    : `max(100%, ${itemCount * 17}rem)`;
+  const itemWidth = itemCount > visibleCount
+    ? `max(17rem, ${100 / itemCount}%)`
+    : `max(17rem, ${100 / visibleCount}%)`;
+
   return `
     <article class="about-work-card about-profile-card lg:col-span-2">
       <div class="about-work-heading">
@@ -1727,34 +1736,55 @@ function renderAboutWorkTimeline(group) {
         <h3 class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">${group.title}</h3>
       </div>
 
-      <div class="about-work-timeline" aria-label="${group.title}" style="--work-count: ${group.items.length || 1}">
-        ${group.items
-          .map(
-            (item, index) => `
-              <article
-                class="about-work-item ${index % 2 === 0 ? "about-work-item--top" : "about-work-item--bottom"} ${
-                  item.detailPlacement === "right" ? "about-work-item--detail-right" : ""
-                }"
-              >
-                <span class="about-work-node" aria-hidden="true"></span>
-                <span class="about-work-branch" aria-hidden="true"></span>
+      <div class="about-work-scroll-controls" aria-label="Navegar experiencia laboral">
+        <button type="button" class="about-work-scroll-arrow about-work-scroll-arrow--prev" aria-label="Ver experiencia anterior" data-about-work-scroll-prev onclick='const s=this.closest(".about-work-card")?.querySelector("[data-about-work-scroll]"); s?.scrollTo({ left: s.scrollLeft - Math.max(s.clientWidth * 0.72, 280), behavior: "smooth" });'>
+          ${renderIcon("arrow_forward", "text-base")}
+        </button>
+        <button type="button" class="about-work-scroll-arrow" aria-label="Ver mas experiencia laboral" data-about-work-scroll-next onclick='const s=this.closest(".about-work-card")?.querySelector("[data-about-work-scroll]"); s?.scrollTo({ left: s.scrollLeft + Math.max(s.clientWidth * 0.72, 280), behavior: "smooth" });'>
+          ${renderIcon("arrow_forward", "text-base")}
+        </button>
+      </div>
 
-                <div class="about-work-summary">
-                  <p class="about-work-date">${item.period}</p>
-                  <h4>${item.title}</h4>
-                  ${item.category ? `<p class="about-work-category">${item.category}</p>` : ""}
-                </div>
+      <div class="about-work-scroll-shell">
+        <div class="about-work-scroll custom-scrollbar" aria-label="${group.title}" data-about-work-scroll>
+          <div class="about-work-timeline" style="--work-count: ${itemCount}; --about-work-visible-count: ${visibleCount}; --about-work-track-width: ${trackWidth}; --about-work-item-width: ${itemWidth}">
+            ${group.items
+              .map(
+                (item, index) => {
+                  const rowClass = index % 2 === 0 ? "about-work-item--top" : "about-work-item--bottom";
+                  const branchClass = index % 2 === 0 ? "about-work-branch--top" : "about-work-branch--bottom";
+                  const toneClass = `about-work-tone-${index % 3}`;
 
-                <div class="about-work-detail">
-                  ${item.description ? `<p class="about-work-description">${item.description}</p>` : ""}
-                  ${renderAboutWorkStack(item.stack)}
-                  ${renderAboutWorkList("Enfoque", item.focus)}
-                  ${renderAboutWorkList("Habilidades", item.skills)}
-                </div>
-              </article>
-            `
-          )
-          .join("")}
+                  return `
+                    <article
+                      class="about-work-item ${rowClass} ${toneClass} ${
+                        item.detailPlacement === "right" ? "about-work-item--detail-right" : ""
+                      }"
+                      style="--work-column: ${index + 1}"
+                    >
+                      <div class="about-work-summary">
+                        <div class="about-work-summary-core">
+                          <p class="about-work-date">${item.period}</p>
+                          <h4>${item.title}</h4>
+                          ${item.category ? `<p class="about-work-category">${item.category}</p>` : ""}
+                        </div>
+
+                        <div class="about-work-detail">
+                          ${item.description ? `<p class="about-work-description">${item.description}</p>` : ""}
+                          ${renderAboutWorkStack(item.stack)}
+                          ${renderAboutWorkList("Enfoque", item.focus)}
+                          ${renderAboutWorkList("Habilidades", item.skills)}
+                        </div>
+                      </div>
+                    </article>
+                    <span class="about-work-branch ${branchClass} ${toneClass}" style="--work-column: ${index + 1}" aria-hidden="true"></span>
+                    <span class="about-work-node ${toneClass}" style="--work-column: ${index + 1}" aria-hidden="true"></span>
+                  `;
+                }
+              )
+              .join("")}
+          </div>
+        </div>
       </div>
     </article>
   `;
@@ -1783,6 +1813,7 @@ function renderAboutProfile() {
 
   elements.aboutProfileGrid.innerHTML = groupCards;
   wireAboutAcademicScrollHints();
+  wireAboutWorkScrollHints();
 }
 
 function updateAboutAcademicScrollHint(scrollArea) {
@@ -1839,6 +1870,51 @@ function wireAboutAcademicScrollHints() {
     nextArrow?.addEventListener("click", () => scrollByStep(1));
     scrollArea.addEventListener("scroll", () => updateAboutAcademicScrollHint(scrollArea), { passive: true });
     window.requestAnimationFrame(() => updateAboutAcademicScrollHint(scrollArea));
+  });
+}
+
+function updateAboutWorkScrollHint(scrollArea) {
+  const shell = scrollArea.closest(".about-work-scroll-shell");
+  const card = scrollArea.closest(".about-work-card");
+
+  if (!shell || !card) {
+    return;
+  }
+
+  const overflowMode = window.getComputedStyle(scrollArea).overflowX;
+  const maxScrollLeft = Math.max(scrollArea.scrollWidth - scrollArea.clientWidth, 0);
+  const hasOverflow = overflowMode !== "visible" && maxScrollLeft > 8;
+  const isAtStart = !hasOverflow || scrollArea.scrollLeft <= 8;
+  const isAtEnd = !hasOverflow || scrollArea.scrollLeft >= maxScrollLeft - 8;
+  const previousArrow = card.querySelector("[data-about-work-scroll-prev]");
+  const nextArrow = card.querySelector("[data-about-work-scroll-next]");
+
+  [shell, card].forEach((element) => {
+    element.classList.toggle("has-overflow", hasOverflow);
+    element.classList.toggle("is-at-start", isAtStart);
+    element.classList.toggle("is-at-end", isAtEnd);
+    element.classList.toggle("is-scrolled", scrollArea.scrollLeft > 4);
+    element.classList.toggle("can-scroll-prev", hasOverflow && !isAtStart);
+    element.classList.toggle("can-scroll-next", hasOverflow && !isAtEnd);
+  });
+
+  if (previousArrow instanceof HTMLButtonElement) {
+    previousArrow.disabled = !hasOverflow || isAtStart;
+  }
+
+  if (nextArrow instanceof HTMLButtonElement) {
+    nextArrow.disabled = !hasOverflow || isAtEnd;
+  }
+}
+
+function updateAboutWorkScrollHints() {
+  elements.aboutProfileGrid?.querySelectorAll("[data-about-work-scroll]").forEach(updateAboutWorkScrollHint);
+}
+
+function wireAboutWorkScrollHints() {
+  elements.aboutProfileGrid?.querySelectorAll("[data-about-work-scroll]").forEach((scrollArea) => {
+    scrollArea.addEventListener("scroll", () => updateAboutWorkScrollHint(scrollArea), { passive: true });
+    window.requestAnimationFrame(() => updateAboutWorkScrollHint(scrollArea));
   });
 }
 
@@ -2139,7 +2215,7 @@ function syncThemeButton() {
 }
 
 function refreshSectionMetrics() {
-  state.headerOffset = elements.header ? elements.header.offsetHeight + 10 : 88;
+  state.headerOffset = elements.header ? elements.header.offsetHeight + 18 : 96;
   state.sectionMetrics = sectionIds
     .map((id) => {
       const section = document.getElementById(id);
@@ -2602,6 +2678,7 @@ function wireEvents() {
     }
 
     updateAboutAcademicScrollHints();
+    updateAboutWorkScrollHints();
     updateDevelopmentScrollHint();
     queueSectionMetricsRefresh();
   });
@@ -2609,6 +2686,7 @@ function wireEvents() {
   window.addEventListener("load", queueSectionMetricsRefresh, { once: true });
   document.fonts?.ready?.then(() => {
     updateAboutAcademicScrollHints();
+    updateAboutWorkScrollHints();
     queueSectionMetricsRefresh();
   });
 

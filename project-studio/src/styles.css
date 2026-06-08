@@ -495,6 +495,7 @@ h1 {
 .module-card-detail {
   display: grid;
   gap: 14px;
+  min-height: 0;
 }
 
 .module-detail-panel {
@@ -720,18 +721,23 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  min-height: 0;
 }
 
 .about-content-block {
   align-content: start;
   margin-top: 0;
+  min-height: 0;
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgb(var(--accent) / 0.1), transparent 58%),
     rgb(var(--color-background) / 0.2);
 }
 
 .about-content-block .active-projects-list {
-  max-height: 20rem;
+  max-height: clamp(14rem, 42vh, 21rem);
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .about-content-message {

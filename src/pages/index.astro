@@ -95,7 +95,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
       <div class="grid-overlay"></div>
     </div>
 
-    <header class="sticky top-0 z-50 px-3 pt-3 lg:px-4">
+    <header class="fixed inset-x-0 top-0 z-50 px-3 pt-3 lg:px-4">
       <nav class="site-shell site-shell--nav mx-auto flex max-w-7xl items-center justify-between rounded-[1.7rem] border border-outline-variant/15 bg-background/72 px-6 py-3 shadow-[0_18px_54px_rgba(0,0,0,0.24)] backdrop-blur-xl lg:px-8">
         <a href="#home" class="font-headline text-base font-black tracking-tight text-on-surface sm:text-xl" id="brand-text">
           TU NOMBRE
@@ -182,7 +182,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
       </div>
     </header>
 
-    <main>
+    <main class="pt-[5.75rem] sm:pt-[6rem]">
       <section id="home" class="relative overflow-hidden px-6 pb-16 pt-2 lg:px-8 lg:pt-3">
         <div id="hero-mascot-field" class="hero-mascot-field" aria-hidden="true">
           <div

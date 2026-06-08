@@ -1608,6 +1608,9 @@ function App() {
   };
 
   const handleSectionClick = (sectionId: StudioSectionId) => {
+    setContentError("");
+    setContentResult(null);
+    setProjectError("");
     setActiveSection(sectionId);
     setWorkspaceView("section-detail");
   };
@@ -2155,9 +2158,6 @@ function App() {
             </div>
           ))}
           {contentError ? <p className="form-message is-error about-content-message">{contentError}</p> : null}
-          {contentResult ? (
-            <p className="form-message is-success about-content-message">Contenido actualizado. Total: {contentResult.totalItems}</p>
-          ) : null}
         </div>
       ) : null}
 
@@ -2409,7 +2409,7 @@ function App() {
         ) : workspaceView === "section-detail" ? (
           <section className="module-detail-layout" aria-label={`Gestion de ${selected.title}`}>
             <section className={`module-detail-panel accent-${selected.accent}`} aria-live="polite">
-              {selected.id !== "development" ? (
+              {selected.id !== "about" && selected.id !== "development" ? (
                 <div className="module-detail-panel-head">
                   <span className="selection-icon" aria-hidden="true">
                     <SelectedIcon size={28} strokeWidth={2.1} />
