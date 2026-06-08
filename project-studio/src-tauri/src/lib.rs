@@ -15,12 +15,17 @@ pub fn run() {
       commands::open_project_preview,
       commands::create_project,
       commands::update_project,
+      commands::delete_project,
+      commands::save_development_item,
+      commands::delete_development_item,
       commands::save_certificate,
       commands::delete_certificate,
       commands::save_about_item,
       commands::delete_about_item,
       commands::save_blog_post,
-      commands::save_interest
+      commands::delete_blog_post,
+      commands::save_interest,
+      commands::delete_interest
     ])
     .run(tauri::generate_context!())
     .expect("error while running Project Studio");

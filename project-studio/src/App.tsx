@@ -29,6 +29,7 @@ import type {
   CertificateFormState,
   ContentKind,
   CreatedProject,
+  DevelopmentFormState,
   InterestFormState,
   PickedCertificateFile,
   ProjectPreviewResult,
@@ -112,6 +113,18 @@ const defaultCertificateForm = (): CertificateFormState => ({
   tagsEn: "",
 });
 
+const defaultDevelopmentForm = (): DevelopmentFormState => ({
+  id: "",
+  kind: "project",
+  cover: "",
+  progress: "35",
+  certificateUrl: "",
+  title: "",
+  description: "",
+  titleEn: "",
+  descriptionEn: "",
+});
+
 const defaultBlogForm = (): BlogFormState => ({
   slug: "",
   filter: "content",
@@ -172,6 +185,7 @@ const defaultAboutForm = (group: AboutGroupKind = "education"): AboutFormState =
 
 const contentSectionKinds: Partial<Record<StudioSectionId, ContentKind>> = {
   about: "about",
+  development: "development",
   certificates: "certificates",
   blog: "blog",
   interests: "interests",
@@ -250,6 +264,9 @@ const fieldHints = {
   liveUrl: "Enlace a la demo o sitio publicado. Debe empezar por https:// si es externo.",
   repoUrl: "Enlace al repositorio del proyecto, si lo quieres mostrar.",
   previewImage: "Ruta de imagen en public o URL externa. Ejemplo: /docqee-preview.png.",
+  developmentCover: "Imagen de portada para la tarjeta de En desarrollo. Puede ser una ruta de public o una URL.",
+  developmentProgress: "Porcentaje de avance visible en la tarjeta. Usa un numero entre 0 y 100.",
+  developmentCertificateUrl: "Enlace opcional al certificado online. Solo se muestra cuando el tipo es Certificado.",
   status: "Estado interno o publico del proyecto: completado, en progreso, concepto, etc.",
   featuredLevel: "Nivel de destaque en el portafolio. Principal debe reservarse para el proyecto mas importante.",
   showInHome: "Activalo si este proyecto debe aparecer en la pagina principal del portafolio.",
@@ -272,6 +289,7 @@ type ImagePickSource = "import" | "existing";
 
 type ImagePickTarget =
   | { kind: "preview" }
+  | { kind: "developmentCover" }
   | { kind: "gallery"; index: number }
   | { kind: "videoPoster"; index: number }
   | { kind: "collaboratorPhoto"; index: number };
@@ -517,6 +535,25 @@ const normalizeCertificateToForm = (certificate: Record<string, any>): Certifica
     titleEn: copyEn.title ?? "",
     issuerEn: copyEn.issuer ?? "",
     tagsEn: joinCommaList(copyEn.tags),
+  };
+};
+
+const normalizeDevelopmentToForm = (item: Record<string, any>): DevelopmentFormState => {
+  const form = defaultDevelopmentForm();
+  const copyEs = item.copy?.es ?? {};
+  const copyEn = item.copy?.en ?? {};
+
+  return {
+    ...form,
+    id: item.id ?? "",
+    kind: item.kind === "certificate" ? "certificate" : "project",
+    cover: item.cover ?? "",
+    progress: String(item.progress ?? form.progress),
+    certificateUrl: item.certificateUrl ?? item.url ?? "",
+    title: copyEs.title ?? "",
+    description: copyEs.description ?? "",
+    titleEn: copyEn.title ?? "",
+    descriptionEn: copyEn.description ?? "",
   };
 };
 
@@ -1003,24 +1040,35 @@ function App() {
   const [activeSection, setActiveSection] = useState<StudioSectionId>("about");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [workspaceView, setWorkspaceView] = useState<
-    "home" | "section-detail" | "project-create" | "about-edit" | "certificate-edit" | "blog-edit" | "interest-edit"
+    | "home"
+    | "section-detail"
+    | "project-create"
+    | "about-edit"
+    | "development-edit"
+    | "certificate-edit"
+    | "blog-edit"
+    | "interest-edit"
   >("home");
   const [projectForm, setProjectForm] = useState<ProjectFormState>(() => defaultProjectForm());
   const [aboutForm, setAboutForm] = useState<AboutFormState>(() => defaultAboutForm());
+  const [developmentForm, setDevelopmentForm] = useState<DevelopmentFormState>(() => defaultDevelopmentForm());
   const [certificateForm, setCertificateForm] = useState<CertificateFormState>(() => defaultCertificateForm());
   const [blogForm, setBlogForm] = useState<BlogFormState>(() => defaultBlogForm());
   const [interestForm, setInterestForm] = useState<InterestFormState>(() => defaultInterestForm());
   const [slugTouched, setSlugTouched] = useState(false);
   const [blogSlugTouched, setBlogSlugTouched] = useState(false);
   const [certificateIdTouched, setCertificateIdTouched] = useState(false);
+  const [developmentIdTouched, setDevelopmentIdTouched] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [editingAboutKey, setEditingAboutKey] = useState<string | null>(null);
+  const [editingDevelopmentId, setEditingDevelopmentId] = useState<string | null>(null);
   const [editingCertificateId, setEditingCertificateId] = useState<string | null>(null);
   const [editingBlogSlug, setEditingBlogSlug] = useState<string | null>(null);
   const [editingInterestIndex, setEditingInterestIndex] = useState<number | null>(null);
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [contentItems, setContentItems] = useState<Record<ContentKind, StudioContentItem[]>>({
     about: [],
+    development: [],
     certificates: [],
     blog: [],
     interests: [],
@@ -1040,9 +1088,7 @@ function App() {
   const selected = useMemo(() => getSectionById(activeSection), [activeSection]);
   const SelectedIcon = selected.icon;
   const activeProjectCount = projects.filter((project) => project.showInHome).length;
-  const developmentProjects = projects.filter((project) => isDevelopmentStatus(project.status));
-  const developmentCertificates = contentItems.certificates.filter((certificate) => isDevelopmentStatus(certificate.status));
-  const developmentItemCount = developmentProjects.length + developmentCertificates.length;
+  const developmentItemCount = contentItems.development.length;
   const activeContentKind = contentSectionKinds[selected.id];
   const selectedContentItems = activeContentKind ? contentItems[activeContentKind] : [];
   const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
@@ -1099,6 +1145,7 @@ function App() {
 
   useEffect(() => {
     loadContent("about");
+    loadContent("development");
     loadContent("certificates");
     loadContent("blog");
     loadContent("interests");
@@ -1187,6 +1234,33 @@ function App() {
 
     if (field === "id") {
       setCertificateIdTouched(true);
+    }
+  };
+
+  const updateDevelopmentField = <Key extends keyof DevelopmentFormState>(
+    field: Key,
+    value: DevelopmentFormState[Key],
+  ) => {
+    setDevelopmentForm((current) => {
+      const next = { ...current, [field]: value };
+
+      if (field === "title" && !developmentIdTouched && typeof value === "string") {
+        next.id = slugify(value);
+      }
+
+      if (field === "id" && typeof value === "string") {
+        next.id = slugify(value);
+      }
+
+      if (field === "progress" && typeof value === "string") {
+        next.progress = value.replace(/[^\d]/g, "").slice(0, 3);
+      }
+
+      return next;
+    });
+
+    if (field === "id") {
+      setDevelopmentIdTouched(true);
     }
   };
 
@@ -1289,9 +1363,12 @@ function App() {
     setImagePickMessage(null);
 
     try {
+      const imageSlug = target.kind === "developmentCover"
+        ? developmentForm.id || slugify(developmentForm.title) || "en-desarrollo"
+        : projectForm.slug || slugify(projectForm.title) || "nuevo-proyecto";
       const pickedImage = await invoke<string | null>("pick_project_image", {
         source,
-        slug: projectForm.slug || slugify(projectForm.title) || "nuevo-proyecto",
+        slug: imageSlug,
       });
 
       if (!pickedImage) {
@@ -1300,6 +1377,8 @@ function App() {
 
       if (target.kind === "preview") {
         updateProjectField("previewImage", pickedImage);
+      } else if (target.kind === "developmentCover") {
+        updateDevelopmentField("cover", pickedImage);
       } else if (target.kind === "gallery") {
         updateOptionalItem("images", target.index, "src", pickedImage);
       } else if (target.kind === "videoPoster") {
@@ -1401,6 +1480,33 @@ function App() {
     }
   };
 
+  const handleDeleteProject = async (slug: string) => {
+    const confirmed = window.confirm(
+      "Esto borrara el proyecto, su ficha y sus assets locales del portafolio.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setProjectError("");
+    setImagePickMessage(null);
+    setProjectResult(null);
+    setIsSavingProject(true);
+
+    try {
+      await invoke<SavedContent>("delete_project", { slug });
+      await loadProjects();
+
+      if (editingSlug === slug) {
+        resetProjectForm();
+      }
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingProject(false);
+    }
+  };
+
   const openAboutEditor = (mode: "new" | "edit" = "new", group: AboutGroupKind = "education") => {
     setActiveSection("about");
     setWorkspaceView("about-edit");
@@ -1410,6 +1516,20 @@ function App() {
     if (mode === "new") {
       setAboutForm(defaultAboutForm(group));
       setEditingAboutKey(null);
+    }
+  };
+
+  const openDevelopmentEditor = (mode: "new" | "edit" = "new") => {
+    setActiveSection("development");
+    setWorkspaceView("development-edit");
+    setContentError("");
+    setContentResult(null);
+    setImagePickMessage(null);
+
+    if (mode === "new") {
+      setDevelopmentForm(defaultDevelopmentForm());
+      setEditingDevelopmentId(null);
+      setDevelopmentIdTouched(false);
     }
   };
 
@@ -1462,6 +1582,11 @@ function App() {
         setAboutForm(normalizeAboutToForm(item));
         setEditingAboutKey(key);
         openAboutEditor("edit");
+      } else if (kind === "development") {
+        setDevelopmentForm(normalizeDevelopmentToForm(item));
+        setEditingDevelopmentId(key);
+        setDevelopmentIdTouched(true);
+        openDevelopmentEditor("edit");
       } else if (kind === "certificates") {
         setCertificateForm(normalizeCertificateToForm(item));
         setEditingCertificateId(key);
@@ -1489,31 +1614,8 @@ function App() {
 
   const handleSectionAction = (action: string) => {
     if (selected.id === "development") {
-      if (action === "Nuevo proyecto en desarrollo") {
-        setProjectForm({ ...defaultProjectForm(), status: "in-progress", showInHome: false });
-        setActiveSection("development");
-        setWorkspaceView("project-create");
-        setEditingSlug(null);
-        setSlugTouched(false);
-        setProjectError("");
-        setImagePickMessage(null);
-        setProjectResult(null);
-        return;
-      }
-
-      if (action === "Editar proyectos") {
-        loadProjects();
-        window.setTimeout(() => {
-          document.getElementById("development-work-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 0);
-        return;
-      }
-
-      if (action === "Editar certificados") {
-        loadContent("certificates");
-        window.setTimeout(() => {
-          document.getElementById("development-work-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 0);
+      if (action === "Agregar elemento") {
+        openDevelopmentEditor("new");
         return;
       }
     }
@@ -1631,6 +1733,56 @@ function App() {
     }
   };
 
+  const handleSaveDevelopment = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setImagePickMessage(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_development_item", {
+        existingId: editingDevelopmentId,
+        input: developmentForm,
+      });
+      setContentResult(result);
+      await loadContent("development");
+      setEditingDevelopmentId(result.key);
+      setDevelopmentIdTouched(true);
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleDeleteDevelopment = async (id: string) => {
+    const confirmed = window.confirm("Esto quitara la entrada de En desarrollo del portafolio.");
+    if (!confirmed) {
+      return;
+    }
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("delete_development_item", { id });
+      setContentResult(result);
+      await loadContent("development");
+
+      if (editingDevelopmentId === id) {
+        setDevelopmentForm(defaultDevelopmentForm());
+        setEditingDevelopmentId(null);
+        setDevelopmentIdTouched(false);
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
   const pickCertificateFile = async (source: ImagePickSource) => {
     setContentError("");
 
@@ -1675,7 +1827,7 @@ function App() {
 
   const handleDeleteCertificate = async (id: string) => {
     const confirmed = window.confirm(
-      "Esto quitara el certificado del portafolio. El archivo original se mantiene en src/certificados.",
+      "Esto quitara el certificado del portafolio y eliminara su archivo local asociado.",
     );
     if (!confirmed) {
       return;
@@ -1724,6 +1876,33 @@ function App() {
     }
   };
 
+  const handleDeleteBlog = async (slug: string) => {
+    const confirmed = window.confirm("Esto borrara la nota publicada del portafolio.");
+    if (!confirmed) {
+      return;
+    }
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("delete_blog_post", { slug });
+      setContentResult(result);
+      await loadContent("blog");
+
+      if (editingBlogSlug === slug) {
+        setBlogForm(defaultBlogForm());
+        setEditingBlogSlug(null);
+        setBlogSlugTouched(false);
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
   const handleSaveInterest = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setContentError("");
@@ -1738,6 +1917,32 @@ function App() {
       setContentResult(result);
       await loadContent("interests");
       setEditingInterestIndex(Number(result.key));
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleDeleteInterest = async (index: number) => {
+    const confirmed = window.confirm("Esto borrara el interes del portafolio y sus assets locales asociados.");
+    if (!confirmed) {
+      return;
+    }
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("delete_interest", { index });
+      setContentResult(result);
+      await loadContent("interests");
+
+      if (editingInterestIndex === index) {
+        setInterestForm(defaultInterestForm());
+        setEditingInterestIndex(null);
+      }
     } catch (error) {
       setContentError(error instanceof Error ? error.message : String(error));
     } finally {
@@ -1790,6 +1995,10 @@ function App() {
           : aboutForm.group === "work"
             ? "Nueva experiencia"
             : "Nueva formacion"
+      : workspaceView === "development-edit"
+        ? editingDevelopmentId
+          ? "Editar en desarrollo"
+          : "Nuevo en desarrollo"
       : workspaceView === "certificate-edit"
         ? editingCertificateId
           ? "Editar certificado"
@@ -1810,6 +2019,8 @@ function App() {
       ? "Proyectos"
       : workspaceView === "about-edit"
         ? "Sobre mi"
+      : workspaceView === "development-edit"
+        ? "En desarrollo"
       : workspaceView === "certificate-edit"
         ? "Certificados"
         : workspaceView === "blog-edit"
@@ -1822,6 +2033,8 @@ function App() {
       resetProjectForm();
     } else if (workspaceView === "about-edit") {
       openAboutEditor("new", aboutForm.group);
+    } else if (workspaceView === "development-edit") {
+      openDevelopmentEditor("new");
     } else if (workspaceView === "certificate-edit") {
       openCertificateEditor("new");
     } else if (workspaceView === "blog-edit") {
@@ -1848,54 +2061,49 @@ function App() {
         <div className="active-projects-panel" id="development-work-list">
           <div className="active-projects-head">
             <div>
-              <strong>Contenido en desarrollo</strong>
-              <span>
-                {developmentProjects.length} proyecto{developmentProjects.length === 1 ? "" : "s"} y{" "}
-                {developmentCertificates.length} certificado{developmentCertificates.length === 1 ? "" : "s"}
-              </span>
+              <strong>Portadas en desarrollo</strong>
+              <span>{contentItems.development.length} entrada{contentItems.development.length === 1 ? "" : "s"} disponible{contentItems.development.length === 1 ? "" : "s"}</span>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                loadProjects();
-                loadContent("certificates");
-              }}
-            >
-              Actualizar
+            <button type="button" onClick={() => openDevelopmentEditor("new")}>
+              Agregar
             </button>
           </div>
 
-          {developmentItemCount === 0 ? (
+          {loadingContentKind === "development" ? (
+            <p className="active-projects-empty">Cargando contenido...</p>
+          ) : contentItems.development.length === 0 ? (
             <p className="active-projects-empty">
-              No hay elementos marcados como en progreso todavia. Usa estados como in-progress, pending, draft o en progreso.
+              Todavia no hay portadas en desarrollo. Agrega una con titulo, descripcion, portada y progreso.
             </p>
           ) : (
             <div className="active-projects-list">
-              {developmentProjects.map((project) => (
-                <div className="active-project-row" key={`project-${project.slug}`}>
+              {contentItems.development.map((item) => (
+                <div className="active-project-row" key={item.key}>
                   <div>
-                    <strong>{project.title}</strong>
-                    <span>Proyecto - {project.year || "Sin ano"} - {project.status || "sin estado"}</span>
+                    <strong>{item.title}</strong>
+                    <span>{item.subtitle} - {item.detail}</span>
                   </div>
-                  <button type="button" onClick={() => handleEditProject(project.slug)}>
-                    Editar
-                  </button>
-                </div>
-              ))}
-
-              {developmentCertificates.map((certificate) => (
-                <div className="active-project-row" key={`certificate-${certificate.key}`}>
-                  <div>
-                    <strong>{certificate.title}</strong>
-                    <span>Certificado - {certificate.status || "sin estado"} - {certificate.detail}</span>
+                  <div className="active-project-row-actions">
+                    <button type="button" onClick={() => handleEditContent("development", item.key)}>
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="danger-action"
+                      onClick={() => handleDeleteDevelopment(item.key)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
                   </div>
-                  <button type="button" onClick={() => handleEditContent("certificates", certificate.key)}>
-                    Editar
-                  </button>
                 </div>
               ))}
             </div>
           )}
+          {contentError ? <p className="form-message is-error">{contentError}</p> : null}
+          {contentResult ? (
+            <p className="form-message is-success">Contenido actualizado. Total: {contentResult.totalItems}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -1979,17 +2187,28 @@ function App() {
                       {project.showInHome ? " - visible en home" : " - oculto en home"}
                     </span>
                   </div>
-                  <button type="button" onClick={() => handleEditProject(project.slug)}>
-                    Editar
-                  </button>
+                  <div className="active-project-row-actions">
+                    <button type="button" onClick={() => handleEditProject(project.slug)}>
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="danger-action"
+                      onClick={() => handleDeleteProject(project.slug)}
+                      disabled={isSavingProject}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
+          {projectError ? <p className="form-message is-error">{projectError}</p> : null}
         </div>
       ) : null}
 
-      {activeContentKind && selected.id !== "about" ? (
+      {activeContentKind && selected.id !== "about" && selected.id !== "development" ? (
         <div className="active-projects-panel">
           <div className="active-projects-head">
             <div>
@@ -2042,6 +2261,24 @@ function App() {
                       >
                         Eliminar
                       </button>
+                    ) : activeContentKind === "blog" ? (
+                      <button
+                        type="button"
+                        className="danger-action"
+                        onClick={() => handleDeleteBlog(item.key)}
+                        disabled={isSavingContent}
+                      >
+                        Eliminar
+                      </button>
+                    ) : activeContentKind === "interests" ? (
+                      <button
+                        type="button"
+                        className="danger-action"
+                        onClick={() => handleDeleteInterest(Number(item.key))}
+                        disabled={isSavingContent}
+                      >
+                        Eliminar
+                      </button>
                     ) : null}
                   </div>
                 </div>
@@ -2049,13 +2286,13 @@ function App() {
             </div>
           )}
           {contentError ? <p className="form-message is-error">{contentError}</p> : null}
-          {(activeContentKind === "about" || activeContentKind === "certificates") && contentResult ? (
+          {(activeContentKind === "about" || activeContentKind === "certificates" || activeContentKind === "blog" || activeContentKind === "interests") && contentResult ? (
             <p className="form-message is-success">Contenido actualizado. Total: {contentResult.totalItems}</p>
           ) : null}
         </div>
       ) : null}
 
-      {selected.id !== "about" ? (
+      {selected.id !== "about" && selected.id !== "development" ? (
         <div className="action-stack" aria-label={`Acciones de ${selected.title}`}>
           {selected.actions.map((action) => (
             <button
@@ -2172,16 +2409,18 @@ function App() {
         ) : workspaceView === "section-detail" ? (
           <section className="module-detail-layout" aria-label={`Gestion de ${selected.title}`}>
             <section className={`module-detail-panel accent-${selected.accent}`} aria-live="polite">
-              <div className="module-detail-panel-head">
-                <span className="selection-icon" aria-hidden="true">
-                  <SelectedIcon size={28} strokeWidth={2.1} />
-                </span>
-                <div>
-                  <p>{selected.eyebrow}</p>
-                  <h3>{selected.title}</h3>
+              {selected.id !== "development" ? (
+                <div className="module-detail-panel-head">
+                  <span className="selection-icon" aria-hidden="true">
+                    <SelectedIcon size={28} strokeWidth={2.1} />
+                  </span>
+                  <div>
+                    <p>{selected.eyebrow}</p>
+                    <h3>{selected.title}</h3>
+                  </div>
                 </div>
-              </div>
-              {selected.id !== "about" ? <p className="selection-copy">{selected.description}</p> : null}
+              ) : null}
+              {selected.id !== "about" && selected.id !== "development" ? <p className="selection-copy">{selected.description}</p> : null}
               {selectedModuleDetail}
             </section>
           </section>
@@ -3136,6 +3375,16 @@ function App() {
               </div>
 
               <div className="form-footer">
+                {editingSlug ? (
+                  <button
+                    type="button"
+                    className="danger-action"
+                    onClick={() => handleDeleteProject(editingSlug)}
+                    disabled={isSavingProject}
+                  >
+                    Eliminar
+                  </button>
+                ) : null}
                 <button type="button" className="secondary-button" onClick={resetProjectForm}>
                   Limpiar
                 </button>
@@ -3361,6 +3610,140 @@ function App() {
                   <button type="submit" className="primary-button" disabled={isSavingContent}>
                     <Save size={17} strokeWidth={2.2} />
                     {isSavingContent ? "Guardando..." : "Guardar entrada"}
+                  </button>
+                </div>
+              </form>
+            ) : workspaceView === "development-edit" ? (
+              <form className="project-form-panel" onSubmit={handleSaveDevelopment}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">En desarrollo</span>
+                    <h3>Portada de avance</h3>
+                  </div>
+
+                  <div className="form-grid">
+                    <label className="field field-wide">
+                      <FieldLabel hint="Nombre que vera la persona en la tarjeta de En desarrollo.">Titulo ES</FieldLabel>
+                      <input
+                        value={developmentForm.title}
+                        onChange={(event) => updateDevelopmentField("title", event.target.value)}
+                        placeholder="Nombre del proyecto o certificado"
+                        required
+                      />
+                    </label>
+                    <label className="field">
+                      <FieldLabel hint="Identificador interno. Usa minusculas, numeros y guiones.">ID / slug</FieldLabel>
+                      <input
+                        value={developmentForm.id}
+                        onChange={(event) => updateDevelopmentField("id", event.target.value)}
+                        placeholder="mi-progreso"
+                        required
+                      />
+                    </label>
+                    <label className="field">
+                      <FieldLabel hint="Define si esta portada representa un proyecto o un certificado.">Tipo</FieldLabel>
+                      <select
+                        value={developmentForm.kind}
+                        onChange={(event) => updateDevelopmentField("kind", event.target.value as DevelopmentFormState["kind"])}
+                      >
+                        <option value="project">Proyecto</option>
+                        <option value="certificate">Certificado</option>
+                      </select>
+                    </label>
+                    <label className="field">
+                      <FieldLabel hint={fieldHints.developmentProgress}>Progreso</FieldLabel>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={developmentForm.progress}
+                        onChange={(event) => updateDevelopmentField("progress", event.target.value)}
+                        placeholder="35"
+                        required
+                      />
+                    </label>
+                    {developmentForm.kind === "certificate" ? (
+                      <label className="field field-wide">
+                        <FieldLabel hint={fieldHints.developmentCertificateUrl}>Enlace del certificado online</FieldLabel>
+                        <input
+                          type="url"
+                          value={developmentForm.certificateUrl}
+                          onChange={(event) => updateDevelopmentField("certificateUrl", event.target.value)}
+                          placeholder="https://..."
+                        />
+                      </label>
+                    ) : null}
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.developmentCover}>Portada</FieldLabel>
+                      <div className="media-picker-row">
+                        <input
+                          value={developmentForm.cover}
+                          onChange={(event) => updateDevelopmentField("cover", event.target.value)}
+                          placeholder="/en-desarrollo.png o https://..."
+                        />
+                        {renderImagePickerActions({ kind: "developmentCover" })}
+                      </div>
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint="Descripcion corta que aparece debajo del titulo.">Descripcion ES</FieldLabel>
+                      <textarea
+                        value={developmentForm.description}
+                        onChange={(event) => updateDevelopmentField("description", event.target.value)}
+                        rows={4}
+                        placeholder="Describe que estas construyendo y que falta para terminarlo."
+                        required
+                      />
+                    </label>
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Version en ingles</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.englishFallback}>Title EN</FieldLabel>
+                      <input
+                        value={developmentForm.titleEn}
+                        onChange={(event) => updateDevelopmentField("titleEn", event.target.value)}
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.englishFallback}>Description EN</FieldLabel>
+                      <textarea
+                        value={developmentForm.descriptionEn}
+                        onChange={(event) => updateDevelopmentField("descriptionEn", event.target.value)}
+                        rows={4}
+                      />
+                    </label>
+                  </div>
+
+                  {imagePickMessage && (
+                    <p className={`form-message is-${imagePickMessage.tone}`}>{imagePickMessage.text}</p>
+                  )}
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>En desarrollo guardado: {contentResult.key}</strong>
+                      <span>Total: {contentResult.totalItems}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={() => openDevelopmentEditor("new")}>Limpiar</button>
+                  {editingDevelopmentId ? (
+                    <button
+                      type="button"
+                      className="secondary-button danger-action"
+                      onClick={() => handleDeleteDevelopment(editingDevelopmentId)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar portada"}
                   </button>
                 </div>
               </form>
@@ -3616,6 +3999,16 @@ function App() {
                   )}
                 </div>
                 <div className="form-footer">
+                  {editingBlogSlug ? (
+                    <button
+                      type="button"
+                      className="danger-action"
+                      onClick={() => handleDeleteBlog(editingBlogSlug)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
                   <button type="button" className="secondary-button" onClick={() => openBlogEditor("new")}>Limpiar</button>
                   <button type="submit" className="primary-button" disabled={isSavingContent}>
                     <Save size={17} strokeWidth={2.2} />
@@ -3705,6 +4098,16 @@ function App() {
                   )}
                 </div>
                 <div className="form-footer">
+                  {editingInterestIndex !== null ? (
+                    <button
+                      type="button"
+                      className="danger-action"
+                      onClick={() => handleDeleteInterest(editingInterestIndex)}
+                      disabled={isSavingContent}
+                    >
+                      Eliminar
+                    </button>
+                  ) : null}
                   <button type="button" className="secondary-button" onClick={() => openInterestEditor("new")}>Limpiar</button>
                   <button type="submit" className="primary-button" disabled={isSavingContent}>
                     <Save size={17} strokeWidth={2.2} />

@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use std::{
+  collections::BTreeSet,
   process::{Command, Stdio},
   fs,
   net::{SocketAddr, TcpStream},
-  path::{Path, PathBuf},
+  path::{Component, Path, PathBuf},
   time::Duration,
 };
 
@@ -240,6 +241,21 @@ pub struct CertificateInput {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct DevelopmentInput {
+  id: String,
+  #[serde(rename = "kind")]
+  item_kind: String,
+  cover: String,
+  progress: String,
+  certificate_url: Option<String>,
+  title: String,
+  description: String,
+  title_en: Option<String>,
+  description_en: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BlogInput {
   slug: String,
   filter: String,
@@ -403,6 +419,10 @@ pub fn get_studio_content(kind: String, key: String) -> Result<Value, String> {
   let key = key.trim();
 
   match kind {
+    "development" => items
+      .into_iter()
+      .find(|item| item.get("id").and_then(Value::as_str) == Some(key))
+      .ok_or_else(|| format!("No se encontro el elemento en desarrollo \"{key}\".")),
     "certificates" => items
       .into_iter()
       .find(|item| item.get("id").and_then(Value::as_str) == Some(key))
@@ -501,6 +521,10 @@ pub fn delete_certificate(id: String) -> Result<SavedContent, String> {
   let mut items = read_json_array(&file_path)?;
   let id = slugify(&clean_required(&id, "El ID del certificado es obligatorio.")?);
   let original_len = items.len();
+  let removed_item = items
+    .iter()
+    .find(|item| item.get("id").and_then(Value::as_str) == Some(id.as_str()))
+    .cloned();
 
   items.retain(|item| item.get("id").and_then(Value::as_str) != Some(id.as_str()));
 
@@ -509,6 +533,71 @@ pub fn delete_certificate(id: String) -> Result<SavedContent, String> {
   }
 
   write_json_array(&file_path, &items)?;
+  if let Some(item) = removed_item {
+    remove_certificate_assets(&root_dir, &item)?;
+    remove_local_public_file_references(&root_dir, &item)?;
+  }
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn save_development_item(existing_id: Option<String>, input: DevelopmentInput) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "development")?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&input.id, "El ID del elemento en desarrollo es obligatorio.")?);
+
+  if id.is_empty() {
+    return Err("El ID del elemento en desarrollo no puede quedar vacio.".to_string());
+  }
+
+  let existing_id = existing_id.as_deref().map(str::trim).filter(|value| !value.is_empty());
+  if items.iter().any(|item| {
+    item.get("id").and_then(Value::as_str) == Some(id.as_str())
+      && existing_id != Some(id.as_str())
+  }) {
+    return Err(format!("Ya existe un elemento en desarrollo con el ID \"{id}\"."));
+  }
+
+  let development_item = build_development_value(&input, &id)?;
+  upsert_by_field(&mut items, "id", existing_id, &id, development_item)?;
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn delete_development_item(id: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "development")?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&id, "El ID del elemento en desarrollo es obligatorio.")?);
+  let original_len = items.len();
+  let removed_item = items
+    .iter()
+    .find(|item| item.get("id").and_then(Value::as_str) == Some(id.as_str()))
+    .cloned();
+
+  items.retain(|item| item.get("id").and_then(Value::as_str) != Some(id.as_str()));
+
+  if items.len() == original_len {
+    return Err(format!("No se encontro el elemento en desarrollo \"{id}\"."));
+  }
+
+  write_json_array(&file_path, &items)?;
+  if let Some(item) = removed_item {
+    remove_project_assets_dir(&root_dir, &id)?;
+    remove_local_public_file_references(&root_dir, &item)?;
+  }
 
   Ok(SavedContent {
     key: id,
@@ -606,6 +695,37 @@ pub fn save_blog_post(existing_slug: Option<String>, input: BlogInput) -> Result
 }
 
 #[tauri::command]
+pub fn delete_blog_post(slug: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "blog")?;
+  let mut items = read_json_array(&file_path)?;
+  let slug = slugify(&clean_required(&slug, "El slug de la nota es obligatorio.")?);
+  let original_len = items.len();
+  let removed_item = items
+    .iter()
+    .find(|item| item.get("slug").and_then(Value::as_str) == Some(slug.as_str()))
+    .cloned();
+
+  items.retain(|item| item.get("slug").and_then(Value::as_str) != Some(slug.as_str()));
+
+  if items.len() == original_len {
+    return Err(format!("No se encontro la nota \"{slug}\"."));
+  }
+
+  write_json_array(&file_path, &items)?;
+  if let Some(item) = removed_item {
+    remove_project_assets_dir(&root_dir, &slug)?;
+    remove_local_public_file_references(&root_dir, &item)?;
+  }
+
+  Ok(SavedContent {
+    key: slug,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
 pub fn save_interest(existing_index: Option<usize>, input: InterestInput) -> Result<SavedContent, String> {
   let root_dir = portfolio_root()?;
   let file_path = studio_content_file(&root_dir, "interests")?;
@@ -628,6 +748,28 @@ pub fn save_interest(existing_index: Option<usize>, input: InterestInput) -> Res
 
   Ok(SavedContent {
     key,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
+pub fn delete_interest(index: usize) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "interests")?;
+  let mut items = read_json_array(&file_path)?;
+
+  if index >= items.len() {
+    return Err(format!("No existe el interes #{index}."));
+  }
+
+  let removed_item = items.remove(index);
+  write_json_array(&file_path, &items)?;
+  remove_project_assets_dir(&root_dir, &index.to_string())?;
+  remove_local_public_file_references(&root_dir, &removed_item)?;
+
+  Ok(SavedContent {
+    key: index.to_string(),
     file_path: display_path(&file_path),
     total_items: items.len(),
   })
@@ -774,6 +916,47 @@ pub fn update_project(existing_slug: String, input: CreateProjectInput) -> Resul
     file_path: display_path(&file_path),
     generated_path: display_path(&generated_file),
     total_projects: all_projects.len(),
+  })
+}
+
+#[tauri::command]
+pub fn delete_project(slug: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let projects_dir = root_dir.join("src").join("content").join("projects");
+  let generated_file = root_dir
+    .join("src")
+    .join("data")
+    .join("projects.generated.json");
+  let slug = slugify(&clean_required(&slug, "El slug del proyecto es obligatorio.")?);
+
+  if slug.is_empty() {
+    return Err("El slug del proyecto no puede quedar vacio.".to_string());
+  }
+
+  let file_path = projects_dir.join(format!("{slug}.json"));
+  if !file_path.exists() {
+    return Err(format!("No existe un proyecto con el slug \"{slug}\"."));
+  }
+
+  let project_to_delete = read_json_value(&file_path)?;
+  let existing_projects = read_project_values(&projects_dir)?;
+  let mut all_projects = existing_projects
+    .into_iter()
+    .filter(|project| project.get("slug").and_then(Value::as_str) != Some(slug.as_str()))
+    .collect::<Vec<_>>();
+  sort_projects(&mut all_projects);
+
+  fs::remove_file(&file_path).map_err(|error| format!("{}: {error}", display_path(&file_path)))?;
+  remove_project_assets_dir(&root_dir, &slug)?;
+  remove_local_public_file_references(&root_dir, &project_to_delete)?;
+
+  fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
+  write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
+
+  Ok(SavedContent {
+    key: slug,
+    file_path: display_path(&file_path),
+    total_items: all_projects.len(),
   })
 }
 
@@ -986,6 +1169,7 @@ fn remove_about_item_at(about: &mut Value, lang: &str, group: &str, index: usize
 
 fn studio_content_file(root_dir: &Path, kind: &str) -> Result<PathBuf, String> {
   let file_name = match kind {
+    "development" => "development.json",
     "certificates" => "certificates.json",
     "blog" => "blog.json",
     "interests" => "interests.json",
@@ -1004,6 +1188,22 @@ fn studio_content_item(kind: &str, item: &Value, index: usize, file_path: &Path)
     .to_string();
 
   let (key, subtitle, detail) = match kind {
+    "development" => {
+      let kind_label = match item.get("kind").and_then(Value::as_str).unwrap_or("project") {
+        "certificate" => "Certificado",
+        _ => "Proyecto",
+      };
+      let progress = item.get("progress").and_then(Value::as_i64).unwrap_or(0);
+
+      (
+        item.get("id")
+          .and_then(Value::as_str)
+          .unwrap_or("")
+          .to_string(),
+        kind_label.to_string(),
+        format!("{progress}% de avance"),
+      )
+    }
     "certificates" => (
       item.get("id")
         .and_then(Value::as_str)
@@ -1232,6 +1432,49 @@ fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, 
       }
     }
   }))
+}
+
+fn build_development_value(input: &DevelopmentInput, id: &str) -> Result<Value, String> {
+  let title = clean_required(&input.title, "El titulo del elemento en desarrollo es obligatorio.")?;
+  let description = clean_required(&input.description, "La descripcion del elemento en desarrollo es obligatoria.")?;
+  let title_en = optional_or(&input.title_en, &title);
+  let description_en = optional_or(&input.description_en, &description);
+  let progress = input
+    .progress
+    .trim()
+    .parse::<i64>()
+    .unwrap_or(0)
+    .clamp(0, 100);
+  let item_kind = match input.item_kind.trim().to_lowercase().as_str() {
+    "certificate" | "certificado" => "certificate",
+    _ => "project",
+  };
+  let mut item = Map::new();
+
+  item.insert("id".to_string(), json!(id));
+  item.insert("kind".to_string(), json!(item_kind));
+  item.insert("progress".to_string(), json!(progress));
+  insert_optional_string(&mut item, "cover", &input.cover);
+  if item_kind == "certificate" {
+    if let Some(certificate_url) = &input.certificate_url {
+      insert_optional_string(&mut item, "certificateUrl", certificate_url);
+    }
+  }
+  item.insert(
+    "copy".to_string(),
+    json!({
+      "es": {
+        "title": title,
+        "description": description
+      },
+      "en": {
+        "title": title_en,
+        "description": description_en
+      }
+    }),
+  );
+
+  Ok(Value::Object(item))
 }
 
 fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
@@ -1772,6 +2015,231 @@ fn public_url_for_path(public_dir: &Path, path: &Path) -> Result<Option<String>,
     .join("/");
 
   Ok(Some(format!("/{relative_url}")))
+}
+
+fn remove_project_assets_dir(root_dir: &Path, slug: &str) -> Result<(), String> {
+  let project_assets_root = root_dir.join("public").join("project-assets");
+  let folder = slugify(slug);
+
+  if folder.is_empty() {
+    return Ok(());
+  }
+
+  remove_dir_inside(&project_assets_root, &project_assets_root.join(folder))
+}
+
+fn remove_certificate_assets(root_dir: &Path, item: &Value) -> Result<(), String> {
+  let Some(file_name) = item.get("fileName").and_then(Value::as_str) else {
+    return Ok(());
+  };
+
+  let Some(relative_path) = safe_relative_path(file_name) else {
+    return Err("El nombre del archivo del certificado no es una ruta local valida.".to_string());
+  };
+
+  for certificates_dir in [
+    root_dir.join("src").join("certificados"),
+    root_dir.join("public").join("certificados"),
+  ] {
+    remove_file_inside(&certificates_dir, &certificates_dir.join(&relative_path))?;
+    prune_empty_dirs_until(&certificates_dir, certificates_dir.join(&relative_path).parent())?;
+  }
+
+  Ok(())
+}
+
+fn remove_local_public_file_references(root_dir: &Path, value: &Value) -> Result<(), String> {
+  let public_dir = root_dir.join("public");
+  if !public_dir.exists() {
+    return Ok(());
+  }
+
+  let mut urls = BTreeSet::new();
+  collect_local_public_urls(value, &mut urls);
+
+  for url in urls {
+    let Some(path) = public_path_from_url(&public_dir, &url) else {
+      continue;
+    };
+
+    if !is_allowed_public_asset_path(&public_dir, &path)? {
+      continue;
+    }
+
+    if let Some(parent) = path.parent().map(Path::to_path_buf) {
+      remove_file_inside(&public_dir, &path)?;
+      prune_allowed_public_asset_dirs(&public_dir, &parent)?;
+    }
+  }
+
+  Ok(())
+}
+
+fn collect_local_public_urls(value: &Value, urls: &mut BTreeSet<String>) {
+  match value {
+    Value::String(text) => {
+      if text.starts_with('/') && !text.starts_with("//") {
+        let path = text
+          .split(['?', '#'])
+          .next()
+          .unwrap_or("")
+          .trim();
+
+        if !path.is_empty() {
+          urls.insert(path.to_string());
+        }
+      }
+    }
+    Value::Array(items) => {
+      for item in items {
+        collect_local_public_urls(item, urls);
+      }
+    }
+    Value::Object(map) => {
+      for item in map.values() {
+        collect_local_public_urls(item, urls);
+      }
+    }
+    _ => {}
+  }
+}
+
+fn public_path_from_url(public_dir: &Path, url: &str) -> Option<PathBuf> {
+  let relative = url.trim_start_matches('/');
+  safe_relative_path(relative).map(|path| public_dir.join(path))
+}
+
+fn safe_relative_path(value: &str) -> Option<PathBuf> {
+  let path = Path::new(value);
+
+  if path.as_os_str().is_empty() {
+    return None;
+  }
+
+  if path.components().any(|component| {
+    matches!(
+      component,
+      Component::ParentDir | Component::RootDir | Component::Prefix(_)
+    )
+  }) {
+    return None;
+  }
+
+  Some(path.to_path_buf())
+}
+
+fn is_allowed_public_asset_path(public_dir: &Path, path: &Path) -> Result<bool, String> {
+  if !path.exists() {
+    return Ok(false);
+  }
+
+  let path = fs::canonicalize(path).map_err(|error| error.to_string())?;
+
+  for allowed_root in [
+    public_dir.join("project-assets"),
+    public_dir.join("certificados"),
+    public_dir.join("interest-assets"),
+    public_dir.join("projects"),
+  ] {
+    if !allowed_root.exists() {
+      continue;
+    }
+
+    let allowed_root = fs::canonicalize(&allowed_root).map_err(|error| error.to_string())?;
+    if path.starts_with(allowed_root) {
+      return Ok(true);
+    }
+  }
+
+  Ok(false)
+}
+
+fn remove_file_inside(parent: &Path, path: &Path) -> Result<(), String> {
+  if !path.exists() {
+    return Ok(());
+  }
+
+  let parent = fs::canonicalize(parent).map_err(|error| error.to_string())?;
+  let path = fs::canonicalize(path).map_err(|error| error.to_string())?;
+
+  if !path.starts_with(&parent) {
+    return Err(format!("No se puede eliminar fuera de {}", display_path(&parent)));
+  }
+
+  if path.is_file() {
+    fs::remove_file(&path).map_err(|error| format!("{}: {error}", display_path(&path)))?;
+  }
+
+  Ok(())
+}
+
+fn remove_dir_inside(parent: &Path, path: &Path) -> Result<(), String> {
+  if !path.exists() {
+    return Ok(());
+  }
+
+  let parent = fs::canonicalize(parent).map_err(|error| error.to_string())?;
+  let path = fs::canonicalize(path).map_err(|error| error.to_string())?;
+
+  if path == parent || !path.starts_with(&parent) {
+    return Err(format!("No se puede eliminar fuera de {}", display_path(&parent)));
+  }
+
+  if path.is_dir() {
+    fs::remove_dir_all(&path).map_err(|error| format!("{}: {error}", display_path(&path)))?;
+  }
+
+  Ok(())
+}
+
+fn prune_allowed_public_asset_dirs(public_dir: &Path, start_dir: &Path) -> Result<(), String> {
+  for allowed_root in [
+    public_dir.join("project-assets"),
+    public_dir.join("certificados"),
+    public_dir.join("interest-assets"),
+    public_dir.join("projects"),
+  ] {
+    prune_empty_dirs_until(&allowed_root, Some(start_dir))?;
+  }
+
+  Ok(())
+}
+
+fn prune_empty_dirs_until(stop_root: &Path, start_dir: Option<&Path>) -> Result<(), String> {
+  if !stop_root.exists() {
+    return Ok(());
+  }
+
+  let stop_root = fs::canonicalize(stop_root).map_err(|error| error.to_string())?;
+  let Some(start_dir) = start_dir else {
+    return Ok(());
+  };
+
+  if !start_dir.exists() {
+    return Ok(());
+  }
+
+  let mut current = fs::canonicalize(start_dir).map_err(|error| error.to_string())?;
+
+  while current.starts_with(&stop_root) && current != stop_root {
+    let is_empty = fs::read_dir(&current)
+      .map_err(|error| error.to_string())?
+      .next()
+      .is_none();
+
+    if !is_empty {
+      break;
+    }
+
+    fs::remove_dir(&current).map_err(|error| format!("{}: {error}", display_path(&current)))?;
+
+    let Some(parent) = current.parent() else {
+      break;
+    };
+    current = parent.to_path_buf();
+  }
+
+  Ok(())
 }
 
 fn read_project_values(projects_dir: &Path) -> Result<Vec<Value>, String> {

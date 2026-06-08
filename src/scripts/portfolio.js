@@ -1,6 +1,7 @@
 import aboutContent from "../data/about.json";
 import blogPosts from "../data/blog.json";
 import certificateCards from "../data/certificates.json";
+import developmentItems from "../data/development.json";
 import interestCards from "../data/interests.json";
 import projectCards from "../data/projects.generated.json";
 
@@ -110,14 +111,19 @@ const content = {
     },
     development: {
       title: "En desarrollo",
-      subtitle: "Proyectos y certificados en los que estoy trabajando antes de publicarlos como terminados.",
+      subtitle: "Portadas de proyectos y certificados que estan en proceso antes de publicarlos como terminados.",
       projectLabel: "Proyecto en progreso",
       certificateLabel: "Certificado en progreso",
-      statusFallback: "En progreso",
-      detailCta: "Ver ficha",
-      certificateCta: "Pendiente",
+      progressLabel: "Avance",
+      certificateLinkCta: "Ver certificado",
+      filters: {
+        all: "Todos",
+        project: "Proyectos",
+        certificate: "Certificados",
+      },
       emptyTitle: "Nada publicado en desarrollo por ahora",
-      emptyDescription: "Aqui aparecera lo que este en proceso: proyectos con estado pendiente o en progreso y certificados que aun no esten terminados.",
+      emptyDescription: "Aqui aparecera lo que agregues desde Project Studio como portada de un trabajo en proceso.",
+      items: getLocalizedItems(developmentItems, "es"),
     },
     certificates: {
       title: "Certificados",
@@ -240,14 +246,19 @@ const content = {
     },
     development: {
       title: "In development",
-      subtitle: "Projects and certificates I am working on before publishing them as finished.",
+      subtitle: "Covers for projects and certificates that are still in progress before being published as finished.",
       projectLabel: "Project in progress",
       certificateLabel: "Certificate in progress",
-      statusFallback: "In progress",
-      detailCta: "View case",
-      certificateCta: "Pending",
+      progressLabel: "Progress",
+      certificateLinkCta: "View certificate",
+      filters: {
+        all: "All",
+        project: "Projects",
+        certificate: "Certificates",
+      },
       emptyTitle: "Nothing published in development yet",
-      emptyDescription: "This section will show work in progress: projects with pending or in-progress status and certificates that are not finished yet.",
+      emptyDescription: "This section will show the in-progress covers you add from Project Studio.",
+      items: getLocalizedItems(developmentItems, "en"),
     },
     certificates: {
       title: "Certificates",
@@ -313,6 +324,7 @@ const content = {
 const state = {
   lang: window.localStorage.getItem("portfolio-lang") || "es",
   theme: document.documentElement.dataset.theme || "dark",
+  developmentFilter: "all",
   filter: "all",
   articleFilter: "all",
   activeArticle: 0,
@@ -356,7 +368,11 @@ const elements = {
   heroSecondaryButton: document.getElementById("hero-secondary-button"),
   heroMascotField: document.getElementById("hero-mascot-field"),
   heroMascots: document.querySelectorAll("[data-hero-mascot]"),
+  developmentFilters: document.getElementById("development-filters"),
   developmentGrid: document.getElementById("development-grid"),
+  developmentScrollFrame: document.querySelector(".development-scroll-frame"),
+  developmentScrollPrevious: document.querySelector("[data-development-scroll-prev]"),
+  developmentScrollNext: document.querySelector("[data-development-scroll-next]"),
   projectsGrid: document.getElementById("projects-grid"),
   projectFilters: document.getElementById("project-filters"),
   certificatesGrid: document.getElementById("certificates-grid"),
@@ -377,6 +393,7 @@ const elements = {
   themeToggleIcon: document.getElementById("theme-toggle-icon"),
   languageToggle: document.getElementById("language-toggle"),
   sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
+  developmentFilterButtons: document.querySelectorAll("#development-filters [data-development-filter]"),
   articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
   interestFilterButtons: document.querySelectorAll("#interests-media-filters [data-interest-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
@@ -388,6 +405,14 @@ const elements = {
 };
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
+const sectionScrollNudges = {
+  about: 64,
+  certificates: 56,
+  development: 70,
+  insights: 56,
+  interests: 56,
+  projects: 56,
+};
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
@@ -594,6 +619,7 @@ function applyStaticCopy() {
   renderHeroLinks();
   renderFilters();
   renderAboutProfile();
+  renderDevelopmentFilters();
   renderDevelopment();
   renderCertificates();
   renderArticleFilters();
@@ -946,73 +972,93 @@ function isDevelopmentCertificate(item) {
   );
 }
 
+function renderDevelopmentFilters() {
+  const labels = getCopy("development.filters");
+  const allowedFilters = new Set(["all", "project", "certificate"]);
+
+  if (!allowedFilters.has(state.developmentFilter)) {
+    state.developmentFilter = "all";
+  }
+
+  elements.developmentFilterButtons.forEach((button) => {
+    const filter = button.dataset.developmentFilter;
+
+    button.textContent = labels[filter];
+    button.classList.toggle("is-active", filter === state.developmentFilter);
+  });
+}
+
+function updateDevelopmentScrollHint() {
+  const scrollArea = elements.developmentGrid;
+  const frame = elements.developmentScrollFrame;
+
+  if (!scrollArea || !frame) {
+    return;
+  }
+
+  const overflowMode = window.getComputedStyle(scrollArea).overflowX;
+  const maxScrollLeft = Math.max(scrollArea.scrollWidth - scrollArea.clientWidth, 0);
+  const hasOverflow = overflowMode !== "visible" && maxScrollLeft > 8;
+  const isAtStart = !hasOverflow || scrollArea.scrollLeft <= 8;
+  const isAtEnd = !hasOverflow || scrollArea.scrollLeft >= maxScrollLeft - 8;
+
+  frame.classList.toggle("has-overflow", hasOverflow);
+  frame.classList.toggle("is-at-start", isAtStart);
+  frame.classList.toggle("is-at-end", isAtEnd);
+
+  if (elements.developmentScrollPrevious instanceof HTMLButtonElement) {
+    elements.developmentScrollPrevious.disabled = !hasOverflow || isAtStart;
+  }
+
+  if (elements.developmentScrollNext instanceof HTMLButtonElement) {
+    elements.developmentScrollNext.disabled = !hasOverflow || isAtEnd;
+  }
+}
+
 function renderDevelopment() {
   if (!elements.developmentGrid) {
     return;
   }
 
   const labels = getCopy("development");
-  const projectCopy = getCopy("projects");
-  const projects = sortProjectsForHome(getCopy("projects.items") || []).filter(isDevelopmentProject);
-  const certificates = (getCopy("certificates.items") || []).filter(isDevelopmentCertificate);
-  const projectCardsHtml = projects.map((item) => {
-    const detailHref = withBase(item.href || `/proyectos/${item.slug}`);
-    const imageAlt = `${projectCopy.imageAlt}: ${item.title}`;
-    const status = formatDevelopmentStatus(item.status, labels.statusFallback);
+  const allItems = getCopy("development.items") || [];
+  const items = allItems.filter((item) =>
+    state.developmentFilter === "all" ? true : item.kind === state.developmentFilter,
+  );
+  const cards = items.map((item) => {
+    const isCertificate = item.kind === "certificate";
+    const label = isCertificate ? labels.certificateLabel : labels.projectLabel;
+    const progress = Math.min(100, Math.max(0, Number(item.progress) || 0));
+    const certificateUrl = isCertificate ? item.certificateUrl || item.url || "" : "";
 
     return `
-      <article class="development-card development-card--project overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
-        ${renderProjectVisual(item, imageAlt)}
+      <article class="development-card overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
+        ${renderDevelopmentCover(item, label)}
         <div class="development-card-body px-1.5 pb-1 pt-4">
           <div class="development-card-heading">
-            <span class="development-card-label">${labels.projectLabel}</span>
-            ${renderIcon("north_east", "text-primary")}
+            <span class="development-card-label">${label}</span>
+            ${renderIcon(isCertificate ? "workspace_premium" : "north_east", isCertificate ? "text-secondary" : "text-primary")}
           </div>
           <h3 class="mt-2 font-headline text-[1.42rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
           <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
-          <div class="development-card-meta">
-            <span>${status}</span>
-            ${item.year ? `<span>${item.year}</span>` : ""}
-          </div>
-          <a class="development-card-action" href="${detailHref}">
-            ${labels.detailCta}
-          </a>
-        </div>
-      </article>
-    `;
-  });
-  const certificateCardsHtml = certificates.map((item) => {
-    const hasFile = Boolean(getCertificateSourceId(item));
-    const viewerUrl = hasFile ? buildCertificateViewerUrl(item) : "";
-    const status = formatDevelopmentStatus(item.status || item.state || item.phase, labels.statusFallback);
-
-    return `
-      <article class="development-card development-card--certificate overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
-        <div class="development-certificate-visual rounded-[1.3rem]">
-          ${renderCertificatePreview(item)}
-          <span class="development-card-badge">${renderIcon("workspace_premium", "text-base")}</span>
-        </div>
-        <div class="development-card-body px-1.5 pb-1 pt-4">
-          <div class="development-card-heading">
-            <span class="development-card-label">${labels.certificateLabel}</span>
-            ${renderIcon("shield_check", "text-secondary")}
-          </div>
-          <h3 class="mt-2 font-headline text-[1.42rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
-          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.issuer || labels.certificateLabel}</p>
-          <div class="development-card-meta">
-            <span>${status}</span>
-            ${item.issued ? `<span>${item.issued}</span>` : ""}
+          <div class="development-card-progress" style="--development-progress: ${progress}%;">
+            <div class="development-progress-head">
+              <span>${labels.progressLabel}</span>
+              <strong>${progress}%</strong>
+            </div>
+            <span class="development-progress-bar" aria-hidden="true">
+              <span></span>
+            </span>
           </div>
           ${
-            hasFile
-              ? `<a class="development-card-action" href="${viewerUrl}">${labels.certificateCta}</a>`
-              : `<span class="development-card-action is-disabled" aria-disabled="true">${labels.certificateCta}</span>`
+            certificateUrl
+              ? `<a class="development-card-action" href="${certificateUrl}" target="_blank" rel="noreferrer noopener">${labels.certificateLinkCta}</a>`
+              : ""
           }
         </div>
       </article>
     `;
   });
-  const cards = [...projectCardsHtml, ...certificateCardsHtml];
 
   if (!cards.length) {
     elements.developmentGrid.innerHTML = `
@@ -1024,10 +1070,35 @@ function renderDevelopment() {
         <p>${labels.emptyDescription}</p>
       </div>
     `;
+    window.requestAnimationFrame(updateDevelopmentScrollHint);
     return;
   }
 
   elements.developmentGrid.innerHTML = cards.join("");
+  window.requestAnimationFrame(updateDevelopmentScrollHint);
+}
+
+function renderDevelopmentCover(item, label) {
+  const cover = item.cover || item.previewImage || item.thumbnail || "";
+
+  if (cover) {
+    return `
+      <div class="development-cover rounded-[1.3rem]">
+        <img
+          src="${withBase(cover)}"
+          alt="${item.title || label}"
+          loading="lazy"
+          draggable="false"
+        />
+      </div>
+    `;
+  }
+
+  return `
+    <div class="development-cover development-cover--placeholder rounded-[1.3rem]" aria-hidden="true">
+      <span>${renderIcon(item.kind === "certificate" ? "workspace_premium" : "north_east", "text-xl")}</span>
+    </div>
+  `;
 }
 
 function renderCertificatePreview(item) {
@@ -1544,8 +1615,10 @@ function renderAboutStandardGroup(group) {
 }
 
 function renderAboutAcademicTimeline(group) {
+  const visibleCount = Math.min(Math.max(group.items.length || 1, 1), 4);
+
   return `
-    <article class="about-git-card lg:col-span-2">
+    <article class="about-git-card lg:col-span-2" style="--about-academic-visible-count: ${visibleCount}">
       <div class="about-git-heading">
         <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-secondary/20 bg-secondary/10 text-secondary">
           ${renderIcon(group.icon, "text-[1.15rem]")}
@@ -2166,9 +2239,10 @@ function queueSectionMetricsRefresh() {
 function scrollToSection(selector) {
   const sectionId = selector.replace("#", "");
   const metric = state.sectionMetrics.find((item) => item.id === sectionId);
+  const scrollNudge = sectionScrollNudges[sectionId] || 0;
 
   if (metric) {
-    const top = Math.max(metric.top - state.headerOffset, 0);
+    const top = Math.max(metric.top - state.headerOffset + scrollNudge, 0);
     window.scrollTo({ top, behavior: "smooth" });
     return;
   }
@@ -2180,7 +2254,7 @@ function scrollToSection(selector) {
     return;
   }
 
-  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - state.headerOffset, 0);
+  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - state.headerOffset + scrollNudge, 0);
 
   window.scrollTo({ top, behavior: "smooth" });
 }
@@ -2396,6 +2470,27 @@ function wireEvents() {
     queueSectionMetricsRefresh();
   });
 
+  elements.developmentFilterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.developmentFilter = button.dataset.developmentFilter;
+      elements.developmentGrid?.scrollTo({ left: 0, behavior: "auto" });
+      renderDevelopmentFilters();
+      renderDevelopment();
+      queueSectionMetricsRefresh();
+    });
+  });
+
+  const scrollDevelopmentByStep = (direction) => {
+    elements.developmentGrid?.scrollBy({
+      left: Math.max(elements.developmentGrid.clientWidth * 0.72, 260) * direction,
+      behavior: "smooth",
+    });
+  };
+
+  elements.developmentScrollPrevious?.addEventListener("click", () => scrollDevelopmentByStep(-1));
+  elements.developmentScrollNext?.addEventListener("click", () => scrollDevelopmentByStep(1));
+  elements.developmentGrid?.addEventListener("scroll", updateDevelopmentScrollHint, { passive: true });
+
   elements.articleFilterButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.articleFilter = button.dataset.articleFilter;
@@ -2507,6 +2602,7 @@ function wireEvents() {
     }
 
     updateAboutAcademicScrollHints();
+    updateDevelopmentScrollHint();
     queueSectionMetricsRefresh();
   });
 

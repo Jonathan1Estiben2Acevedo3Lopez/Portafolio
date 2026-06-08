@@ -142,7 +142,7 @@ export interface ProjectListItem {
   filePath: string;
 }
 
-export type ContentKind = "about" | "certificates" | "blog" | "interests";
+export type ContentKind = "about" | "development" | "certificates" | "blog" | "interests";
 
 export type AboutGroupKind = "education" | "work";
 
@@ -197,6 +197,18 @@ export interface CertificateFormState {
   titleEn: string;
   issuerEn: string;
   tagsEn: string;
+}
+
+export interface DevelopmentFormState {
+  id: string;
+  kind: "project" | "certificate";
+  cover: string;
+  progress: string;
+  certificateUrl: string;
+  title: string;
+  description: string;
+  titleEn: string;
+  descriptionEn: string;
 }
 
 export interface BlogFormState {
