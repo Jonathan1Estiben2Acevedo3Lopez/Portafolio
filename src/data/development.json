@@ -1,1 +1,69 @@
-[]
+[
+  {
+    "certificateUrl": "https://coursera.org/share/9206c6af8acce23fc2be35e1b88a458d",
+    "copy": {
+      "en": {
+        "description": "Beginner A1 English training focused on vocabulary, basic grammar, oral comprehension, and communication in everyday situations.",
+        "title": "English Certificate for Beginners (A1)"
+      },
+      "es": {
+        "description": "Formación en inglés nivel principiante A1, enfocada en vocabulario, gramática básica, comprensión oral y comunicación en situaciones cotidianas.",
+        "title": "Certificado de Inglés para principiantes A1"
+      }
+    },
+    "cover": "/project-assets/certificado-de-ingles-para-principiantes-a1/captura-de-pantalla-2026-06-08-174549.png",
+    "id": "certificado-de-ingles-para-principiantes-a1",
+    "kind": "certificate",
+    "progress": 38
+  },
+  {
+    "certificateUrl": "https://coursera.org/share/9f74a9af9c1896cb361a6ccfb0355c32",
+    "copy": {
+      "en": {
+        "description": "Professional certification in Microsoft Excel focused on data analysis, visualization, automation, dashboards, and the use of Copilot to optimize spreadsheet workflows.",
+        "title": "Microsoft Excel Professional Certificate"
+      },
+      "es": {
+        "description": "Certificación profesional en Microsoft Excel orientada al análisis de datos, visualización, automatización y uso de Copilot para optimizar procesos con hojas de cálculo.",
+        "title": "Certificado Profesional de Microsoft Excel"
+      }
+    },
+    "cover": "/project-assets/certificado-profesional-de-microsoft-excel/captura-de-pantalla-2026-06-08-180416.png",
+    "id": "certificado-profesional-de-microsoft-excel",
+    "kind": "certificate",
+    "progress": 4
+  },
+  {
+    "certificateUrl": "https://coursera.org/share/0ca9eeaaebdd4fe524ed71f9eb860613",
+    "copy": {
+      "en": {
+        "description": "Professional training in data analytics focused on data cleaning, analysis, visualization, and communication to support data-driven decision-making.",
+        "title": "Google Data Analytics Professional Certificate"
+      },
+      "es": {
+        "description": "Formación profesional en análisis de datos orientada a la limpieza, análisis, visualización y comunicación de información para la toma de decisiones basada en datos.",
+        "title": "Certificado Profesional de Análisis de datos de Google"
+      }
+    },
+    "cover": "/project-assets/certificado-profesional-de-analisis-de-datos-de-google/captura-de-pantalla-2026-06-08-180710.png",
+    "id": "certificado-profesional-de-analisis-de-datos-de-google",
+    "kind": "certificate",
+    "progress": 10
+  },
+  {
+    "copy": {
+      "en": {
+        "description": "Ahorra+ is a web application focused on personal finance management and analysis, allowing users to track income, expenses, and financial habits in an organized manner.",
+        "title": "Ahorra+"
+      },
+      "es": {
+        "description": "Ahorra+ es una aplicación web orientada a la gestión y análisis de finanzas personales, permitiendo controlar ingresos, gastos y hábitos financieros de manera organizada.",
+        "title": "Ahorra+"
+      }
+    },
+    "cover": "/project-assets/ahorra/ahorra.png",
+    "id": "ahorra",
+    "kind": "project",
+    "progress": 25
+  }
+]

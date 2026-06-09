@@ -3055,14 +3055,14 @@ body.project-preview-open {
 
 .development-scroll-frame {
   position: relative;
-  padding-top: 3.55rem;
+  padding-top: 0;
 }
 
 .development-grid {
-  --development-card-width: min(84vw, 21.5rem);
+  --development-card-width: min(74vw, 17.75rem);
   display: flex;
   align-items: stretch;
-  gap: 1rem;
+  gap: 1.35rem;
   margin-top: -0.45rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -3079,63 +3079,17 @@ body.project-preview-open {
   display: none;
 }
 
-.development-scroll-arrow {
-  position: absolute;
-  top: 0.9rem;
-  z-index: 6;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  border: 1px solid rgb(var(--color-outline-variant) / 0.24);
-  border-radius: 999px;
-  color: rgb(var(--color-on-surface));
-  background: rgb(var(--color-surface-container-highest) / 0.76);
-  box-shadow: 0 16px 34px rgb(var(--color-background) / 0.18);
-  cursor: pointer;
-  transform: translateY(-50%);
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
-}
-
-.development-scroll-frame.has-overflow .development-scroll-arrow {
-  display: inline-flex;
-}
-
-.development-scroll-arrow--prev {
-  left: -1.4rem;
-}
-
-.development-scroll-arrow--next {
-  right: -1.4rem;
-}
-
-.development-scroll-arrow:not(:disabled):hover,
-.development-scroll-arrow:not(:disabled):focus-visible {
-  border-color: rgb(var(--color-secondary) / 0.46);
-  color: rgb(var(--color-secondary));
-  outline: none;
-  transform: translateY(-50%) scale(1.04);
-}
-
-.development-scroll-arrow:disabled {
-  cursor: not-allowed;
-  opacity: 0.34;
-}
-
 .development-grid > .development-card {
+  align-self: stretch;
   flex: 0 0 var(--development-card-width);
+  height: auto !important;
   width: var(--development-card-width);
   scroll-snap-align: start;
 }
 
 .development-card {
   display: flex;
-  height: 100%;
+  height: auto;
   flex-direction: column;
   color: inherit;
   text-decoration: none;
@@ -3151,11 +3105,12 @@ body.project-preview-open {
   display: flex;
   flex: 1;
   flex-direction: column;
+  padding-top: 0.85rem !important;
 }
 
 .development-cover {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 8.6;
   overflow: hidden;
   border: 1px solid rgb(var(--color-outline-variant) / 0.16);
   background:
@@ -3202,6 +3157,18 @@ body.project-preview-open {
   text-transform: uppercase;
 }
 
+.development-card-body h3 {
+  font-size: 1.08rem !important;
+  line-height: 1.12 !important;
+}
+
+.development-card-body > p {
+  display: block;
+  overflow: visible;
+  font-size: 0.8rem !important;
+  line-height: 1.45 !important;
+}
+
 .development-card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -3223,9 +3190,9 @@ body.project-preview-open {
 
 .development-card-progress {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.36rem;
   margin-top: auto;
-  padding-top: 1.15rem;
+  padding-top: 0.62rem;
 }
 
 .development-progress-head {
@@ -3234,7 +3201,7 @@ body.project-preview-open {
   justify-content: space-between;
   gap: 1rem;
   color: rgb(var(--color-on-surface-variant));
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -3242,12 +3209,12 @@ body.project-preview-open {
 
 .development-progress-head strong {
   color: rgb(var(--color-on-surface));
-  font-size: 0.85rem;
+  font-size: 0.76rem;
 }
 
 .development-progress-bar {
   display: block;
-  height: 0.55rem;
+  height: 0.44rem;
   overflow: hidden;
   border: 1px solid rgb(var(--color-outline-variant) / 0.18);
   border-radius: 999px;
@@ -3266,12 +3233,12 @@ body.project-preview-open {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 0.62rem;
   border: 1px solid rgb(var(--color-outline-variant) / 0.22);
   border-radius: 1rem;
   color: rgb(var(--color-on-surface));
-  padding: 0.85rem 1rem;
-  font-size: 0.72rem;
+  padding: 0.55rem 0.72rem;
+  font-size: 0.61rem;
   font-weight: 900;
   letter-spacing: 0.15em;
   text-align: center;
@@ -3363,19 +3330,38 @@ body.project-preview-open {
 
 @media (min-width: 640px) {
   .development-grid {
-    --development-card-width: min(58vw, 22rem);
+    --development-card-width: min(56vw, 18.5rem);
   }
 }
 
 @media (min-width: 1024px) {
   .development-grid {
-    --development-card-width: min(32vw, 23rem);
+    --development-card-width: min(29vw, 18.5rem);
   }
 }
 
 @media (min-width: 1280px) {
   .development-grid {
-    --development-card-width: min(27vw, 23.5rem);
+    --development-card-width: min(23vw, 18.75rem);
+  }
+}
+
+@media (min-width: 1536px) {
+  .development-grid {
+    --development-card-width: min(19rem, 21vw);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .development-grid {
+    --development-card-width: min(18.5rem, 17vw);
+  }
+}
+
+@media (min-width: 2400px) {
+  .development-grid {
+    --development-card-width: min(18rem, 15vw);
   }
 }
 

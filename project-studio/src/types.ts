@@ -171,6 +171,7 @@ export interface AboutFormState {
   group: AboutGroupKind;
   period: string;
   title: string;
+  category: string;
   institution: string;
   detail: string;
   skills: string;
@@ -178,6 +179,7 @@ export interface AboutFormState {
   focus: string;
   detailPlacement: string;
   titleEn: string;
+  categoryEn: string;
   institutionEn: string;
   detailEn: string;
   skillsEn: string;

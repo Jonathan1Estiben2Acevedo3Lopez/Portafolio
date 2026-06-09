@@ -209,6 +209,8 @@ pub struct AboutInput {
   group: String,
   period: String,
   title: String,
+  #[serde(default)]
+  category: String,
   institution: String,
   detail: String,
   skills: String,
@@ -216,6 +218,7 @@ pub struct AboutInput {
   focus: String,
   detail_placement: String,
   title_en: Option<String>,
+  category_en: Option<String>,
   institution_en: Option<String>,
   detail_en: Option<String>,
   skills_en: Option<String>,
@@ -1319,6 +1322,7 @@ fn build_about_item_value(input: &AboutInput, lang: &str) -> Result<Value, Strin
   let group = about_group_key(&input.group)?;
   let period = fallback(&input.period, "2026");
   let title = localized_field(lang, &input.title, &input.title_en);
+  let category = localized_field(lang, &input.category, &input.category_en);
   let institution = localized_field(lang, &input.institution, &input.institution_en);
   let detail = localized_field(lang, &input.detail, &input.detail_en);
   let skills = localized_list(lang, &input.skills, &input.skills_en);
@@ -1343,6 +1347,7 @@ fn build_about_item_value(input: &AboutInput, lang: &str) -> Result<Value, Strin
   } else {
     let title = clean_required(&title, "La experiencia necesita un titulo.")?;
     item.insert("title".to_string(), json!(title));
+    insert_optional_string(&mut item, "category", &category);
     insert_optional_string(&mut item, "description", &detail);
 
     if !stack.is_empty() {

@@ -170,6 +170,7 @@ const defaultAboutForm = (group: AboutGroupKind = "education"): AboutFormState =
   group,
   period: currentYear,
   title: "",
+  category: "",
   institution: "",
   detail: "",
   skills: "",
@@ -177,6 +178,7 @@ const defaultAboutForm = (group: AboutGroupKind = "education"): AboutFormState =
   focus: "",
   detailPlacement: "",
   titleEn: "",
+  categoryEn: "",
   institutionEn: "",
   detailEn: "",
   skillsEn: "",
@@ -623,6 +625,7 @@ const normalizeAboutToForm = (entry: Record<string, any>): AboutFormState => {
     group,
     period: es.period ?? form.period,
     title: es.title ?? "",
+    category: es.category ?? "",
     institution: es.institution ?? "",
     detail: group === "work" ? es.description ?? es.detail ?? "" : es.detail ?? "",
     skills: joinCommaList(es.skills),
@@ -630,6 +633,7 @@ const normalizeAboutToForm = (entry: Record<string, any>): AboutFormState => {
     focus: joinCommaList(es.focus),
     detailPlacement: es.detailPlacement ?? "",
     titleEn: en.title ?? "",
+    categoryEn: en.category ?? "",
     institutionEn: en.institution ?? "",
     detailEn: group === "work" ? en.description ?? en.detail ?? "" : en.detail ?? "",
     skillsEn: joinCommaList(en.skills),
@@ -2048,7 +2052,7 @@ function App() {
   };
 
   const selectedModuleDetail = (
-    <div className="module-card-detail" aria-live="polite">
+    <div className={`module-card-detail module-card-detail--${selected.id}`} aria-live="polite">
       <div className="selection-status">
         <span>
           <CircleDot size={16} strokeWidth={2.4} />
@@ -3470,6 +3474,14 @@ function App() {
                           />
                         </label>
                         <label className="field field-wide">
+                          <span className="compact-label">Texto bajo el titulo ES</span>
+                          <input
+                            value={aboutForm.category}
+                            onChange={(event) => updateAboutField("category", event.target.value)}
+                            placeholder="Software - Proyecto de grado"
+                          />
+                        </label>
+                        <label className="field field-wide">
                           <span className="compact-label">Detalle ES</span>
                           <textarea
                             value={aboutForm.detail}
@@ -3549,14 +3561,24 @@ function App() {
                         </label>
                       </>
                     ) : (
-                      <label className="field field-wide">
-                        <span className="compact-label">Title EN</span>
-                        <input
-                          value={aboutForm.titleEn}
-                          onChange={(event) => updateAboutField("titleEn", event.target.value)}
-                          placeholder="Full Stack Developer - Docqee"
-                        />
-                      </label>
+                      <>
+                        <label className="field field-wide">
+                          <span className="compact-label">Title EN</span>
+                          <input
+                            value={aboutForm.titleEn}
+                            onChange={(event) => updateAboutField("titleEn", event.target.value)}
+                            placeholder="Full Stack Developer - Docqee"
+                          />
+                        </label>
+                        <label className="field field-wide">
+                          <span className="compact-label">Text under title EN</span>
+                          <input
+                            value={aboutForm.categoryEn}
+                            onChange={(event) => updateAboutField("categoryEn", event.target.value)}
+                            placeholder="Software - Degree project"
+                          />
+                        </label>
+                      </>
                     )}
                     {aboutForm.group === "work" ? (
                       <label className="field field-wide">
