@@ -141,7 +141,7 @@
             "en": "App start with logo, welcome message, and informational disclaimer.",
             "es": "Inicio de la app con logo, mensaje de bienvenida y aviso informativo."
           },
-          "src": "/project-assets/gluvi/welcome.png"
+          "src": "/project-assets/gluvi/welcome.webp"
         },
         {
           "alt": {
@@ -152,7 +152,7 @@
             "en": "Selection between the type 1 diabetes test and metabolic syndrome test.",
             "es": "Seleccion entre test de diabetes tipo 1 y test de sindrome metabolico."
           },
-          "src": "/project-assets/gluvi/test-selection.png"
+          "src": "/project-assets/gluvi/test-selection.webp"
         },
         {
           "alt": {
@@ -163,7 +163,7 @@
             "en": "Question screen with local answer options and quiz progress.",
             "es": "Pantalla de preguntas con opciones locales y progreso del cuestionario."
           },
-          "src": "/project-assets/gluvi/quiz-question.png"
+          "src": "/project-assets/gluvi/quiz-question.webp"
         },
         {
           "alt": {
@@ -174,7 +174,7 @@
             "en": "Orientative result with risk level and medical evaluation disclaimer.",
             "es": "Resultado orientativo con nivel de riesgo y aviso de valoracion medica."
           },
-          "src": "/project-assets/gluvi/risk-result.png"
+          "src": "/project-assets/gluvi/risk-result.webp"
         },
         {
           "alt": {
@@ -185,7 +185,7 @@
             "en": "Educational content filterable by disease and category.",
             "es": "Contenido educativo filtrable por enfermedad y categoria."
           },
-          "src": "/project-assets/gluvi/curiosities.png"
+          "src": "/project-assets/gluvi/curiosities.webp"
         },
         {
           "alt": {
@@ -196,7 +196,7 @@
             "en": "Collaborators module organized by participating institutions.",
             "es": "Modulo de colaboradores organizado por instituciones participantes."
           },
-          "src": "/project-assets/gluvi/collaborators-overview.png"
+          "src": "/project-assets/gluvi/collaborators-overview.webp"
         },
         {
           "alt": {
@@ -207,7 +207,7 @@
             "en": "Expanded detail of team members and roles.",
             "es": "Detalle expandido de integrantes y roles del equipo."
           },
-          "src": "/project-assets/gluvi/collaborators-detail.png"
+          "src": "/project-assets/gluvi/collaborators-detail.webp"
         }
       ],
       "videos": []
@@ -277,7 +277,7 @@
         }
       }
     ],
-    "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.png",
+    "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.webp",
     "sectionOrder": [
       "images",
       "videos",
@@ -358,7 +358,7 @@
     "studio-module-4"
   ],
   "order": 30,
-  "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.png",
+  "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.webp",
   "sectionOrder": [
     "images",
     "videos",

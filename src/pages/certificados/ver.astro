@@ -156,7 +156,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
           renderPdfCertificate();
         } else {
           content.classList.remove("is-pdf");
-          content.innerHTML = `<img class="certificate-page-image" src="${file}" alt="${safeTitle}" draggable="false" />`;
+          content.innerHTML = `<img class="certificate-page-image" src="${file}" alt="${safeTitle}" decoding="async" draggable="false" />`;
         }
 
         document.addEventListener("contextmenu", (event) => {

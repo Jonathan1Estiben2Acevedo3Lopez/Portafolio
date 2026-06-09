@@ -5,7 +5,7 @@
   "year": "2026",
   "href": "/proyectos/portafolio-web",
   "githubUrl": "https://github.com/Jonathan1Estiben2Acevedo3Lopez/Portafolio",
-  "previewImage": "/portafolio-web.png",
+  "previewImage": "/portafolio-web.webp",
   "visualClass": "visual-system",
   "featuredLevel": "featured",
   "status": "completed",
@@ -20,10 +20,10 @@
     "GitHub"
   ],
   "media": {
-    "cover": "/portafolio-web.png",
+    "cover": "/portafolio-web.webp",
     "gallery": [
       {
-        "src": "/portafolio-web.png",
+        "src": "/portafolio-web.webp",
         "alt": {
           "es": "Vista principal del portafolio web",
           "en": "Main view of the web portfolio"
@@ -167,7 +167,7 @@
     "media": {
       "images": [
         {
-          "src": "/portafolio-web.png",
+          "src": "/portafolio-web.webp",
           "alt": {
             "es": "Vista principal del portafolio web",
             "en": "Main view of the web portfolio"
@@ -180,7 +180,7 @@
       ],
       "videos": []
     },
-    "previewImage": "/portafolio-web.png",
+    "previewImage": "/portafolio-web.webp",
     "sectionOrder": [
       "modules",
       "images",

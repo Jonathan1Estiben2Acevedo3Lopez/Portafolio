@@ -1081,6 +1081,7 @@ function renderDevelopmentCover(item, label) {
           src="${withBase(cover)}"
           alt="${item.title || label}"
           loading="lazy"
+          decoding="async"
           draggable="false"
         />
       </div>
@@ -1103,6 +1104,7 @@ function renderCertificatePreview(item) {
         src="${withBase(preview)}"
         alt="${item.title}"
         loading="lazy"
+        decoding="async"
         draggable="false"
         class="certificate-card-preview"
       />
@@ -1209,6 +1211,7 @@ function renderProjectVisual(item, altText) {
           src="${withBase(item.previewImage)}"
           alt="${altText}"
           loading="lazy"
+          decoding="async"
           class="project-preview-image"
         />
       </div>
@@ -1226,6 +1229,7 @@ function renderInterestVisual(item, classNames) {
           src="${withBase(item.image)}"
           alt="${item.imageAlt || item.title}"
           loading="lazy"
+          decoding="async"
           class="interest-photo-image"
         />
       </div>

@@ -6,13 +6,14 @@
   "description": "Portafolio personal en Astro",
   "scripts": {
     "new:project": "node scripts/new-project.mjs",
+    "optimize:images": "node scripts/optimize-public-images.mjs",
     "sync:projects": "node scripts/sync-projects.mjs",
-    "predev": "npm run sync:projects",
+    "predev": "npm run optimize:images && npm run sync:projects",
     "dev": "astro dev",
-    "prebuild": "npm run sync:projects",
+    "prebuild": "npm run optimize:images && npm run sync:projects",
     "build": "astro build",
     "studio:build": "npm --prefix project-studio run tauri build",
-    "prepreview": "npm run sync:projects",
+    "prepreview": "npm run optimize:images && npm run sync:projects",
     "preview": "astro preview"
   },
   "dependencies": {

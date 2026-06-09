@@ -167,6 +167,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
                     src={assetUrl(heroImage)}
                     alt={heroImageAlt}
                     loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
                     class="project-preview-image"
                   />
                 </div>
@@ -1094,7 +1096,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
                 <article class="detail-collaborator-card">
                   ${
                     collaborator.photo
-                      ? `<img src="${escapeHtml(withBase(collaborator.photo))}" alt="${escapeHtml(collaborator.name)}" loading="lazy" />`
+                      ? `<img src="${escapeHtml(withBase(collaborator.photo))}" alt="${escapeHtml(collaborator.name)}" loading="lazy" decoding="async" />`
                       : `<span class="detail-collaborator-avatar" aria-hidden="true">${escapeHtml(initials || "C")}</span>`
                   }
                   <div class="min-w-0">
@@ -1141,6 +1143,8 @@ const youtubeEmbedUrl = youtube?.youtubeId
               src="${escapeHtml(withBase(heroSrc))}"
               alt="${escapeHtml(image?.alt || `${copy.title} ${labels[state.lang].imageFallback}`)}"
               loading="eager"
+              decoding="async"
+              fetchpriority="high"
               class="project-preview-image"
             />
           `;
@@ -1176,7 +1180,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
                     aria-label="Ampliar imagen"
                   >
                     <div class="project-live-visual detail-adaptive-image-frame bg-white">
-                      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" class="project-preview-image" />
+                      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="project-preview-image" />
                     </div>
                   </button>
                   ${
@@ -1430,7 +1434,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
               const visual = image
                 ? `
                   <div class="project-visual project-live-visual relative overflow-hidden rounded-[1.3rem] border border-outline-variant/15 bg-white">
-                    <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.title)}" loading="lazy" class="project-preview-image" />
+                    <img src="${escapeHtml(withBase(image))}" alt="${escapeHtml(copy.title)}" loading="lazy" decoding="async" class="project-preview-image" />
                   </div>
                 `
                 : `<div class="project-visual ${escapeHtml(item.visualClass || liveProjectVisualClass)} aspect-[16/10] rounded-[1.3rem]"></div>`;
