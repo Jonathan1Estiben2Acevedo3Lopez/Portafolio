@@ -405,7 +405,11 @@ const elements = {
 };
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
-const sectionScrollNudges = {};
+const sectionScrollNudges = {
+  development: 8,
+  projects: 8,
+  interests: 8,
+};
 
 function getCopy(path) {
   return path.split(".").reduce((accumulator, segment) => accumulator?.[segment], content[state.lang]);
