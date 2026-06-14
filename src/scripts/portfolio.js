@@ -401,7 +401,7 @@ const elements = {
   menuToggle: document.getElementById("menu-toggle"),
   mobileMenu: document.getElementById("mobile-menu"),
   mobileLinks: document.querySelectorAll(".mobile-link"),
-  header: document.querySelector("header"),
+  headerNav: document.querySelector("header nav"),
 };
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
@@ -2223,7 +2223,8 @@ function syncThemeButton() {
 }
 
 function refreshSectionMetrics() {
-  state.headerOffset = elements.header ? elements.header.offsetHeight + 18 : 96;
+  const headerNavBottom = elements.headerNav?.getBoundingClientRect().bottom;
+  state.headerOffset = headerNavBottom ? Math.ceil(headerNavBottom) + 18 : 96;
   state.sectionMetrics = sectionIds
     .map((id) => {
       const section = document.getElementById(id);
