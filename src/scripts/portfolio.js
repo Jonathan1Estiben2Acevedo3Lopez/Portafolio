@@ -2362,8 +2362,50 @@ function wireTouchHorizontalScroll(element) {
   let gestureAxis = "";
   let startX = 0;
   let startY = 0;
-  let startScrollLeft = 0;
+  let lastX = 0;
+  let lastMoveTime = 0;
+  let velocity = 0;
+  let momentumFrame = null;
   let suppressClick = false;
+
+  const stopMomentum = () => {
+    if (momentumFrame !== null) {
+      window.cancelAnimationFrame(momentumFrame);
+      momentumFrame = null;
+    }
+
+    element.classList.remove("is-touch-scrolling");
+  };
+
+  const startMomentum = () => {
+    if (Math.abs(velocity) < 0.05 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      stopMomentum();
+      return;
+    }
+
+    velocity = Math.max(Math.min(velocity * 1.2, 2.6), -2.6);
+    let previousTime = window.performance.now();
+
+    const glide = (currentTime) => {
+      const elapsed = Math.min(currentTime - previousTime, 32);
+      const previousScrollLeft = element.scrollLeft;
+
+      element.scrollLeft += velocity * elapsed;
+      velocity *= Math.pow(0.93, elapsed / 16);
+      previousTime = currentTime;
+
+      const reachedEdge = Math.abs(velocity) > 0.05 && Math.abs(element.scrollLeft - previousScrollLeft) < 0.1;
+
+      if (Math.abs(velocity) < 0.025 || reachedEdge) {
+        stopMomentum();
+        return;
+      }
+
+      momentumFrame = window.requestAnimationFrame(glide);
+    };
+
+    momentumFrame = window.requestAnimationFrame(glide);
+  };
 
   element.addEventListener(
     "touchstart",
@@ -2374,10 +2416,13 @@ function wireTouchHorizontalScroll(element) {
         return;
       }
 
+      stopMomentum();
       gestureAxis = "";
       startX = touch.clientX;
       startY = touch.clientY;
-      startScrollLeft = element.scrollLeft;
+      lastX = touch.clientX;
+      lastMoveTime = event.timeStamp;
+      velocity = 0;
       suppressClick = false;
     },
     { passive: true }
@@ -2404,11 +2449,38 @@ function wireTouchHorizontalScroll(element) {
       }
 
       event.preventDefault();
-      element.scrollLeft = startScrollLeft - deltaX;
+      element.classList.add("is-touch-scrolling");
+
+      const elapsed = Math.max(event.timeStamp - lastMoveTime, 1);
+      const movement = lastX - touch.clientX;
+      const currentVelocity = movement / elapsed;
+
+      velocity = velocity * 0.35 + currentVelocity * 0.65;
+      element.scrollLeft += movement;
+      lastX = touch.clientX;
+      lastMoveTime = event.timeStamp;
       suppressClick = Math.abs(deltaX) > 10;
     },
     { passive: false }
   );
+
+  element.addEventListener("touchend", (event) => {
+    if (gestureAxis === "horizontal") {
+      if (event.timeStamp - lastMoveTime > 80) {
+        velocity = 0;
+      }
+
+      startMomentum();
+    }
+
+    gestureAxis = "";
+  });
+
+  element.addEventListener("touchcancel", () => {
+    gestureAxis = "";
+    velocity = 0;
+    stopMomentum();
+  });
 
   element.addEventListener(
     "click",

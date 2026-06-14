@@ -3070,7 +3070,7 @@ body.project-preview-open {
   padding-top: 0.45rem;
   padding-bottom: 0.75rem;
   scroll-padding-left: 0.25rem;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   scrollbar-width: none;
   touch-action: pan-y pinch-zoom;
 }
@@ -4382,7 +4382,7 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   overscroll-behavior-inline: contain;
   padding-bottom: 0.65rem;
   scroll-padding-left: 0.25rem;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   touch-action: pan-y pinch-zoom;
 }
 
@@ -4390,6 +4390,13 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   flex: 0 0 var(--project-card-width);
   width: var(--project-card-width);
   scroll-snap-align: start;
+}
+
+.development-grid.is-touch-scrolling,
+.projects-scroll-row.is-touch-scrolling,
+.certificates-grid.is-touch-scrolling,
+.articles-scroll-column.is-touch-scrolling {
+  scroll-snap-type: none;
 }
 
 .projects-scroll-row > .project-live-card {
