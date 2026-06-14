@@ -2354,6 +2354,77 @@ function wireScrollButtons() {
   });
 }
 
+function wireTouchHorizontalScroll(element) {
+  if (!element) {
+    return;
+  }
+
+  let gestureAxis = "";
+  let startX = 0;
+  let startY = 0;
+  let startScrollLeft = 0;
+  let suppressClick = false;
+
+  element.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.touches[0];
+
+      if (!touch) {
+        return;
+      }
+
+      gestureAxis = "";
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startScrollLeft = element.scrollLeft;
+      suppressClick = false;
+    },
+    { passive: true }
+  );
+
+  element.addEventListener(
+    "touchmove",
+    (event) => {
+      const touch = event.touches[0];
+
+      if (!touch) {
+        return;
+      }
+
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      if (!gestureAxis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) >= 6) {
+        gestureAxis = Math.abs(deltaX) > Math.abs(deltaY) ? "horizontal" : "vertical";
+      }
+
+      if (gestureAxis !== "horizontal") {
+        return;
+      }
+
+      event.preventDefault();
+      element.scrollLeft = startScrollLeft - deltaX;
+      suppressClick = Math.abs(deltaX) > 10;
+    },
+    { passive: false }
+  );
+
+  element.addEventListener(
+    "click",
+    (event) => {
+      if (!suppressClick) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      suppressClick = false;
+    },
+    true
+  );
+}
+
 function initHeroMascots() {
   const home = document.getElementById("home");
 
@@ -2701,6 +2772,13 @@ function wireEvents() {
 
   queueSectionMetricsRefresh();
   wireScrollButtons();
+  [
+    elements.developmentGrid,
+    elements.projectsGrid,
+    elements.certificatesGrid,
+    elements.articlesList,
+    elements.interestsMediaList,
+  ].forEach(wireTouchHorizontalScroll);
   initHeroMascots();
 }
 
