@@ -17,6 +17,7 @@ pub fn run() {
       commands::update_project,
       commands::delete_project,
       commands::save_development_item,
+      commands::move_development_item,
       commands::delete_development_item,
       commands::save_certificate,
       commands::delete_certificate,

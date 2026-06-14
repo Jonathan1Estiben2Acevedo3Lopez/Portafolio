@@ -65,5 +65,22 @@
     "id": "ahorra",
     "kind": "project",
     "progress": 25
+  },
+  {
+    "certificateUrl": "https://www.coursera.org/learn/english-common-interactions-workplace-basic-level/home/info",
+    "copy": {
+      "en": {
+        "description": "A2-level Workplace English certification focused on professional communication skills, including telephone conversations, meeting coordination, business vocabulary, and everyday workplace interactions.",
+        "title": "English for Common Interactions in the Workplace: Basic Level"
+      },
+      "es": {
+        "description": "Curso de inglés laboral nivel A2 orientado a la comunicación en entornos profesionales, incluyendo llamadas telefónicas, reuniones, vocabulario de negocios y situaciones cotidianas de trabajo.",
+        "title": "Inglés para Interacciones Comunes en el Lugar de Trabajo: Nivel básico"
+      }
+    },
+    "cover": "/project-assets/ingles-para-interacciones-comunes-en-el-lugar-de-trabajo-nivel-basico/captura-de-pantalla-2026-06-11-211251.webp",
+    "id": "ingles-para-interacciones-comunes-en-el-lugar-de-trabajo-nivel-basico",
+    "kind": "certificate",
+    "progress": 1
   }
 ]

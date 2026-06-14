@@ -579,6 +579,35 @@ pub fn save_development_item(existing_id: Option<String>, input: DevelopmentInpu
 }
 
 #[tauri::command]
+pub fn move_development_item(id: String, direction: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let file_path = studio_content_file(&root_dir, "development")?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&id, "El ID del elemento en desarrollo es obligatorio.")?);
+  let current_index = items
+    .iter()
+    .position(|item| item.get("id").and_then(Value::as_str) == Some(id.as_str()))
+    .ok_or_else(|| format!("No se encontro el elemento en desarrollo \"{id}\"."))?;
+  let target_index = match direction.trim().to_lowercase().as_str() {
+    "up" | "arriba" if current_index > 0 => current_index - 1,
+    "down" | "abajo" if current_index + 1 < items.len() => current_index + 1,
+    "up" | "arriba" | "down" | "abajo" => current_index,
+    _ => return Err("Direccion de orden no valida.".to_string()),
+  };
+
+  if target_index != current_index {
+    items.swap(current_index, target_index);
+    write_json_array(&file_path, &items)?;
+  }
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
 pub fn delete_development_item(id: String) -> Result<SavedContent, String> {
   let root_dir = portfolio_root()?;
   let file_path = studio_content_file(&root_dir, "development")?;

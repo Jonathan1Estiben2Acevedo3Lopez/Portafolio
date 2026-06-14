@@ -734,6 +734,19 @@ h1 {
   overflow-y: auto;
 }
 
+.development-order-help {
+  margin: 0;
+  border-left: 3px solid rgb(var(--accent) / 0.68);
+  padding: 3px 0 3px 10px;
+  color: rgb(var(--color-on-muted));
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.development-order-list {
+  max-height: clamp(16rem, 46vh, 24rem);
+}
+
 .about-content-blocks {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -772,12 +785,50 @@ h1 {
   min-width: 0;
 }
 
+.active-project-row-copy {
+  flex: 1 1 auto;
+}
+
+.development-order-index {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgb(var(--accent) / 0.35);
+  border-radius: 8px;
+  color: rgb(var(--accent)) !important;
+  background: rgb(var(--accent) / 0.1);
+  font-size: 0.76rem !important;
+  font-weight: 950;
+}
+
 .active-project-row-actions {
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 7px;
+}
+
+.development-order-actions {
+  display: inline-flex !important;
+  gap: 5px;
+}
+
+.active-project-row button.development-order-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.active-project-row button.development-order-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
 }
 
 .active-project-row strong,

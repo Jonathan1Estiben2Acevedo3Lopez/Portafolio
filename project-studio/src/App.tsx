@@ -1790,6 +1790,22 @@ function App() {
     }
   };
 
+  const handleMoveDevelopment = async (id: string, direction: "up" | "down") => {
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("move_development_item", { id, direction });
+      setContentResult(result);
+      await loadContent("development");
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
   const pickCertificateFile = async (source: ImagePickSource) => {
     setContentError("");
 
@@ -2068,7 +2084,7 @@ function App() {
         <div className="active-projects-panel" id="development-work-list">
           <div className="active-projects-head">
             <div>
-              <strong>Portadas en desarrollo</strong>
+              <strong>Orden de En desarrollo</strong>
               <span>{contentItems.development.length} entrada{contentItems.development.length === 1 ? "" : "s"} disponible{contentItems.development.length === 1 ? "" : "s"}</span>
             </div>
             <button type="button" onClick={() => openDevelopmentEditor("new")}>
@@ -2080,32 +2096,62 @@ function App() {
             <p className="active-projects-empty">Cargando contenido...</p>
           ) : contentItems.development.length === 0 ? (
             <p className="active-projects-empty">
-              Todavia no hay portadas en desarrollo. Agrega una con titulo, descripcion, portada y progreso.
+              Todavia no hay elementos en desarrollo. Agrega un proyecto o certificado con titulo, descripcion, portada y progreso.
             </p>
           ) : (
-            <div className="active-projects-list">
-              {contentItems.development.map((item) => (
-                <div className="active-project-row" key={item.key}>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.subtitle} - {item.detail}</span>
+            <>
+              <p className="development-order-help">
+                Ordena las tarjetas segun la visibilidad que quieras darles. La posicion 1 aparece primero en En desarrollo.
+              </p>
+              <div className="active-projects-list development-order-list">
+                {contentItems.development.map((item, index) => (
+                  <div className="active-project-row" key={item.key}>
+                    <span className="development-order-index" aria-label={`Posicion ${index + 1}`}>
+                      {index + 1}
+                    </span>
+                    <div className="active-project-row-copy">
+                      <strong>{item.title}</strong>
+                      <span>{item.subtitle} - {item.detail}</span>
+                    </div>
+                    <div className="active-project-row-actions">
+                      <span className="development-order-actions" aria-label="Cambiar posicion">
+                        <button
+                          type="button"
+                          className="development-order-button"
+                          onClick={() => handleMoveDevelopment(item.key, "up")}
+                          disabled={index === 0 || isSavingContent}
+                          aria-label={`Subir ${item.title}`}
+                          title="Subir una posicion"
+                        >
+                          <ChevronUp size={16} strokeWidth={2.5} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          className="development-order-button"
+                          onClick={() => handleMoveDevelopment(item.key, "down")}
+                          disabled={index === contentItems.development.length - 1 || isSavingContent}
+                          aria-label={`Bajar ${item.title}`}
+                          title="Bajar una posicion"
+                        >
+                          <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" />
+                        </button>
+                      </span>
+                      <button type="button" onClick={() => handleEditContent("development", item.key)}>
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="danger-action"
+                        onClick={() => handleDeleteDevelopment(item.key)}
+                        disabled={isSavingContent}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </div>
-                  <div className="active-project-row-actions">
-                    <button type="button" onClick={() => handleEditContent("development", item.key)}>
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      className="danger-action"
-                      onClick={() => handleDeleteDevelopment(item.key)}
-                      disabled={isSavingContent}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
           {contentError ? <p className="form-message is-error">{contentError}</p> : null}
           {contentResult ? (
