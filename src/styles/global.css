@@ -3072,7 +3072,7 @@ body.project-preview-open {
   scroll-padding-left: 0.25rem;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  touch-action: pan-x pan-y;
+  touch-action: auto;
 }
 
 .development-grid::-webkit-scrollbar {
@@ -4383,7 +4383,7 @@ html.certificate-page-is-blackout .certificate-page-blackout {
   padding-bottom: 0.65rem;
   scroll-padding-left: 0.25rem;
   scroll-snap-type: x mandatory;
-  touch-action: pan-x pan-y;
+  touch-action: auto;
 }
 
 .projects-scroll-row > * {
