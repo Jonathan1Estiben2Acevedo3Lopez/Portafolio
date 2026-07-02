@@ -1525,6 +1525,22 @@ function App() {
     }
   };
 
+  const handleMoveProject = async (slug: string, direction: "up" | "down") => {
+    setProjectError("");
+    setImagePickMessage(null);
+    setProjectResult(null);
+    setIsSavingProject(true);
+
+    try {
+      await invoke<SavedContent>("move_project", { slug, direction });
+      await loadProjects();
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingProject(false);
+    }
+  };
+
   const openAboutEditor = (mode: "new" | "edit" = "new", group: AboutGroupKind = "education") => {
     setActiveSection("about");
     setWorkspaceView("about-edit");
@@ -1643,14 +1659,6 @@ function App() {
 
     if (selected.id === "projects" && action === "Nuevo proyecto") {
       openProjectCreator();
-      return;
-    }
-
-    if (selected.id === "projects" && action === "Editar proyecto") {
-      loadProjects();
-      window.setTimeout(() => {
-        document.getElementById("project-edit-list")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 0);
       return;
     }
 
@@ -2144,9 +2152,6 @@ function App() {
             </p>
           ) : (
             <>
-              <p className="development-order-help">
-                Ordena las tarjetas segun la visibilidad que quieras darles. La posicion 1 aparece primero en En desarrollo.
-              </p>
               <div className="active-projects-list development-order-list">
                 {contentItems.development.map((item, index) => (
                   <div className={`active-project-row${item.hidden ? " is-hidden-content" : ""}`} key={item.key}>
@@ -2271,7 +2276,7 @@ function App() {
         <div className="active-projects-panel" id="project-edit-list">
           <div className="active-projects-head">
             <div>
-              <strong>Editar proyectos existentes</strong>
+              <strong>Orden de proyectos</strong>
               <span>{projects.length} proyecto{projects.length === 1 ? "" : "s"} disponible{projects.length === 1 ? "" : "s"}</span>
             </div>
             <button type="button" onClick={loadProjects}>
@@ -2284,9 +2289,12 @@ function App() {
             <p className="active-projects-empty">No hay proyectos en src/content/projects todavia.</p>
           ) : (
             <div className="active-projects-list">
-              {projects.map((project) => (
+              {projects.map((project, index) => (
                 <div className="active-project-row" key={project.slug}>
-                  <div>
+                  <span className="project-order-index" aria-label={`Posicion ${index + 1}`}>
+                    {index + 1}
+                  </span>
+                  <div className="active-project-row-copy">
                     <strong>{project.title}</strong>
                     <span>
                       {project.year || "Sin ano"} - {project.status || "sin estado"}
@@ -2294,6 +2302,28 @@ function App() {
                     </span>
                   </div>
                   <div className="active-project-row-actions">
+                    <span className="project-order-actions" aria-label="Cambiar posicion">
+                      <button
+                        type="button"
+                        className="project-order-button"
+                        onClick={() => handleMoveProject(project.slug, "up")}
+                        disabled={index === 0 || isSavingProject}
+                        aria-label={`Subir ${project.title}`}
+                        title="Subir una posicion"
+                      >
+                        <ChevronUp size={16} strokeWidth={2.5} aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        className="project-order-button"
+                        onClick={() => handleMoveProject(project.slug, "down")}
+                        disabled={index === projects.length - 1 || isSavingProject}
+                        aria-label={`Bajar ${project.title}`}
+                        title="Bajar una posicion"
+                      >
+                        <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" />
+                      </button>
+                    </span>
                     <button type="button" onClick={() => handleEditProject(project.slug)}>
                       Editar
                     </button>
@@ -2521,7 +2551,7 @@ function App() {
                         {section.title}
                         <ChevronRight size={18} strokeWidth={2.3} />
                       </span>
-                      <span className="module-description">{section.description}</span>
+                      {section.description ? <span className="module-description">{section.description}</span> : null}
                     </button>
                   </article>
                 );
@@ -2530,7 +2560,7 @@ function App() {
           </section>
         ) : workspaceView === "section-detail" ? (
           <section className="module-detail-layout" aria-label={`Gestion de ${selected.title}`}>
-            <section className={`module-detail-panel accent-${selected.accent}`} aria-live="polite">
+            <section className={`module-detail-panel module-detail-panel--${selected.id} accent-${selected.accent}`} aria-live="polite">
               {selected.id !== "about" && selected.id !== "development" ? (
                 <div className="module-detail-panel-head">
                   <span className="selection-icon" aria-hidden="true">
@@ -2542,7 +2572,9 @@ function App() {
                   </div>
                 </div>
               ) : null}
-              {selected.id !== "about" && selected.id !== "development" ? <p className="selection-copy">{selected.description}</p> : null}
+              {selected.id !== "about" && selected.id !== "development" && selected.description ? (
+                <p className="selection-copy">{selected.description}</p>
+              ) : null}
               {selectedModuleDetail}
             </section>
           </section>

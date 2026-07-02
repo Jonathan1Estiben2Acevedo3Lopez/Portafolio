@@ -992,6 +992,59 @@ pub fn update_project(existing_slug: String, input: CreateProjectInput) -> Resul
 }
 
 #[tauri::command]
+pub fn move_project(slug: String, direction: String) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let projects_dir = root_dir.join("src").join("content").join("projects");
+  let generated_file = root_dir
+    .join("src")
+    .join("data")
+    .join("projects.generated.json");
+  let slug = slugify(&clean_required(&slug, "El slug del proyecto es obligatorio.")?);
+
+  if slug.is_empty() {
+    return Err("El slug del proyecto no puede quedar vacio.".to_string());
+  }
+
+  let mut all_projects = read_project_values(&projects_dir)?;
+  let current_index = all_projects
+    .iter()
+    .position(|project| project.get("slug").and_then(Value::as_str) == Some(slug.as_str()))
+    .ok_or_else(|| format!("No se encontro el proyecto \"{slug}\"."))?;
+  let target_index = match direction.trim().to_lowercase().as_str() {
+    "up" | "arriba" if current_index > 0 => current_index - 1,
+    "down" | "abajo" if current_index + 1 < all_projects.len() => current_index + 1,
+    "up" | "arriba" | "down" | "abajo" => current_index,
+    _ => return Err("Direccion de orden no valida.".to_string()),
+  };
+
+  if target_index != current_index {
+    all_projects.swap(current_index, target_index);
+
+    for (index, project) in all_projects.iter_mut().enumerate() {
+      let project_slug = project
+        .get("slug")
+        .and_then(Value::as_str)
+        .ok_or_else(|| "Proyecto sin slug.".to_string())?
+        .to_string();
+      project
+        .as_object_mut()
+        .ok_or_else(|| format!("El proyecto \"{project_slug}\" no es un objeto JSON."))?
+        .insert("order".to_string(), json!(((index as i64) + 1) * 10));
+      write_json_file(&projects_dir.join(format!("{project_slug}.json")), project)?;
+    }
+  }
+
+  fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
+  write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
+
+  Ok(SavedContent {
+    key: slug,
+    file_path: display_path(&generated_file),
+    total_items: all_projects.len(),
+  })
+}
+
+#[tauri::command]
 pub fn delete_project(slug: String) -> Result<SavedContent, String> {
   let root_dir = portfolio_root()?;
   let projects_dir = root_dir.join("src").join("content").join("projects");

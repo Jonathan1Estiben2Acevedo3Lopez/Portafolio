@@ -16,6 +16,7 @@ pub fn run() {
       commands::open_project_preview,
       commands::create_project,
       commands::update_project,
+      commands::move_project,
       commands::delete_project,
       commands::save_development_item,
       commands::move_development_item,
