@@ -1,20 +1,54 @@
 [
   {
-    "certificateUrl": "https://coursera.org/share/9206c6af8acce23fc2be35e1b88a458d",
+    "certificateUrl": "https://www.coursera.org/programs/bancolombia-2-ph7ho/learn/introduction-software-testing?authProvider=bancolombia&source=search",
     "copy": {
       "en": {
-        "description": "Beginner A1 English training focused on vocabulary, basic grammar, oral comprehension, and communication in everyday situations.",
-        "title": "English Certificate for Beginners (A1)"
+        "description": "Introductory course from the University of Minnesota on software testing, focused on test case design, defect detection, code coverage, and basic automation with JUnit.",
+        "title": "Introduction to Software Testing"
       },
       "es": {
-        "description": "Formación en inglés nivel principiante A1, enfocada en vocabulario, gramática básica, comprensión oral y comunicación en situaciones cotidianas.",
-        "title": "Certificado de Inglés para principiantes A1"
+        "description": "Curso introductorio de la University of Minnesota sobre pruebas de software, orientado al diseño de casos de prueba, detección de defectos, cobertura de código y automatización básica con JUnit.",
+        "title": "Introducción a las pruebas de software"
       }
     },
-    "cover": "/project-assets/certificado-de-ingles-para-principiantes-a1/captura-de-pantalla-2026-06-08-174549.webp",
-    "id": "certificado-de-ingles-para-principiantes-a1",
+    "cover": "/project-assets/introduccion-a-las-pruebas-de-software/ps.png",
+    "id": "introduccion-a-las-pruebas-de-software",
     "kind": "certificate",
-    "progress": 64
+    "progress": 0
+  },
+  {
+    "certificateUrl": "https://www.coursera.org/programs/bancolombia-2-ph7ho/professional-certificates/google-project-management?authProvider=bancolombia&source=search",
+    "copy": {
+      "en": {
+        "description": "Google professional certification focused on project management, including the project life cycle, planning, documentation, risk management, stakeholder communication, agile methodologies, Scrum, and the use of AI tools applied to projects.",
+        "title": "Google Project Management Professional Certificate"
+      },
+      "es": {
+        "description": "Certificación profesional de Google enfocada en la gestión de proyectos, incluyendo ciclo de vida del proyecto, planificación, documentación, gestión de riesgos, comunicación con partes interesadas, metodologías ágiles, Scrum y uso de herramientas de IA aplicadas a proyectos.",
+        "title": "Certificado Profesional de Gestión de proyectos de Google"
+      }
+    },
+    "cover": "/project-assets/certificado-profesional-de-gestion-de-proyectos-de-google/kpkpk.png",
+    "id": "certificado-profesional-de-gestion-de-proyectos-de-google",
+    "kind": "certificate",
+    "progress": 0
+  },
+  {
+    "certificateUrl": "https://www.coursera.org/programs/bancolombia-2-ph7ho/specializations/software-qa-and-test-automation-engineering?authProvider=bancolombia&source=search",
+    "copy": {
+      "en": {
+        "description": "Coursera specialization focused on QA Automation, with hands-on training in web test automation, API testing, and performance testing using modern tools such as Selenium, Cypress, JMeter, and Postman.",
+        "title": "Specialized Program: Software QA & Test Automation Engineering"
+      },
+      "es": {
+        "description": "Especialización de Coursera enfocada en QA Automation, con formación práctica en automatización de pruebas web, pruebas de API y pruebas de rendimiento utilizando herramientas modernas como Selenium, Cypress, JMeter y Postman.",
+        "title": "Programa especializado: Software QA & Test Automation Engineering"
+      }
+    },
+    "cover": "/project-assets/programa-especializado-software-qa-test-automation-engineering/kkkkk.png",
+    "id": "programa-especializado-software-qa-test-automation-engineering",
+    "kind": "certificate",
+    "progress": 0
   },
   {
     "certificateUrl": "https://coursera.org/share/9f74a9af9c1896cb361a6ccfb0355c32",
@@ -32,23 +66,6 @@
     "id": "certificado-profesional-de-microsoft-excel",
     "kind": "certificate",
     "progress": 4
-  },
-  {
-    "certificateUrl": "https://coursera.org/share/0ca9eeaaebdd4fe524ed71f9eb860613",
-    "copy": {
-      "en": {
-        "description": "Professional training in data analytics focused on data cleaning, analysis, visualization, and communication to support data-driven decision-making.",
-        "title": "Google Data Analytics Professional Certificate"
-      },
-      "es": {
-        "description": "Formación profesional en análisis de datos orientada a la limpieza, análisis, visualización y comunicación de información para la toma de decisiones basada en datos.",
-        "title": "Certificado Profesional de Análisis de datos de Google"
-      }
-    },
-    "cover": "/project-assets/certificado-profesional-de-analisis-de-datos-de-google/captura-de-pantalla-2026-06-08-180710.webp",
-    "id": "certificado-profesional-de-analisis-de-datos-de-google",
-    "kind": "certificate",
-    "progress": 10
   },
   {
     "copy": {
@@ -82,5 +99,23 @@
     "id": "ingles-para-interacciones-comunes-en-el-lugar-de-trabajo-nivel-basico",
     "kind": "certificate",
     "progress": 1
+  },
+  {
+    "certificateUrl": "https://coursera.org/share/0ca9eeaaebdd4fe524ed71f9eb860613",
+    "copy": {
+      "en": {
+        "description": "Professional training in data analytics focused on data cleaning, analysis, visualization, and communication to support data-driven decision-making.",
+        "title": "Google Data Analytics Professional Certificate"
+      },
+      "es": {
+        "description": "Formación profesional en análisis de datos orientada a la limpieza, análisis, visualización y comunicación de información para la toma de decisiones basada en datos.",
+        "title": "Certificado Profesional de Análisis de datos de Google"
+      }
+    },
+    "cover": "/project-assets/certificado-profesional-de-analisis-de-datos-de-google/captura-de-pantalla-2026-06-08-180710.webp",
+    "hidden": true,
+    "id": "certificado-profesional-de-analisis-de-datos-de-google",
+    "kind": "certificate",
+    "progress": 10
   }
 ]

@@ -9,6 +9,7 @@ pub fn run() {
       commands::get_project,
       commands::list_studio_content,
       commands::get_studio_content,
+      commands::set_studio_content_hidden,
       commands::pick_project_image,
       commands::pick_certificate_file,
       commands::write_project_preview,

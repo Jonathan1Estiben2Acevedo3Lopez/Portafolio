@@ -184,6 +184,7 @@ pub struct StudioContentItem {
   subtitle: String,
   detail: String,
   status: String,
+  hidden: bool,
   file_path: String,
 }
 
@@ -234,6 +235,8 @@ pub struct CertificateInput {
   mime: String,
   issued: String,
   status: String,
+  #[serde(default)]
+  hidden: bool,
   title: String,
   issuer: String,
   tags: String,
@@ -251,6 +254,8 @@ pub struct DevelopmentInput {
   cover: String,
   progress: String,
   certificate_url: Option<String>,
+  #[serde(default)]
+  hidden: bool,
   title: String,
   description: String,
   title_en: Option<String>,
@@ -446,10 +451,45 @@ pub fn get_studio_content(kind: String, key: String) -> Result<Value, String> {
 }
 
 #[tauri::command]
+pub fn set_studio_content_hidden(kind: String, key: String, hidden: bool) -> Result<SavedContent, String> {
+  let root_dir = portfolio_root()?;
+  let kind = kind.trim();
+
+  if !matches!(kind, "development" | "certificates") {
+    return Err("La visibilidad solo esta disponible para En desarrollo y Certificados.".to_string());
+  }
+
+  let file_path = studio_content_file(&root_dir, kind)?;
+  let mut items = read_json_array(&file_path)?;
+  let id = slugify(&clean_required(&key, "El ID del contenido es obligatorio.")?);
+  let item = items
+    .iter_mut()
+    .find(|item| item.get("id").and_then(Value::as_str) == Some(id.as_str()))
+    .ok_or_else(|| format!("No se encontro el contenido \"{id}\"."))?;
+  let item_object = item
+    .as_object_mut()
+    .ok_or_else(|| format!("El contenido \"{id}\" no tiene un formato editable."))?;
+
+  if hidden {
+    item_object.insert("hidden".to_string(), json!(true));
+  } else {
+    item_object.remove("hidden");
+  }
+
+  write_json_array(&file_path, &items)?;
+
+  Ok(SavedContent {
+    key: id,
+    file_path: display_path(&file_path),
+    total_items: items.len(),
+  })
+}
+
+#[tauri::command]
 pub fn pick_certificate_file(source: String) -> Result<Option<PickedCertificateFile>, String> {
   let source = source.trim().to_lowercase();
   let root_dir = portfolio_root()?;
-  let certificates_dir = root_dir.join("src").join("certificados");
+  let certificates_dir = root_dir.join("public").join("certificados");
   fs::create_dir_all(&certificates_dir).map_err(|error| error.to_string())?;
 
   let mut dialog = rfd::FileDialog::new().add_filter("Certificados", CERTIFICATE_EXTENSIONS);
@@ -1038,6 +1078,7 @@ fn list_about_items(root_dir: &Path) -> Result<Vec<StudioContentItem>, String> {
           .unwrap_or("Sin periodo")
           .to_string(),
         status: String::new(),
+        hidden: false,
         file_path: display_path(&file_path),
       });
     }
@@ -1294,6 +1335,7 @@ fn studio_content_item(kind: &str, item: &Value, index: usize, file_path: &Path)
       .and_then(Value::as_str)
       .unwrap_or("")
       .to_string(),
+    hidden: item.get("hidden").and_then(Value::as_bool).unwrap_or(false),
     file_path: display_path(file_path),
   }
 }
@@ -1446,7 +1488,7 @@ fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, 
   let mime = clean_optional(Some(input.mime.as_str())).unwrap_or(detected_mime);
   let status = clean_optional(Some(input.status.as_str())).unwrap_or_else(|| "completed".to_string());
 
-  Ok(json!({
+  let mut certificate = json!({
     "id": id,
     "fileName": file_name,
     "type": certificate_type,
@@ -1465,7 +1507,13 @@ fn build_certificate_value(input: &CertificateInput, id: &str) -> Result<Value, 
         "tags": tags_en
       }
     }
-  }))
+  });
+
+  if input.hidden {
+    certificate["hidden"] = json!(true);
+  }
+
+  Ok(certificate)
 }
 
 fn build_development_value(input: &DevelopmentInput, id: &str) -> Result<Value, String> {
@@ -1488,6 +1536,9 @@ fn build_development_value(input: &DevelopmentInput, id: &str) -> Result<Value, 
   item.insert("id".to_string(), json!(id));
   item.insert("kind".to_string(), json!(item_kind));
   item.insert("progress".to_string(), json!(progress));
+  if input.hidden {
+    item.insert("hidden".to_string(), json!(true));
+  }
   insert_optional_string(&mut item, "cover", &input.cover);
   if item_kind == "certificate" {
     if let Some(certificate_url) = &input.certificate_url {

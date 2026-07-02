@@ -3432,11 +3432,52 @@ body.project-preview-open {
   -webkit-user-drag: none;
 }
 
+.certificate-pdf-cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.certificate-card-preview-canvas {
+  opacity: 0;
+  transition:
+    opacity 220ms ease,
+    transform 260ms ease;
+}
+
+.certificate-pdf-cover[data-render-state="ready"] .certificate-card-preview-canvas {
+  opacity: 1;
+}
+
+.certificate-pdf-cover[data-render-state="ready"] .certificate-card-placeholder {
+  opacity: 0;
+  transform: scale(1.02);
+}
+
+.certificate-pdf-cover[data-render-state="error"] .certificate-card-placeholder::after {
+  content: "PDF";
+  position: absolute;
+  bottom: 16%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgb(var(--color-primary) / 0.16);
+  color: rgb(var(--color-primary));
+  padding: 0.35rem 0.65rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
 .certificate-card-placeholder {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
+  transition:
+    opacity 220ms ease,
+    transform 260ms ease;
 }
 
 .certificate-card-placeholder::before {
@@ -3500,15 +3541,7 @@ body.project-preview-open {
   justify-content: flex-end;
   padding: 0.85rem;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgb(var(--color-background) / 0.18), transparent 45%),
-    repeating-linear-gradient(
-      135deg,
-      rgb(var(--color-on-surface) / 0.04),
-      rgb(var(--color-on-surface) / 0.04) 1px,
-      transparent 1px,
-      transparent 10px
-    );
+  background: linear-gradient(180deg, rgb(var(--color-background) / 0.16), transparent 40%);
 }
 
 .certificate-card-lock,
@@ -3633,9 +3666,9 @@ body.project-preview-open {
 }
 
 .certificate-page-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem;
   border: 1px solid rgb(var(--color-outline-variant) / 0.2);
   border-radius: 1rem;
@@ -3643,7 +3676,8 @@ body.project-preview-open {
   padding: 0.6rem 0.75rem;
 }
 
-.certificate-page-back {
+.certificate-page-back,
+.certificate-page-open {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3660,6 +3694,16 @@ body.project-preview-open {
   text-transform: uppercase;
 }
 
+.certificate-page-open {
+  background: rgb(var(--color-primary));
+  border-color: rgb(var(--color-primary) / 0.72);
+  color: rgb(var(--color-on-primary));
+}
+
+.certificate-page-open.is-hidden {
+  display: none;
+}
+
 .certificate-page-header h1 {
   min-width: 0;
   margin: 0;
@@ -3668,7 +3712,7 @@ body.project-preview-open {
   font-weight: 700;
   line-height: 1.1;
   overflow-wrap: anywhere;
-  text-align: right;
+  text-align: center;
 }
 
 .certificate-page-viewer {
@@ -3682,7 +3726,8 @@ body.project-preview-open {
 }
 
 .certificate-page-content,
-.certificate-page-image {
+.certificate-page-image,
+.certificate-page-frame {
   height: 100%;
   width: 100%;
 }
@@ -3692,10 +3737,26 @@ body.project-preview-open {
   overscroll-behavior: contain;
 }
 
+.certificate-page-content.is-pdf {
+  overflow: hidden;
+}
+
+.certificate-page-content.is-image {
+  display: grid;
+  place-items: center;
+}
+
+.certificate-page-frame {
+  display: block;
+  border: 0;
+  background: #ffffff;
+}
+
 .certificate-page-image {
   display: block;
+  max-height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -3750,82 +3811,6 @@ body.project-preview-open {
   font-weight: 900;
 }
 
-.certificate-page-watermark {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.18;
-}
-
-.certificate-page-watermark::before,
-.certificate-page-watermark::after {
-  content: attr(data-watermark);
-  position: absolute;
-  left: -10%;
-  width: 120%;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: clamp(1rem, 3vw, 3rem);
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-transform: uppercase;
-  transform: rotate(-22deg);
-}
-
-.certificate-page-watermark::before {
-  top: 28%;
-}
-
-.certificate-page-watermark::after {
-  top: 58%;
-}
-
-.certificate-page-blackout {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  background: #000000;
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-  transition:
-    opacity 60ms ease,
-    visibility 60ms ease;
-}
-
-html.certificate-page-is-blackout .certificate-page-blackout {
-  visibility: visible;
-  opacity: 1;
-}
-
-.certificate-page-warning {
-  position: absolute;
-  left: 50%;
-  bottom: 1rem;
-  z-index: 4;
-  transform: translate(-50%, 0.75rem);
-  border: 1px solid rgb(var(--color-secondary) / 0.28);
-  border-radius: 999px;
-  background: rgb(var(--color-background) / 0.86);
-  color: rgb(var(--color-secondary));
-  opacity: 0;
-  pointer-events: none;
-  padding: 0.72rem 1rem;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-align: center;
-  text-transform: uppercase;
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.certificate-page-warning.is-visible {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
 @media (max-width: 767px) {
   .project-preview-modal {
     padding: 0.75rem;
@@ -3857,29 +3842,21 @@ html.certificate-page-is-blackout .certificate-page-blackout {
 
   .certificate-page-header {
     gap: 0.55rem;
+    grid-template-columns: minmax(0, 1fr) auto;
     padding: 0.55rem 0.6rem;
   }
 
   .certificate-page-header h1 {
+    grid-column: 1 / -1;
+    grid-row: 2;
     font-size: clamp(0.92rem, 4.4vw, 1.1rem);
-  }
-}
-
-@media print {
-  body.certificate-page * {
-    visibility: hidden !important;
+    text-align: left;
   }
 
-  body.certificate-page::before {
-    content: "La impresion de certificados esta deshabilitada.";
-    position: fixed;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    visibility: visible !important;
-    color: #111111;
-    font: 700 16pt sans-serif;
-    text-align: center;
+  .certificate-page-back,
+  .certificate-page-open {
+    min-height: 2rem;
+    padding-inline: 0.7rem;
   }
 }
 

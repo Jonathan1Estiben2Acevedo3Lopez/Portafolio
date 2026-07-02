@@ -552,6 +552,10 @@ h1 {
   margin-top: 0;
 }
 
+.module-card-detail--development {
+  gap: 8px;
+}
+
 .module-card-detail--development .selection-status {
   gap: 6px;
 }
@@ -566,6 +570,10 @@ h1 {
 .module-card-detail--development .selection-status svg {
   width: 14px;
   height: 14px;
+}
+
+.module-card-detail--development .active-projects-panel {
+  margin-top: 0;
 }
 
 .module-card-detail .action-stack {
@@ -781,6 +789,11 @@ h1 {
   padding: 9px;
 }
 
+.active-project-row.is-hidden-content {
+  border-color: rgb(var(--color-outline) / 0.14);
+  opacity: 0.72;
+}
+
 .active-project-row div {
   min-width: 0;
 }
@@ -814,6 +827,33 @@ h1 {
 
 .development-order-actions {
   display: inline-flex !important;
+  gap: 5px;
+}
+
+.content-visibility-badge {
+  display: inline-flex !important;
+  align-items: center;
+  width: fit-content;
+  margin-top: 5px;
+  border: 1px solid rgb(var(--color-mint) / 0.28);
+  border-radius: 999px;
+  color: rgb(var(--color-mint)) !important;
+  background: rgb(var(--color-mint) / 0.08);
+  padding: 3px 7px;
+  font-size: 0.66rem !important;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.content-visibility-badge.is-hidden {
+  border-color: rgb(var(--color-outline) / 0.24);
+  color: rgb(var(--color-on-muted)) !important;
+  background: rgb(var(--color-background) / 0.28);
+}
+
+.active-project-row button.visibility-action {
+  display: inline-flex;
+  align-items: center;
   gap: 5px;
 }
 

@@ -4,6 +4,7 @@ import certificateCards from "../data/certificates.json";
 import developmentItems from "../data/development.json";
 import interestCards from "../data/interests.json";
 import projectCards from "../data/projects.generated.json";
+import pdfJsWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 
 const baseUrl = document.body?.dataset.baseUrl || "/";
 const basePath = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
@@ -31,6 +32,8 @@ const getLocalizedItems = (items, language) =>
     ...item,
     ...(copy?.[language] ?? copy?.es ?? {}),
   }));
+
+const getVisibleItems = (items) => items.filter((item) => item?.hidden !== true);
 
 const getLocalizedSection = ({ copy, ...section }, language) => ({
   ...section,
@@ -123,7 +126,7 @@ const content = {
       },
       emptyTitle: "Nada publicado en desarrollo por ahora",
       emptyDescription: "Aqui aparecera lo que agregues desde Project Studio como portada de un trabajo en proceso.",
-      items: getLocalizedItems(developmentItems, "es"),
+      items: getLocalizedItems(getVisibleItems(developmentItems), "es"),
     },
     certificates: {
       title: "Certificados",
@@ -134,7 +137,7 @@ const content = {
       viewCta: "Ver certificado",
       unavailableCta: "Por cargar",
       fileUnavailable: "Archivo pendiente",
-      items: getLocalizedItems(certificateCards, "es"),
+      items: getLocalizedItems(getVisibleItems(certificateCards), "es"),
     },
     insights: {
       title: "Blog",
@@ -258,7 +261,7 @@ const content = {
       },
       emptyTitle: "Nothing published in development yet",
       emptyDescription: "This section will show the in-progress covers you add from Project Studio.",
-      items: getLocalizedItems(developmentItems, "en"),
+      items: getLocalizedItems(getVisibleItems(developmentItems), "en"),
     },
     certificates: {
       title: "Certificates",
@@ -269,7 +272,7 @@ const content = {
       viewCta: "View certificate",
       unavailableCta: "Pending file",
       fileUnavailable: "Pending file",
-      items: getLocalizedItems(certificateCards, "en"),
+      items: getLocalizedItems(getVisibleItems(certificateCards), "en"),
     },
     insights: {
       title: "Blog",
@@ -872,11 +875,48 @@ function closeProjectPreview() {
 }
 
 function getCertificateSourceId(item) {
-  return item.id || "";
+  return item.fileName ? item.id || "" : "";
 }
 
 function getCertificateViewerId(item) {
   return getCertificateSourceId(item);
+}
+
+function getCertificateFileUrl(item) {
+  const fileName = item.fileName || "";
+
+  if (!fileName) {
+    return "";
+  }
+
+  if (/^(?:[a-z][a-z\d+\-.]*:|\/)/i.test(fileName)) {
+    return withBase(fileName);
+  }
+
+  const safeFileName = fileName
+    .split(/[\\/]/)
+    .map((part) => encodeURIComponent(part))
+    .join("/");
+
+  return withBase(`/certificados/${safeFileName}`);
+}
+
+function escapeAttribute(value) {
+  const replacements = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+
+  return String(value ?? "").replace(/[&<>"']/g, (character) => replacements[character]);
+}
+
+function isPdfCertificate(item) {
+  const fileName = item.fileName || "";
+
+  return item.type === "pdf" || item.mime === "application/pdf" || /\.pdf(?:$|[?#])/i.test(fileName);
 }
 
 function buildCertificateViewerUrl(item) {
@@ -1100,18 +1140,41 @@ function renderDevelopmentCover(item, label) {
 }
 
 function renderCertificatePreview(item) {
-  const preview = item.thumbnail || "";
+  const certificateUrl = getCertificateFileUrl(item);
+  const preview = item.thumbnail || (!isPdfCertificate(item) ? certificateUrl : "");
 
   if (preview) {
     return `
       <img
         src="${withBase(preview)}"
-        alt="${item.title}"
+        alt="${escapeAttribute(item.title)}"
         loading="lazy"
         decoding="async"
         draggable="false"
         class="certificate-card-preview"
       />
+    `;
+  }
+
+  if (certificateUrl && isPdfCertificate(item)) {
+    return `
+      <div
+        class="certificate-pdf-cover"
+        data-certificate-pdf-cover
+        data-pdf-url="${escapeAttribute(certificateUrl)}"
+        aria-label="${escapeAttribute(item.title)}"
+      >
+        <canvas class="certificate-card-preview certificate-card-preview-canvas" aria-hidden="true"></canvas>
+        <div class="certificate-card-placeholder certificate-card-placeholder--loading" aria-hidden="true">
+          <div class="certificate-card-ribbon"></div>
+          <div class="certificate-card-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          ${renderIcon("workspace_premium", "certificate-card-award")}
+        </div>
+      </div>
     `;
   }
 
@@ -1205,6 +1268,89 @@ function renderCertificates() {
       `;
     })
     .join("");
+
+  scheduleCertificatePdfPreviews();
+}
+
+let certificatePdfPreviewObserver = null;
+
+function scheduleCertificatePdfPreviews() {
+  const schedule = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 120));
+
+  schedule(() => {
+    const covers = Array.from(
+      elements.certificatesGrid?.querySelectorAll("[data-certificate-pdf-cover]:not([data-render-state])") || []
+    );
+
+    if (!covers.length) {
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      covers.forEach(renderCertificatePdfCover);
+      return;
+    }
+
+    if (!certificatePdfPreviewObserver) {
+      certificatePdfPreviewObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              return;
+            }
+
+            certificatePdfPreviewObserver?.unobserve(entry.target);
+            renderCertificatePdfCover(entry.target);
+          });
+        },
+        { rootMargin: "260px" }
+      );
+    }
+
+    covers.forEach((cover) => {
+      cover.dataset.renderState = "queued";
+      certificatePdfPreviewObserver.observe(cover);
+    });
+  });
+}
+
+async function renderCertificatePdfCover(cover) {
+  const url = cover.dataset.pdfUrl;
+  const canvas = cover.querySelector("canvas");
+
+  if (!url || !canvas) {
+    return;
+  }
+
+  cover.dataset.renderState = "loading";
+
+  try {
+    const pdfjsLib = await import("pdfjs-dist/build/pdf.mjs");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfJsWorkerUrl;
+
+    const pdf = await pdfjsLib.getDocument({ url }).promise;
+    const page = await pdf.getPage(1);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const outputScale = Math.min(window.devicePixelRatio || 1, 3);
+    const targetWidth = Math.max(cover.clientWidth || 320, 320) * outputScale;
+    const targetHeight = Math.max(cover.clientHeight || 200, 200) * outputScale;
+    const scale = Math.min(Math.max(targetWidth / baseViewport.width, targetHeight / baseViewport.height), 3);
+    const viewport = page.getViewport({ scale });
+    const context = canvas.getContext("2d", { alpha: false });
+
+    if (!context) {
+      return;
+    }
+
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    canvas.style.aspectRatio = `${viewport.width} / ${viewport.height}`;
+
+    await page.render({ canvasContext: context, viewport }).promise;
+    cover.dataset.renderState = "ready";
+  } catch (error) {
+    cover.dataset.renderState = "error";
+  }
 }
 
 function renderProjectVisual(item, altText) {

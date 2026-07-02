@@ -152,6 +152,7 @@ export interface StudioContentItem {
   subtitle: string;
   detail: string;
   status?: string;
+  hidden: boolean;
   filePath: string;
 }
 
@@ -193,6 +194,7 @@ export interface CertificateFormState {
   mime: string;
   issued: string;
   status: string;
+  hidden: boolean;
   title: string;
   issuer: string;
   tags: string;
@@ -207,6 +209,7 @@ export interface DevelopmentFormState {
   cover: string;
   progress: string;
   certificateUrl: string;
+  hidden: boolean;
   title: string;
   description: string;
   titleEn: string;

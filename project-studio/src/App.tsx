@@ -9,6 +9,8 @@ import {
   ChevronRight,
   ChevronUp,
   CircleDot,
+  Eye,
+  EyeOff,
   ExternalLink,
   FolderOpen,
   FolderCog,
@@ -105,6 +107,7 @@ const defaultCertificateForm = (): CertificateFormState => ({
   mime: "application/pdf",
   issued: currentYear,
   status: "completed",
+  hidden: false,
   title: "",
   issuer: "Formacion",
   tags: "PDF",
@@ -119,6 +122,7 @@ const defaultDevelopmentForm = (): DevelopmentFormState => ({
   cover: "",
   progress: "35",
   certificateUrl: "",
+  hidden: false,
   title: "",
   description: "",
   titleEn: "",
@@ -269,6 +273,7 @@ const fieldHints = {
   developmentCover: "Imagen de portada para la tarjeta de En desarrollo. Puede ser una ruta de public o una URL.",
   developmentProgress: "Porcentaje de avance visible en la tarjeta. Usa un numero entre 0 y 100.",
   developmentCertificateUrl: "Enlace opcional al certificado online. Solo se muestra cuando el tipo es Certificado.",
+  contentHidden: "Oculta este contenido del portafolio publico sin eliminarlo del archivo. Puedes volver a mostrarlo cuando quieras.",
   status: "Estado interno o publico del proyecto: completado, en progreso, concepto, etc.",
   featuredLevel: "Nivel de destaque en el portafolio. Principal debe reservarse para el proyecto mas importante.",
   showInHome: "Activalo si este proyecto debe aparecer en la pagina principal del portafolio.",
@@ -531,6 +536,7 @@ const normalizeCertificateToForm = (certificate: Record<string, any>): Certifica
     mime: certificate.mime ?? form.mime,
     issued: certificate.issued ?? form.issued,
     status: certificate.status ?? form.status,
+    hidden: certificate.hidden === true,
     title: copyEs.title ?? "",
     issuer: copyEs.issuer ?? form.issuer,
     tags: joinCommaList(copyEs.tags),
@@ -552,6 +558,7 @@ const normalizeDevelopmentToForm = (item: Record<string, any>): DevelopmentFormS
     cover: item.cover ?? "",
     progress: String(item.progress ?? form.progress),
     certificateUrl: item.certificateUrl ?? item.url ?? "",
+    hidden: item.hidden === true,
     title: copyEs.title ?? "",
     description: copyEs.description ?? "",
     titleEn: copyEn.title ?? "",
@@ -1093,6 +1100,13 @@ function App() {
   const SelectedIcon = selected.icon;
   const activeProjectCount = projects.filter((project) => project.showInHome).length;
   const developmentItemCount = contentItems.development.length;
+  const visibleDevelopmentItemCount = contentItems.development.filter((item) => !item.hidden).length;
+  const developmentMetric = visibleDevelopmentItemCount === developmentItemCount
+    ? `${developmentItemCount} en progreso`
+    : `${visibleDevelopmentItemCount} visibles / ${developmentItemCount} total`;
+  const developmentOrderSummary = visibleDevelopmentItemCount === developmentItemCount
+    ? `${developmentItemCount} entrada${developmentItemCount === 1 ? "" : "s"} disponible${developmentItemCount === 1 ? "" : "s"}`
+    : `${visibleDevelopmentItemCount} visible${visibleDevelopmentItemCount === 1 ? "" : "s"} de ${developmentItemCount} entrada${developmentItemCount === 1 ? "" : "s"}`;
   const activeContentKind = contentSectionKinds[selected.id];
   const selectedContentItems = activeContentKind ? contentItems[activeContentKind] : [];
   const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
@@ -1100,7 +1114,7 @@ function App() {
   const sectionMetric = selected.id === "projects"
     ? `${activeProjectCount} activos`
     : selected.id === "development"
-      ? `${developmentItemCount} en progreso`
+      ? developmentMetric
     : activeContentKind
       ? `${selectedContentItems.length} items`
       : selected.metric;
@@ -1110,7 +1124,7 @@ function App() {
     }
 
     if (sectionId === "development") {
-      return `${developmentItemCount} en progreso`;
+      return developmentMetric;
     }
 
     const kind = contentSectionKinds[sectionId];
@@ -1806,6 +1820,36 @@ function App() {
     }
   };
 
+  const handleToggleContentHidden = async (kind: "development" | "certificates", item: StudioContentItem) => {
+    const hidden = !item.hidden;
+
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("set_studio_content_hidden", {
+        kind,
+        key: item.key,
+        hidden,
+      });
+      setContentResult(result);
+      await loadContent(kind);
+
+      if (kind === "development" && editingDevelopmentId === item.key) {
+        setDevelopmentForm((current) => ({ ...current, hidden }));
+      }
+
+      if (kind === "certificates" && editingCertificateId === item.key) {
+        setCertificateForm((current) => ({ ...current, hidden }));
+      }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
   const pickCertificateFile = async (source: ImagePickSource) => {
     setContentError("");
 
@@ -2085,7 +2129,7 @@ function App() {
           <div className="active-projects-head">
             <div>
               <strong>Orden de En desarrollo</strong>
-              <span>{contentItems.development.length} entrada{contentItems.development.length === 1 ? "" : "s"} disponible{contentItems.development.length === 1 ? "" : "s"}</span>
+              <span>{developmentOrderSummary}</span>
             </div>
             <button type="button" onClick={() => openDevelopmentEditor("new")}>
               Agregar
@@ -2105,13 +2149,16 @@ function App() {
               </p>
               <div className="active-projects-list development-order-list">
                 {contentItems.development.map((item, index) => (
-                  <div className="active-project-row" key={item.key}>
+                  <div className={`active-project-row${item.hidden ? " is-hidden-content" : ""}`} key={item.key}>
                     <span className="development-order-index" aria-label={`Posicion ${index + 1}`}>
                       {index + 1}
                     </span>
                     <div className="active-project-row-copy">
                       <strong>{item.title}</strong>
                       <span>{item.subtitle} - {item.detail}</span>
+                      <span className={`content-visibility-badge${item.hidden ? " is-hidden" : ""}`}>
+                        {item.hidden ? "Oculto en web" : "Visible en web"}
+                      </span>
                     </div>
                     <div className="active-project-row-actions">
                       <span className="development-order-actions" aria-label="Cambiar posicion">
@@ -2136,6 +2183,15 @@ function App() {
                           <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" />
                         </button>
                       </span>
+                      <button
+                        type="button"
+                        className="visibility-action"
+                        onClick={() => handleToggleContentHidden("development", item)}
+                        disabled={isSavingContent}
+                      >
+                        {item.hidden ? <Eye size={15} strokeWidth={2.3} /> : <EyeOff size={15} strokeWidth={2.3} />}
+                        {item.hidden ? "Mostrar" : "Ocultar"}
+                      </button>
                       <button type="button" onClick={() => handleEditContent("development", item.key)}>
                         Editar
                       </button>
@@ -2284,10 +2340,15 @@ function App() {
           ) : (
             <div className="active-projects-list">
               {selectedContentItems.map((item) => (
-                <div className="active-project-row" key={item.key}>
+                <div className={`active-project-row${item.hidden ? " is-hidden-content" : ""}`} key={item.key}>
                   <div>
                     <strong>{item.title}</strong>
                     <span>{item.subtitle} - {item.detail}</span>
+                    {activeContentKind === "certificates" ? (
+                      <span className={`content-visibility-badge${item.hidden ? " is-hidden" : ""}`}>
+                        {item.hidden ? "Oculto en web" : "Visible en web"}
+                      </span>
+                    ) : null}
                   </div>
                   <div className="active-project-row-actions">
                     <button type="button" onClick={() => handleEditContent(activeContentKind, item.key)}>
@@ -2303,14 +2364,25 @@ function App() {
                         Eliminar
                       </button>
                     ) : activeContentKind === "certificates" ? (
-                      <button
-                        type="button"
-                        className="danger-action"
-                        onClick={() => handleDeleteCertificate(item.key)}
-                        disabled={isSavingContent}
-                      >
-                        Eliminar
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          className="visibility-action"
+                          onClick={() => handleToggleContentHidden("certificates", item)}
+                          disabled={isSavingContent}
+                        >
+                          {item.hidden ? <Eye size={15} strokeWidth={2.3} /> : <EyeOff size={15} strokeWidth={2.3} />}
+                          {item.hidden ? "Mostrar" : "Ocultar"}
+                        </button>
+                        <button
+                          type="button"
+                          className="danger-action"
+                          onClick={() => handleDeleteCertificate(item.key)}
+                          disabled={isSavingContent}
+                        >
+                          Eliminar
+                        </button>
+                      </>
                     ) : activeContentKind === "blog" ? (
                       <button
                         type="button"
@@ -3741,6 +3813,14 @@ function App() {
                         />
                       </label>
                     ) : null}
+                    <label className="check-field">
+                      <input
+                        type="checkbox"
+                        checked={developmentForm.hidden}
+                        onChange={(event) => updateDevelopmentField("hidden", event.target.checked)}
+                      />
+                      <FieldLabel hint={fieldHints.contentHidden}>Ocultar en portafolio</FieldLabel>
+                    </label>
                     <label className="field field-wide">
                       <FieldLabel hint={fieldHints.developmentCover}>Portada</FieldLabel>
                       <div className="media-picker-row">
@@ -3901,6 +3981,14 @@ function App() {
                         onChange={(event) => updateCertificateField("status", event.target.value)}
                         placeholder="completed o in-progress"
                       />
+                    </label>
+                    <label className="check-field">
+                      <input
+                        type="checkbox"
+                        checked={certificateForm.hidden}
+                        onChange={(event) => updateCertificateField("hidden", event.target.checked)}
+                      />
+                      <FieldLabel hint={fieldHints.contentHidden}>Ocultar en portafolio</FieldLabel>
                     </label>
                     <label className="field field-wide">
                       <span className="compact-label">Tags ES</span>
