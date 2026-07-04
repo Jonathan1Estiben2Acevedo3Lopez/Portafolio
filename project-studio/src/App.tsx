@@ -133,10 +133,13 @@ const defaultBlogForm = (): BlogFormState => ({
   slug: "",
   filter: "content",
   visualClass: "visual-notes",
+  cover: "",
+  articleImage: "",
   category: "Contenido",
   date: "Mayo 2026",
   readTime: "4 min de lectura",
   title: "",
+  phrase: "",
   excerpt: "",
   body: "",
   introduction: "",
@@ -146,11 +149,14 @@ const defaultBlogForm = (): BlogFormState => ({
   dateEn: "May 2026",
   readTimeEn: "4 min read",
   titleEn: "",
+  phraseEn: "",
   excerptEn: "",
   bodyEn: "",
   introductionEn: "",
   paragraphsEn: "",
   highlightsEn: "",
+  imageCredit: "",
+  imageCreditEn: "",
 });
 
 const defaultInterestForm = (): InterestFormState => ({
@@ -273,6 +279,22 @@ const fieldHints = {
   developmentCover: "Imagen de portada para la tarjeta de En desarrollo. Puede ser una ruta de public o una URL.",
   developmentProgress: "Porcentaje de avance visible en la tarjeta. Usa un numero entre 0 y 100.",
   developmentCertificateUrl: "Enlace opcional al certificado online. Solo se muestra cuando el tipo es Certificado.",
+  blogTitle: "Titulo publico de la nota. Aparece en la lista, en el destacado y en la pagina del blog.",
+  blogSlug: "Identificador de la URL. Usa minusculas, numeros y guiones. Ejemplo: automatizaciones-qa.",
+  blogCategory: "Categoria visible y filtro publico de la nota. Ejemplo: Automatizaciones, QA, Diseno.",
+  blogFilter: "Campo legado opcional. El portafolio ahora filtra por Categoria, pero se conserva por compatibilidad.",
+  blogDate: "Fecha visible de publicacion. Ejemplo: Mayo 2026.",
+  blogReadTime: "Tiempo estimado de lectura. Ejemplo: 6 min de lectura.",
+  blogVisualClass: "Estilo visual de respaldo si no agregas portada. Ejemplo: visual-notes.",
+  blogCover: "Imagen de portada para el destacado y la tarjeta del blog. Usa una ruta de public o importa una imagen.",
+  blogArticleImage: "Imagen horizontal para la pagina del articulo. Recomendado: formato 16:9 o panoramico.",
+  blogPhrase: "Frase editorial que aparece bajo el titulo en el articulo completo. Es obligatoria y debe ser breve.",
+  blogExcerpt: "Resumen breve para la tarjeta del listado. Debe explicar de que trata la nota en pocas lineas.",
+  blogBody: "Texto corto que aparece en el destacado de la seccion Blog.",
+  blogIntroduction: "Primer parrafo de la pagina individual del blog. Presenta contexto y objetivo.",
+  blogParagraphs: "Contenido principal del articulo. Agrega cada parrafo como un bloque separado en espanol e ingles.",
+  blogHighlights: "Ideas clave mostradas en la pagina individual. Escribe un punto por linea.",
+  blogImageCredit: "Nombre, herramienta o fuente que creo la imagen del articulo. Aparece debajo de la imagen.",
   contentHidden: "Oculta este contenido del portafolio publico sin eliminarlo del archivo. Puedes volver a mostrarlo cuando quieras.",
   status: "Estado interno o publico del proyecto: completado, en progreso, concepto, etc.",
   featuredLevel: "Nivel de destaque en el portafolio. Principal debe reservarse para el proyecto mas importante.",
@@ -297,6 +319,8 @@ type ImagePickSource = "import" | "existing";
 type ImagePickTarget =
   | { kind: "preview" }
   | { kind: "developmentCover" }
+  | { kind: "blogCover" }
+  | { kind: "blogArticleImage" }
   | { kind: "gallery"; index: number }
   | { kind: "videoPoster"; index: number }
   | { kind: "collaboratorPhoto"; index: number };
@@ -382,6 +406,23 @@ const uniqueStackItems = (items: string[]) => {
 };
 
 const formatStackItems = (items: string[]) => uniqueStackItems(items).join(", ");
+
+const uniqueTextOptions = (items: Array<string | null | undefined>) => {
+  const seen = new Set<string>();
+
+  return items
+    .map((item) => String(item || "").trim())
+    .filter((item) => {
+      const key = normalizeStackKey(item);
+      if (!key || seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .sort((itemA, itemB) => itemA.localeCompare(itemB, "es", { sensitivity: "base" }));
+};
 
 const localizedValue = (value: unknown, lang: "es" | "en", fallback = "") => {
   if (typeof value === "string") {
@@ -576,10 +617,13 @@ const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
     slug: post.slug ?? "",
     filter: post.filter ?? form.filter,
     visualClass: post.visualClass ?? form.visualClass,
+    cover: post.cover ?? "",
+    articleImage: post.articleImage ?? "",
     category: copyEs.category ?? form.category,
     date: copyEs.date ?? form.date,
     readTime: copyEs.readTime ?? form.readTime,
     title: copyEs.title ?? "",
+    phrase: copyEs.phrase ?? "",
     excerpt: copyEs.excerpt ?? "",
     body: copyEs.body ?? "",
     introduction: copyEs.introduction ?? "",
@@ -589,11 +633,14 @@ const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
     dateEn: copyEn.date ?? "",
     readTimeEn: copyEn.readTime ?? "",
     titleEn: copyEn.title ?? "",
+    phraseEn: copyEn.phrase ?? "",
     excerptEn: copyEn.excerpt ?? "",
     bodyEn: copyEn.body ?? "",
     introductionEn: copyEn.introduction ?? "",
     paragraphsEn: joinTextLines(copyEn.paragraphs),
     highlightsEn: joinTextLines(copyEn.highlights),
+    imageCredit: copyEs.imageCredit ?? "",
+    imageCreditEn: copyEn.imageCredit ?? "",
   };
 };
 
@@ -990,6 +1037,123 @@ function OptionalItemActions({
   );
 }
 
+function BlogParagraphEditor({
+  hint,
+  onChange,
+  valueEn,
+  valueEs,
+}: {
+  hint: string;
+  onChange: (valueEs: string, valueEn: string) => void;
+  valueEn: string;
+  valueEs: string;
+}) {
+  const rawEs = valueEs ? valueEs.split(/\r?\n/) : [];
+  const rawEn = valueEn ? valueEn.split(/\r?\n/) : [];
+  const rowCount = Math.max(rawEs.length, rawEn.length, 1);
+  const linesEs = Array.from({ length: rowCount }, (_, index) => rawEs[index] ?? "");
+  const linesEn = Array.from({ length: rowCount }, (_, index) => rawEn[index] ?? "");
+
+  const commit = (nextEs: string[], nextEn: string[]) => {
+    onChange(nextEs.join("\n"), nextEn.join("\n"));
+  };
+
+  const updateLine = (index: number, lang: "es" | "en", nextValue: string) => {
+    const nextEs = [...linesEs];
+    const nextEn = [...linesEn];
+
+    if (lang === "es") {
+      nextEs[index] = nextValue;
+    } else {
+      nextEn[index] = nextValue;
+    }
+
+    commit(nextEs, nextEn);
+  };
+
+  const addParagraph = () => {
+    commit([...linesEs, ""], [...linesEn, ""]);
+  };
+
+  const removeParagraph = (index: number) => {
+    if (rowCount <= 1) {
+      commit([""], [""]);
+      return;
+    }
+
+    commit(
+      linesEs.filter((_, lineIndex) => lineIndex !== index),
+      linesEn.filter((_, lineIndex) => lineIndex !== index),
+    );
+  };
+
+  const moveParagraph = (index: number, direction: -1 | 1) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= rowCount) {
+      return;
+    }
+
+    const nextEs = [...linesEs];
+    const nextEn = [...linesEn];
+    [nextEs[index], nextEs[targetIndex]] = [nextEs[targetIndex], nextEs[index]];
+    [nextEn[index], nextEn[targetIndex]] = [nextEn[targetIndex], nextEn[index]];
+    commit(nextEs, nextEn);
+  };
+
+  return (
+    <div className="optional-group field-wide blog-paragraph-editor">
+      <div className="optional-group-head">
+        <div>
+          <FieldLabel hint={hint}>Parrafos del articulo</FieldLabel>
+          <p>Agrega cada parrafo por separado y conserva el mismo orden para espanol e ingles.</p>
+        </div>
+        <button type="button" className="add-row-button" onClick={addParagraph}>
+          <Plus size={16} strokeWidth={2.2} />
+          Agregar
+        </button>
+      </div>
+
+      <div className="optional-list">
+        {linesEs.map((lineEs, index) => (
+          <div className="optional-item" key={`blog-paragraph-${index}`}>
+            <div className="optional-item-head">
+              <strong>Parrafo {index + 1}</strong>
+              <OptionalItemActions
+                canMoveUp={index > 0}
+                canMoveDown={index < rowCount - 1}
+                onMoveUp={() => moveParagraph(index, -1)}
+                onMoveDown={() => moveParagraph(index, 1)}
+                onRemove={() => removeParagraph(index)}
+                removeLabel={`Quitar parrafo ${index + 1}`}
+              />
+            </div>
+            <div className="optional-item-grid">
+              <label className="field">
+                <span className="compact-label">Parrafo ES</span>
+                <textarea
+                  value={lineEs}
+                  onChange={(event) => updateLine(index, "es", event.target.value)}
+                  rows={4}
+                  placeholder="Escribe el parrafo en espanol"
+                />
+              </label>
+              <label className="field">
+                <span className="compact-label">Paragraph EN</span>
+                <textarea
+                  value={linesEn[index]}
+                  onChange={(event) => updateLine(index, "en", event.target.value)}
+                  rows={4}
+                  placeholder="Write the paragraph in English"
+                />
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SectionOrderControl({
   hint,
   onMove,
@@ -1109,6 +1273,18 @@ function App() {
     : `${visibleDevelopmentItemCount} visible${visibleDevelopmentItemCount === 1 ? "" : "s"} de ${developmentItemCount} entrada${developmentItemCount === 1 ? "" : "s"}`;
   const activeContentKind = contentSectionKinds[selected.id];
   const selectedContentItems = activeContentKind ? contentItems[activeContentKind] : [];
+  const blogCategoryOptions = useMemo(
+    () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.category ?? item.detail), blogForm.category]),
+    [blogForm.category, contentItems.blog],
+  );
+  const blogCategoryEnOptions = useMemo(
+    () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.categoryEn), blogForm.categoryEn]),
+    [blogForm.categoryEn, contentItems.blog],
+  );
+  const blogFilterOptions = useMemo(
+    () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.filter), blogForm.filter]),
+    [blogForm.filter, contentItems.blog],
+  );
   const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
   const aboutWorkItems = contentItems.about.filter((item) => item.key.startsWith("work:"));
   const sectionMetric = selected.id === "projects"
@@ -1383,6 +1559,8 @@ function App() {
     try {
       const imageSlug = target.kind === "developmentCover"
         ? developmentForm.id || slugify(developmentForm.title) || "en-desarrollo"
+        : target.kind === "blogCover" || target.kind === "blogArticleImage"
+          ? blogForm.slug || slugify(blogForm.title) || "blog"
         : projectForm.slug || slugify(projectForm.title) || "nuevo-proyecto";
       const pickedImage = await invoke<string | null>("pick_project_image", {
         source,
@@ -1397,6 +1575,10 @@ function App() {
         updateProjectField("previewImage", pickedImage);
       } else if (target.kind === "developmentCover") {
         updateDevelopmentField("cover", pickedImage);
+      } else if (target.kind === "blogCover") {
+        updateBlogField("cover", pickedImage);
+      } else if (target.kind === "blogArticleImage") {
+        updateBlogField("articleImage", pickedImage);
       } else if (target.kind === "gallery") {
         updateOptionalItem("images", target.index, "src", pickedImage);
       } else if (target.kind === "videoPoster") {
@@ -1585,6 +1767,7 @@ function App() {
     setWorkspaceView("blog-edit");
     setContentError("");
     setContentResult(null);
+    setImagePickMessage(null);
 
     if (mode === "new") {
       setBlogForm(defaultBlogForm());
@@ -1922,6 +2105,22 @@ function App() {
         setEditingCertificateId(null);
         setCertificateIdTouched(false);
       }
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
+    }
+  };
+
+  const handleMoveCertificate = async (id: string, direction: "up" | "down") => {
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("move_certificate", { id, direction });
+      setContentResult(result);
+      await loadContent("certificates");
     } catch (error) {
       setContentError(error instanceof Error ? error.message : String(error));
     } finally {
@@ -2369,9 +2568,14 @@ function App() {
             <p className="active-projects-empty">Todavia no hay contenido en este modulo.</p>
           ) : (
             <div className="active-projects-list">
-              {selectedContentItems.map((item) => (
+              {selectedContentItems.map((item, index) => (
                 <div className={`active-project-row${item.hidden ? " is-hidden-content" : ""}`} key={item.key}>
-                  <div>
+                  {activeContentKind === "certificates" ? (
+                    <span className="project-order-index" aria-label={`Posicion ${index + 1}`}>
+                      {index + 1}
+                    </span>
+                  ) : null}
+                  <div className="active-project-row-copy">
                     <strong>{item.title}</strong>
                     <span>{item.subtitle} - {item.detail}</span>
                     {activeContentKind === "certificates" ? (
@@ -2395,6 +2599,28 @@ function App() {
                       </button>
                     ) : activeContentKind === "certificates" ? (
                       <>
+                        <span className="project-order-actions" aria-label="Cambiar posicion">
+                          <button
+                            type="button"
+                            className="project-order-button"
+                            onClick={() => handleMoveCertificate(item.key, "up")}
+                            disabled={index === 0 || isSavingContent}
+                            aria-label={`Subir ${item.title}`}
+                            title="Subir una posicion"
+                          >
+                            <ChevronUp size={16} strokeWidth={2.5} aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            className="project-order-button"
+                            onClick={() => handleMoveCertificate(item.key, "down")}
+                            disabled={index === selectedContentItems.length - 1 || isSavingContent}
+                            aria-label={`Bajar ${item.title}`}
+                            title="Bajar una posicion"
+                          >
+                            <ChevronDown size={16} strokeWidth={2.5} aria-hidden="true" />
+                          </button>
+                        </span>
                         <button
                           type="button"
                           className="visibility-action"
@@ -4084,53 +4310,122 @@ function App() {
                     <span className="section-label">Blog</span>
                     <h3>Nota y detalle</h3>
                   </div>
+                  <datalist id="blog-category-options">
+                    {blogCategoryOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                  <datalist id="blog-filter-options">
+                    {blogFilterOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                  <datalist id="blog-category-en-options">
+                    {blogCategoryEnOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
                   <div className="form-grid">
                     <label className="field">
-                      <span className="compact-label">Titulo ES</span>
+                      <FieldLabel hint={fieldHints.blogTitle}>Titulo ES</FieldLabel>
                       <input value={blogForm.title} onChange={(event) => updateBlogField("title", event.target.value)} required />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Slug</span>
+                      <FieldLabel hint={fieldHints.blogPhrase}>Frase ES</FieldLabel>
+                      <input
+                        value={blogForm.phrase}
+                        onChange={(event) => updateBlogField("phrase", event.target.value)}
+                        required
+                        placeholder="Una frase breve para abrir el articulo"
+                      />
+                    </label>
+                    <label className="field">
+                      <FieldLabel hint={fieldHints.blogSlug}>Slug</FieldLabel>
                       <input value={blogForm.slug} onChange={(event) => updateBlogField("slug", event.target.value)} required />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Categoria ES</span>
-                      <input value={blogForm.category} onChange={(event) => updateBlogField("category", event.target.value)} />
+                      <FieldLabel hint={fieldHints.blogCategory}>Categoria ES</FieldLabel>
+                      <input
+                        list="blog-category-options"
+                        value={blogForm.category}
+                        onChange={(event) => updateBlogField("category", event.target.value)}
+                        placeholder="Elige una existente o escribe una nueva"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Filtro</span>
-                      <input value={blogForm.filter} onChange={(event) => updateBlogField("filter", event.target.value)} placeholder="web, design, content" />
+                      <FieldLabel hint={fieldHints.blogFilter}>Filtro</FieldLabel>
+                      <input
+                        list="blog-filter-options"
+                        value={blogForm.filter}
+                        onChange={(event) => updateBlogField("filter", event.target.value)}
+                        placeholder="Elige uno existente o escribe uno nuevo"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Fecha ES</span>
+                      <FieldLabel hint={fieldHints.blogDate}>Fecha ES</FieldLabel>
                       <input value={blogForm.date} onChange={(event) => updateBlogField("date", event.target.value)} />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Lectura ES</span>
+                      <FieldLabel hint={fieldHints.blogReadTime}>Lectura ES</FieldLabel>
                       <input value={blogForm.readTime} onChange={(event) => updateBlogField("readTime", event.target.value)} />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Visual class</span>
+                      <FieldLabel hint={fieldHints.blogVisualClass}>Visual class</FieldLabel>
                       <input value={blogForm.visualClass} onChange={(event) => updateBlogField("visualClass", event.target.value)} />
                     </label>
+                    <div className="field field-wide">
+                      <FieldLabel hint={fieldHints.blogCover}>Portada</FieldLabel>
+                      <div className="media-picker-row">
+                        <input
+                          value={blogForm.cover}
+                          onChange={(event) => updateBlogField("cover", event.target.value)}
+                          placeholder="/project-assets/mi-blog/portada.webp o https://..."
+                        />
+                        {renderImagePickerActions({ kind: "blogCover" })}
+                      </div>
+                    </div>
+                    <div className="field field-wide">
+                      <FieldLabel hint={fieldHints.blogArticleImage}>Imagen horizontal del articulo</FieldLabel>
+                      <div className="media-picker-row">
+                        <input
+                          value={blogForm.articleImage}
+                          onChange={(event) => updateBlogField("articleImage", event.target.value)}
+                          placeholder="/project-assets/mi-blog/articulo-horizontal.webp o https://..."
+                        />
+                        {renderImagePickerActions({ kind: "blogArticleImage" })}
+                      </div>
+                    </div>
                     <label className="field field-wide">
-                      <span className="compact-label">Extracto ES</span>
+                      <FieldLabel hint={fieldHints.blogImageCredit}>Credito de imagen ES</FieldLabel>
+                      <input
+                        value={blogForm.imageCredit}
+                        onChange={(event) => updateBlogField("imageCredit", event.target.value)}
+                        placeholder="Ej. Imagen generada por ChatGPT, diseno propio, Unsplash..."
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.blogExcerpt}>Extracto ES</FieldLabel>
                       <textarea value={blogForm.excerpt} onChange={(event) => updateBlogField("excerpt", event.target.value)} rows={3} required />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Cuerpo corto ES</span>
+                      <FieldLabel hint={fieldHints.blogBody}>Cuerpo corto ES</FieldLabel>
                       <textarea value={blogForm.body} onChange={(event) => updateBlogField("body", event.target.value)} rows={4} required />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Introduccion ES</span>
+                      <FieldLabel hint={fieldHints.blogIntroduction}>Introduccion ES</FieldLabel>
                       <textarea value={blogForm.introduction} onChange={(event) => updateBlogField("introduction", event.target.value)} rows={4} />
                     </label>
+                    <BlogParagraphEditor
+                      hint={fieldHints.blogParagraphs}
+                      valueEs={blogForm.paragraphs}
+                      valueEn={blogForm.paragraphsEn}
+                      onChange={(nextParagraphs, nextParagraphsEn) => {
+                        updateBlogField("paragraphs", nextParagraphs);
+                        updateBlogField("paragraphsEn", nextParagraphsEn);
+                      }}
+                    />
                     <label className="field field-wide">
-                      <span className="compact-label">Parrafos ES</span>
-                      <textarea value={blogForm.paragraphs} onChange={(event) => updateBlogField("paragraphs", event.target.value)} rows={7} placeholder="Un parrafo por linea" />
-                    </label>
-                    <label className="field field-wide">
-                      <span className="compact-label">Highlights ES</span>
+                      <FieldLabel hint={fieldHints.blogHighlights}>Highlights ES</FieldLabel>
                       <textarea value={blogForm.highlights} onChange={(event) => updateBlogField("highlights", event.target.value)} rows={4} placeholder="Un punto por linea" />
                     </label>
                   </div>
@@ -4141,43 +4436,62 @@ function App() {
                   </div>
                   <div className="form-grid">
                     <label className="field">
-                      <span className="compact-label">Title EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Title EN</FieldLabel>
                       <input value={blogForm.titleEn} onChange={(event) => updateBlogField("titleEn", event.target.value)} />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Category EN</span>
-                      <input value={blogForm.categoryEn} onChange={(event) => updateBlogField("categoryEn", event.target.value)} />
+                      <FieldLabel hint={fieldHints.blogPhrase}>Phrase EN</FieldLabel>
+                      <input
+                        value={blogForm.phraseEn}
+                        onChange={(event) => updateBlogField("phraseEn", event.target.value)}
+                        placeholder="English version of the opening phrase"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Date EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Category EN</FieldLabel>
+                      <input
+                        list="blog-category-en-options"
+                        value={blogForm.categoryEn}
+                        onChange={(event) => updateBlogField("categoryEn", event.target.value)}
+                      />
+                    </label>
+                    <label className="field">
+                      <FieldLabel hint={fieldHints.englishFallback}>Date EN</FieldLabel>
                       <input value={blogForm.dateEn} onChange={(event) => updateBlogField("dateEn", event.target.value)} />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Read time EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Read time EN</FieldLabel>
                       <input value={blogForm.readTimeEn} onChange={(event) => updateBlogField("readTimeEn", event.target.value)} />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Excerpt EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Excerpt EN</FieldLabel>
                       <textarea value={blogForm.excerptEn} onChange={(event) => updateBlogField("excerptEn", event.target.value)} rows={3} />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Body EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Body EN</FieldLabel>
                       <textarea value={blogForm.bodyEn} onChange={(event) => updateBlogField("bodyEn", event.target.value)} rows={4} />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Introduction EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Introduction EN</FieldLabel>
                       <textarea value={blogForm.introductionEn} onChange={(event) => updateBlogField("introductionEn", event.target.value)} rows={4} />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Paragraphs EN</span>
-                      <textarea value={blogForm.paragraphsEn} onChange={(event) => updateBlogField("paragraphsEn", event.target.value)} rows={7} />
+                      <FieldLabel hint={fieldHints.blogImageCredit}>Image credit EN</FieldLabel>
+                      <input
+                        value={blogForm.imageCreditEn}
+                        onChange={(event) => updateBlogField("imageCreditEn", event.target.value)}
+                        placeholder="Image by ChatGPT, own design, Unsplash..."
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Highlights EN</span>
+                      <FieldLabel hint={fieldHints.englishFallback}>Highlights EN</FieldLabel>
                       <textarea value={blogForm.highlightsEn} onChange={(event) => updateBlogField("highlightsEn", event.target.value)} rows={4} />
                     </label>
                   </div>
 
+                  {imagePickMessage && (
+                    <p className={`form-message is-${imagePickMessage.tone}`}>{imagePickMessage.text}</p>
+                  )}
                   {contentError && <p className="form-message is-error">{contentError}</p>}
                   {contentResult && (
                     <div className="form-message is-success">

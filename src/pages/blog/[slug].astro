@@ -1,18 +1,25 @@
 ---
-import { blogDetails } from "../../data/blog-details";
+import { Image } from "astro:assets";
+import { getBlogDetailBySlug, getBlogDetails } from "../../data/blog-details";
+import authorImage from "../../assets/Jonathan_Acevedo.webp";
 import "../../styles/global.css";
 
 export function getStaticPaths() {
-  return blogDetails.map((post) => ({
+  return getBlogDetails().map((post) => ({
     params: { slug: post.slug },
-    props: { post },
   }));
 }
 
-const { post } = Astro.props;
-const relatedPosts = blogDetails.filter((item) => item.slug !== post.slug).slice(0, 3);
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
+const post = getBlogDetailBySlug(Astro.params.slug);
+const relatedPosts = getBlogDetails().filter((item) => item.slug !== post.slug).slice(0, 3);
+const articleImage = post.articleImage || post.cover || "";
+const articlePhrase = post.phrase || "";
+const articleImageCredit = post.imageCredit || "";
+const articleParagraphs = Array.isArray(post.paragraphs) ? post.paragraphs : [];
+const articleHighlights = Array.isArray(post.highlights) ? post.highlights.filter(Boolean) : [];
+const blogAuthorName = "Jonathan Acevedo López";
 ---
 
 <!DOCTYPE html>
@@ -81,73 +88,124 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
       </nav>
     </header>
 
-    <main class="detail-page-main px-6 pb-20 pt-10 lg:px-8 lg:pt-12">
-      <section class="site-shell site-shell--main detail-lead-grid mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(18rem,0.92fr)] lg:items-start lg:gap-10">
-        <div>
-          <div class="flex flex-wrap items-center gap-4 text-[0.72rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
-            <span class="text-primary">{post.category}</span>
-            <span>{post.date}</span>
-            <span>{post.readTime}</span>
-          </div>
-          <h1 class="detail-display mt-5 max-w-4xl font-headline text-4xl font-bold leading-[1.04] tracking-tight text-on-surface sm:text-5xl lg:text-6xl">
-            {post.title}
-          </h1>
-          <p class="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
-            {post.excerpt}
-          </p>
-
-          <article class="mt-10 space-y-6 text-[1.03rem] leading-8 text-on-surface-variant">
-            <p>{post.introduction}</p>
-            {post.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-          </article>
+    <main class="detail-page-main blog-article-page px-5 pb-20 pt-9 sm:px-6 lg:px-8 lg:pt-12">
+      <section class="site-shell site-shell--main blog-article-hero mx-auto max-w-5xl text-center">
+        <div class="blog-article-meta justify-center">
+          <span class="text-primary">{post.category}</span>
+          <span>{post.date}</span>
+          <span>{post.readTime}</span>
         </div>
+        <h1 id="blog-article-title" class="blog-article-title mx-auto mt-5 max-w-4xl font-headline font-bold leading-[1.08] tracking-tight text-on-surface">
+          {post.title}
+        </h1>
+        {articlePhrase ? (
+          <p class="blog-article-phrase mx-auto mt-5 max-w-3xl text-on-surface-variant">
+            {articlePhrase}
+          </p>
+        ) : null}
+      </section>
 
-        <aside class="space-y-6 lg:sticky lg:top-28">
-          <div class={`article-visual ${post.visualClass} min-h-[18rem] rounded-[2rem] border border-outline-variant/15`}></div>
-
-          <div class="glass-panel rounded-[2rem] border border-outline-variant/15 p-6">
-            <p id="detail-key-ideas-label" class="text-[0.68rem] font-black uppercase tracking-[0.22em] text-secondary">
-              Ideas clave
-            </p>
-            <div class="mt-5 space-y-3">
-              {post.highlights.map((item) => (
-                <div class="rounded-[1.2rem] border border-outline-variant/15 bg-surface-container-highest/70 px-4 py-4 text-sm leading-7 text-on-surface-variant">
-                  {item}
-                </div>
-              ))}
+      <section class="site-shell site-shell--main blog-article-shell mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-start lg:gap-10">
+        <article class="blog-article-prose" aria-labelledby="blog-article-title">
+          <p class="blog-article-intro">{post.introduction}</p>
+          {articleParagraphs.map((paragraph) => <p class="blog-article-main-point">{paragraph}</p>)}
+          <div class="blog-article-author" aria-label={`Blog creado por ${blogAuthorName}`}>
+            <Image
+              src={authorImage}
+              alt={`Foto de ${blogAuthorName}`}
+              class="blog-article-author-photo"
+              widths={[96, 128, 160, 224]}
+              sizes="3.75rem"
+              quality={86}
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="blog-article-author-copy">
+              <p>Blog creado por</p>
+              <strong>{blogAuthorName}</strong>
             </div>
           </div>
+        </article>
+
+        <aside class="blog-article-sidebar lg:sticky lg:top-28">
+          <div class="blog-article-info">
+            <p class="detail-section-label">Lectura</p>
+            <dl class="mt-5 grid gap-4">
+              <div>
+                <dt>Categoria</dt>
+                <dd>{post.category}</dd>
+              </div>
+              <div>
+                <dt>Publicado</dt>
+                <dd>{post.date}</dd>
+              </div>
+              <div>
+                <dt>Tiempo</dt>
+                <dd>{post.readTime}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {articleHighlights.length ? (
+            <div class="blog-article-key-ideas" aria-labelledby="blog-article-key-ideas-title">
+              <p id="blog-article-key-ideas-title" class="detail-section-label">Ideas clave</p>
+              <ul class="mt-5 grid list-none gap-3 p-0" role="list">
+                {articleHighlights.map((highlight) => (
+                  <li class="blog-article-highlight">
+                    <span class="material-symbols-outlined blog-article-highlight-icon" aria-hidden="true">check_circle</span>
+                    <p>{highlight}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </aside>
       </section>
 
-      <section class="site-shell site-shell--main mx-auto mt-16 max-w-7xl">
-        <div class="mb-6 flex items-center justify-between gap-4">
-          <h2 id="detail-related-title" class="font-headline text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-            Otros articulos
-          </h2>
-        </div>
+      {articleImage ? (
+        <section class="site-shell site-shell--main mx-auto mt-12 max-w-5xl">
+          <figure class="blog-article-media">
+            <img
+              src={withBase(articleImage)}
+              alt={post.title}
+              loading="lazy"
+              decoding="async"
+            />
+            {articleImageCredit ? <figcaption>{articleImageCredit}</figcaption> : null}
+          </figure>
+        </section>
+      ) : null}
 
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {relatedPosts.map((item) => (
-            <a
-              href={withBase(`/blog/${item.slug}`)}
-              class="article-list-card flex min-h-[14rem] flex-col justify-between rounded-[1.6rem] border border-outline-variant/15 bg-surface-container-highest/88 p-5 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_24px_54px_rgba(0,0,0,0.18)]"
-            >
-              <div>
-                <p class="text-[0.62rem] font-black uppercase tracking-[0.2em] text-secondary">{item.category}</p>
-                <h3 class="mt-3 font-headline text-[1.2rem] font-bold leading-7 tracking-tight text-on-surface">
-                  {item.title}
-                </h3>
-                <p class="mt-4 text-sm leading-7 text-on-surface-variant">{item.excerpt}</p>
-              </div>
-              <div class="mt-5 flex items-center justify-between gap-4 text-[0.68rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
-                <span>{item.date}</span>
-                <span class="material-symbols-outlined text-primary">arrow_outward</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
+      {relatedPosts.length ? (
+        <section class="site-shell site-shell--main blog-related-section mx-auto mt-14 max-w-6xl">
+          <div class="mb-6 flex items-center justify-between gap-4">
+            <h2 id="detail-related-title" class="font-headline text-xl font-bold tracking-tight text-on-surface sm:text-2xl">
+              Otros articulos
+            </h2>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {relatedPosts.map((item) => (
+              <a
+                href={withBase(`/blog/${item.slug}`)}
+                class="blog-related-card article-list-card flex min-h-[9.5rem] flex-col justify-between rounded-[1rem] border border-outline-variant/15 bg-surface-container-highest/88 p-3.5 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_20px_44px_rgba(0,0,0,0.16)]"
+              >
+                <div>
+                  <p class="text-[0.58rem] font-black uppercase tracking-[0.18em] text-secondary">{item.category}</p>
+                  <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface">
+                    {item.title}
+                  </h3>
+                  <p class="mt-2.5 text-[0.8rem] leading-5 text-on-surface-variant">{item.excerpt}</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between gap-4 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                  <span>{item.date}</span>
+                  <span class="material-symbols-outlined text-primary">arrow_outward</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </main>
 
     <script is:inline>

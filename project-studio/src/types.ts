@@ -154,6 +154,7 @@ export interface StudioContentItem {
   status?: string;
   hidden: boolean;
   filePath: string;
+  metadata?: Record<string, string>;
 }
 
 export interface SavedContent {
@@ -220,10 +221,13 @@ export interface BlogFormState {
   slug: string;
   filter: string;
   visualClass: string;
+  cover: string;
+  articleImage: string;
   category: string;
   date: string;
   readTime: string;
   title: string;
+  phrase: string;
   excerpt: string;
   body: string;
   introduction: string;
@@ -233,11 +237,14 @@ export interface BlogFormState {
   dateEn: string;
   readTimeEn: string;
   titleEn: string;
+  phraseEn: string;
   excerptEn: string;
   bodyEn: string;
   introductionEn: string;
   paragraphsEn: string;
   highlightsEn: string;
+  imageCredit: string;
+  imageCreditEn: string;
 }
 
 export interface InterestFormState {

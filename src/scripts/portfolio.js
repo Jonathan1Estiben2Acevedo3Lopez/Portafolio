@@ -130,7 +130,6 @@ const content = {
     },
     certificates: {
       title: "Certificados",
-      subtitle: "Formacion continua y cursos en progreso; aqui publicare certificados y constancias verificables cuando esten disponibles.",
       privacyBadge: "En progreso",
       emptyTitle: "Certificados proximamente",
       emptyDescription: "Actualmente estoy fortaleciendo mi formacion con cursos y nuevas experiencias de aprendizaje. En cuanto cuente con certificados oficiales, los publicare aqui para consulta.",
@@ -265,7 +264,6 @@ const content = {
     },
     certificates: {
       title: "Certificates",
-      subtitle: "Ongoing training and courses in progress; verified certificates will be published here when available.",
       privacyBadge: "In progress",
       emptyTitle: "Certificates coming soon",
       emptyDescription: "I am currently strengthening my training through courses and new learning experiences. Once official certificates are available, I will publish them here for review.",
@@ -409,9 +407,11 @@ const elements = {
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
 const sectionScrollNudges = {
-  development: 8,
+  development: 12,
   projects: 8,
-  interests: 8,
+  certificates: 0,
+  insights: 0,
+  interests: 0,
 };
 
 function getCopy(path) {
@@ -760,6 +760,55 @@ function createProjectFilterButton(filter, label, className = "filter-chip") {
   return button;
 }
 
+function normalizeArticleFilter(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-") || "general";
+}
+
+function getArticleFilterKey(article) {
+  return normalizeArticleFilter(article.category || article.filter || "general");
+}
+
+function getArticleFilterOptions() {
+  const filters = new Map();
+
+  (getCopy("articles") || []).forEach((article) => {
+    const key = getArticleFilterKey(article);
+    const label = article.category || article.filter || key;
+    const current = filters.get(key);
+
+    filters.set(key, {
+      filter: key,
+      label,
+      count: (current?.count || 0) + 1,
+    });
+  });
+
+  return [...filters.values()].sort((filterA, filterB) => {
+    if (filterA.count !== filterB.count) {
+      return filterB.count - filterA.count;
+    }
+
+    return filterA.label.localeCompare(filterB.label);
+  });
+}
+
+function createArticleFilterButton(filter, label) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "filter-chip";
+  button.dataset.articleFilter = filter;
+  button.textContent = label;
+  button.classList.toggle("is-active", filter === state.articleFilter);
+
+  return button;
+}
+
 function renderFilters() {
   if (!elements.projectFilters) {
     return;
@@ -813,7 +862,12 @@ function renderFilters() {
 
 function renderArticleFilters() {
   const labels = getCopy("insights.filters");
-  const hasArticles = Boolean((getCopy("articles") || []).length);
+  const filters = getArticleFilterOptions();
+  const hasArticles = Boolean(filters.length);
+
+  if (!elements.articleFilters) {
+    return;
+  }
 
   if (elements.articleFilters) {
     elements.articleFilters.style.display = hasArticles ? "" : "none";
@@ -823,9 +877,17 @@ function renderArticleFilters() {
     state.articleFilter = "all";
   }
 
-  elements.articleFilterButtons.forEach((button) => {
-    button.textContent = labels[button.dataset.articleFilter];
-    button.classList.toggle("is-active", button.dataset.articleFilter === state.articleFilter);
+  const availableFilters = new Set(filters.map((item) => item.filter));
+
+  if (state.articleFilter !== "all" && !availableFilters.has(state.articleFilter)) {
+    state.articleFilter = "all";
+  }
+
+  elements.articleFilters.innerHTML = "";
+  elements.articleFilters.append(createArticleFilterButton("all", labels.all));
+
+  filters.forEach((item) => {
+    elements.articleFilters.append(createArticleFilterButton(item.filter, item.label));
   });
 }
 
@@ -1389,6 +1451,25 @@ function renderInterestVisual(item, classNames) {
   return `<div class="${classNames} ${item.visualClass}"></div>`;
 }
 
+function renderArticleVisual(item, classNames) {
+  if (item.cover) {
+    return `
+      <div class="${classNames} article-photo-visual">
+        <img
+          src="${withBase(item.cover)}"
+          alt="${escapeAttribute(item.title)}"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+          class="article-photo-image"
+        />
+      </div>
+    `;
+  }
+
+  return `<div class="${classNames} ${item.visualClass}"></div>`;
+}
+
 function getProjectFeaturedRank(project) {
   if (project.featuredLevel === "main") {
     return 0;
@@ -1403,6 +1484,13 @@ function getProjectFeaturedRank(project) {
 
 function sortProjectsForHome(projects) {
   return [...projects].sort((projectA, projectB) => {
+    const orderA = Number.isFinite(projectA.order) ? projectA.order : Number.MAX_SAFE_INTEGER;
+    const orderB = Number.isFinite(projectB.order) ? projectB.order : Number.MAX_SAFE_INTEGER;
+
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
     const pinnedA = projectA.pinned ? 0 : 1;
     const pinnedB = projectB.pinned ? 0 : 1;
 
@@ -1429,13 +1517,6 @@ function sortProjectsForHome(projects) {
 
     if (yearA !== yearB) {
       return yearB - yearA;
-    }
-
-    const orderA = Number.isFinite(projectA.order) ? projectA.order : Number.MAX_SAFE_INTEGER;
-    const orderB = Number.isFinite(projectB.order) ? projectB.order : Number.MAX_SAFE_INTEGER;
-
-    if (orderA !== orderB) {
-      return orderA - orderB;
     }
 
     return String(projectA.slug).localeCompare(String(projectB.slug));
@@ -1552,7 +1633,7 @@ function renderArticles(preserveScroll = false) {
 
   const articles = allArticles
     .map((article, index) => ({ ...article, index }))
-    .filter((article) => (state.articleFilter === "all" ? true : article.filter === state.articleFilter));
+    .filter((article) => (state.articleFilter === "all" ? true : getArticleFilterKey(article) === state.articleFilter));
   const active = articles.find((article) => article.index === state.activeArticle) || articles[0];
   const mobileLayout = isMobileViewport();
   const listScrollOffset = preserveScroll
@@ -1606,20 +1687,20 @@ function renderArticles(preserveScroll = false) {
 
         return `
           <a
-            class="project-card article-mobile-card group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5"
+            class="project-card article-mobile-card group flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-outline-variant/18 bg-surface-container-highest/90 p-2"
             href="${detailHref}"
           >
-            <div class="project-visual ${article.visualClass} aspect-[16/10] rounded-[1.3rem]"></div>
-            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
-              <div class="flex items-start justify-between gap-4">
+            ${renderArticleVisual(article, "project-visual aspect-[16/9] rounded-[1rem]")}
+            <div class="flex h-full flex-col px-1 pb-0.5 pt-3">
+              <div class="flex items-start justify-between gap-3">
                 <div>
-                  <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${article.category}</p>
-                  <h3 class="mt-2 font-headline text-[1.18rem] font-bold leading-6 tracking-tight text-on-surface">${article.title}</h3>
+                  <p class="text-[0.6rem] font-black uppercase tracking-[0.18em] text-secondary">${article.category}</p>
+                  <h3 class="mt-1.5 font-headline text-[1.02rem] font-bold leading-5 tracking-tight text-on-surface">${article.title}</h3>
                 </div>
                 ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
               </div>
-              <p class="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
-              <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
+              <p class="article-mobile-excerpt mt-2 flex-1 text-[0.82rem] leading-5 text-on-surface-variant">${article.excerpt}</p>
+              <div class="mt-3 flex items-center gap-3 text-[0.62rem] font-black uppercase tracking-[0.17em] text-on-surface-variant">
                 <span>${article.date}</span>
               </div>
             </div>
@@ -1647,19 +1728,19 @@ function renderArticles(preserveScroll = false) {
       return `
         <button
           type="button"
-          class="article-list-card ${activeClass} flex min-h-[9.75rem] flex-col justify-between rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-high/78 p-4 text-left lg:min-h-[10.35rem]"
+          class="article-list-card ${activeClass} flex min-h-[7.2rem] w-full min-w-0 max-w-full flex-col justify-between overflow-hidden rounded-[1.05rem] border border-outline-variant/15 bg-surface-container-high/78 p-2.5 text-left lg:min-h-[7.8rem]"
           data-article-index="${article.index}"
           aria-pressed="${article.index === state.activeArticle}"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-[0.62rem] font-black uppercase tracking-[0.2em] text-secondary">${article.category}</p>
-              <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface sm:text-[1.08rem]">${article.title}</h3>
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[0.58rem] font-black uppercase tracking-[0.18em] text-secondary">${article.category}</p>
+              <h3 class="mt-2 font-headline text-[0.92rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.98rem]">${article.title}</h3>
             </div>
-            <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${article.date}</span>
+            <span class="shrink-0 text-[0.58rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">${article.date}</span>
           </div>
-          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${article.excerpt}</p>
-          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
+          <p class="article-list-excerpt mt-2 text-[0.82rem] leading-5 text-on-surface-variant">${article.excerpt}</p>
+          <div class="mt-3 inline-flex items-center gap-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
             <span>${article.index === state.activeArticle ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
           </div>
@@ -1673,24 +1754,25 @@ function renderArticles(preserveScroll = false) {
   }
 
   const detailHref = withBase(`/blog/${active.slug}`);
+  const featureCopy = active.excerpt || active.body || "";
 
   elements.articleFeature.innerHTML = `
     <a
       href="${detailHref}"
-      class="article-feature-card group block overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[27.5rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]"
+      class="article-feature-card group block min-w-0 overflow-hidden rounded-[1.4rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[19rem] lg:grid-cols-[minmax(9.5rem,0.6fr)_minmax(0,1.18fr)]"
     >
-      <div class="article-visual ${active.visualClass} min-h-[160px] lg:min-h-full"></div>
-      <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-5">
-        <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
+      ${renderArticleVisual(active, "article-visual min-h-[115px] lg:min-h-full")}
+      <div class="glass-panel min-w-0 border-t border-outline-variant/15 p-3.5 lg:border-l lg:border-t-0 lg:px-4 lg:py-3.5">
+        <div class="flex flex-wrap items-center gap-3 text-[0.6rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
           <span class="text-primary">${getCopy("insights.cardLabel")}</span>
           <span>${active.category}</span>
           <span>${active.date}</span>
         </div>
-        <h3 class="mt-4 max-w-3xl font-headline text-[1.7rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[2.35rem]">
+        <h3 class="mt-3 max-w-3xl font-headline text-[1.28rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[1.76rem]">
           ${active.title}
         </h3>
-        <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.body}</p>
-        <div class="mt-5 inline-flex items-center gap-3 text-sm font-bold tracking-tight text-primary transition group-hover:gap-4">
+        <p class="article-feature-copy mt-3 max-w-3xl text-[0.86rem] leading-6 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${featureCopy}</p>
+        <div class="mt-4 inline-flex items-center gap-2 text-[0.8rem] font-bold tracking-tight text-primary transition group-hover:gap-3">
           <span>${getCopy("insights.cta")}</span>
           ${renderIcon("arrow_forward", "text-base")}
         </div>
@@ -2865,14 +2947,19 @@ function wireEvents() {
   elements.developmentScrollNext?.addEventListener("click", () => scrollDevelopmentByStep(1));
   elements.developmentGrid?.addEventListener("scroll", updateDevelopmentScrollHint, { passive: true });
 
-  elements.articleFilterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.articleFilter = button.dataset.articleFilter;
-      renderArticleFilters();
-      renderArticles();
-      wireScrollButtons();
-      queueSectionMetricsRefresh();
-    });
+  elements.articleFilters?.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest("[data-article-filter]");
+
+    if (!button || !elements.articleFilters.contains(button)) {
+      return;
+    }
+
+    state.articleFilter = button.dataset.articleFilter || "all";
+    renderArticleFilters();
+    renderArticles();
+    wireScrollButtons();
+    queueSectionMetricsRefresh();
   });
 
   elements.interestFilterButtons.forEach((button) => {

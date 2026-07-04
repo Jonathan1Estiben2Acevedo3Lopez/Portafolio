@@ -785,6 +785,11 @@ h1 {
 }
 
 .active-project-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   border: 1px solid rgb(var(--color-outline) / 0.2);
   border-radius: 8px;
   background: rgb(var(--color-surface-raised) / 0.32);

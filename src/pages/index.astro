@@ -389,9 +389,6 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
               <h2 class="text-4xl font-bold tracking-tight text-on-surface sm:text-5xl" data-i18n="certificates.title">
                 Certificados
               </h2>
-              <p class="max-w-none text-sm leading-7 text-on-surface-variant sm:text-base" data-i18n="certificates.subtitle">
-                Formacion continua y cursos en progreso; aqui publicare certificados verificables cuando esten disponibles.
-              </p>
             </div>
 
             <div class="certificate-privacy-badge">
@@ -417,14 +414,10 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
             </h2>
             <div id="insights-filters" class="flex flex-wrap gap-3">
               <button type="button" class="filter-chip" data-article-filter="all">Todos</button>
-              <button type="button" class="filter-chip" data-article-filter="design">Diseno</button>
-              <button type="button" class="filter-chip" data-article-filter="web">Web</button>
-              <button type="button" class="filter-chip" data-article-filter="automation">Automatizacion</button>
-              <button type="button" class="filter-chip" data-article-filter="content">Contenido</button>
             </div>
           </div>
 
-          <div class="split-feature-grid grid gap-5 lg:grid-cols-[minmax(17rem,0.74fr)_minmax(0,1.26fr)] lg:items-start lg:gap-6">
+          <div class="split-feature-grid grid gap-5 lg:grid-cols-[minmax(16rem,24rem)_minmax(0,1fr)] lg:items-start lg:gap-6">
             <div id="articles-list" class="articles-scroll-column custom-scrollbar order-2 lg:order-1"></div>
             <article id="article-feature" class="order-1 lg:order-2 lg:sticky lg:top-28 lg:self-start"></article>
           </div>

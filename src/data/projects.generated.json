@@ -298,7 +298,7 @@
       "studio-module-3",
       "studio-module-4"
     ],
-    "order": 20,
+    "order": 10,
     "previewImage": "/project-assets/docqee/captura-de-pantalla-2026-05-24-094147-1.webp",
     "sectionOrder": [
       "modules",
@@ -306,302 +306,6 @@
       "videos"
     ],
     "slug": "docqee",
-    "status": "completed",
-    "visualClass": "visual-system",
-    "year": "2026"
-  },
-  {
-    "category": "portfolio",
-    "copy": {
-      "en": {
-        "accent": "Astro + Tailwind CSS",
-        "description": "Creation of a personal web portfolio to present professional profile, projects, certificates, interests, and contact information.",
-        "longDescription": "A project focused on building a personal digital presence with a modern visual experience, clear navigation, and editable content for future projects.",
-        "tag": "Personal portfolio",
-        "title": "Web Portfolio"
-      },
-      "es": {
-        "accent": "Astro + Tailwind CSS",
-        "description": "Creacion de un portafolio web personal para presentar perfil profesional, proyectos, certificados, intereses y contacto.",
-        "longDescription": "Proyecto enfocado en construir una presencia digital propia, con una experiencia visual moderna, navegacion clara y contenido editable para seguir incorporando nuevos proyectos.",
-        "tag": "Portafolio personal",
-        "title": "Portafolio Web"
-      }
-    },
-    "detail": {
-      "category": {
-        "en": "Portfolio",
-        "es": "Portafolio"
-      },
-      "collaborators": [],
-      "en": {
-        "challenge": "The main challenge was turning personal and technical information into an organized, visually attractive, and maintainable experience, avoiding a site that felt like a static page only.",
-        "deliverables": [
-          "Main portfolio page",
-          "Featured projects section",
-          "Project detail pages",
-          "JSON-based content system",
-          "Light and dark theme support",
-          "Spanish/English bilingual support",
-          "Certificates, blog, interests, and contact sections"
-        ],
-        "learnings": [
-          "Organizing content as data makes the portfolio easier to grow.",
-          "A good portfolio does not only show projects; it also explains decisions and process.",
-          "The mobile experience should be considered from the beginning to avoid late fixes.",
-          "Separating content, presentation, and scripts helps keep the project organized."
-        ],
-        "longDescription": "The portfolio was designed as a professional presentation tool and, at the same time, as a technical project of its own. The creation included experience design, content organization, responsive component implementation, light/dark theme handling, bilingual support, and a data structure prepared to grow with new projects.",
-        "overview": "This project consists of creating a personal web portfolio built with Astro, Tailwind CSS, and JavaScript. The goal was to build a clear and flexible digital presence capable of showcasing featured projects, professional information, certificates, articles, personal interests, and contact channels through a modern interface.\n\nThe site also includes an editable content system for projects, making it possible to keep adding new case studies with details, images, tech stack, modules, results, and links without restructuring the whole application.",
-        "process": [
-          "Defined the portfolio structure",
-          "Organized personal and professional information",
-          "Designed the main visual sections",
-          "Implemented the site with Astro, Tailwind CSS, and JavaScript",
-          "Created the project system from JSON files",
-          "Integrated certificates, blog, interests, and contact sections",
-          "Reviewed responsiveness and prepared the site for future content"
-        ],
-        "results": "The result is a functional, responsive, and extensible web portfolio that presents Jonathan Acevedo's professional profile in a more complete way. The solution makes it possible to show projects as case studies, highlight certificates, maintain bilingual content, and keep adding new pieces without changing the main structure of the site.",
-        "solution": "An Astro architecture was built with data separated by modules, Tailwind CSS styling, scripts to synchronize projects, and detail pages that turn each work into a navigable case study.",
-        "summary": "Personal web portfolio created to bring together professional profile, projects, certificates, blog, interests, and contact information in a modern responsive experience."
-      },
-      "es": {
-        "challenge": "El principal reto fue transformar informacion personal y tecnica en una experiencia ordenada, visualmente atractiva y facil de mantener, evitando que el sitio fuera solo una pagina estatica.",
-        "deliverables": [
-          "Pagina principal del portafolio",
-          "Seccion de proyectos destacados",
-          "Paginas de detalle para proyectos",
-          "Sistema de contenido basado en JSON",
-          "Soporte de tema claro y oscuro",
-          "Soporte bilingue espanol/ingles",
-          "Secciones de certificados, blog, intereses y contacto"
-        ],
-        "learnings": [
-          "Organizar contenido como datos facilita hacer crecer el portafolio.",
-          "Un buen portafolio no solo muestra proyectos, tambien explica decisiones y proceso.",
-          "La experiencia movil debe pensarse desde el inicio para evitar ajustes tardios.",
-          "Separar contenido, presentacion y scripts ayuda a mantener el proyecto ordenado."
-        ],
-        "longDescription": "El portafolio fue pensado como una herramienta de presentacion profesional y, al mismo tiempo, como un proyecto tecnico en si mismo. La creacion incluyo el diseno de la experiencia, la organizacion de la informacion, la implementacion de componentes responsivos, el manejo de tema claro/oscuro, soporte bilingue y una estructura de datos preparada para crecer con nuevos proyectos.",
-        "overview": "Este proyecto consiste en la creacion de un portafolio web personal desarrollado con Astro, Tailwind CSS y JavaScript. El objetivo fue construir una presencia digital clara y flexible, capaz de mostrar proyectos destacados, informacion profesional, certificados, articulos, intereses personales y canales de contacto desde una interfaz moderna.\n\nEl sitio tambien incorpora un sistema de contenido editable para proyectos, lo que permite seguir agregando nuevas fichas con detalle, imagenes, stack tecnologico, modulos, resultados y enlaces sin reestructurar toda la aplicacion.",
-        "process": [
-          "Definicion de la estructura del portafolio",
-          "Organizacion de informacion personal y profesional",
-          "Diseno visual de secciones principales",
-          "Implementacion con Astro, Tailwind CSS y JavaScript",
-          "Creacion del sistema de proyectos desde archivos JSON",
-          "Integracion de certificados, blog, intereses y contacto",
-          "Revision responsiva y preparacion para nuevos contenidos"
-        ],
-        "results": "El resultado es un portafolio web funcional, responsivo y ampliable que presenta el perfil profesional de Jonathan Acevedo de manera mas completa. La solucion permite mostrar proyectos como casos de estudio, destacar certificados, mantener contenido bilingue y seguir incorporando nuevas piezas sin cambiar la estructura principal del sitio.",
-        "solution": "Se construyo una arquitectura en Astro con datos separados por modulos, estilos en Tailwind CSS, scripts para sincronizar proyectos y paginas de detalle que convierten cada trabajo en un caso de estudio navegable.",
-        "summary": "Portafolio web personal creado para reunir perfil profesional, proyectos, certificados, blog, intereses y contacto en una experiencia moderna y responsiva."
-      },
-      "links": [
-        {
-          "href": "https://github.com/Jonathan1Estiben2Acevedo3Lopez/Portafolio",
-          "label": {
-            "en": "Repository",
-            "es": "Repositorio"
-          },
-          "type": "repo"
-        }
-      ],
-      "media": {
-        "images": [
-          {
-            "alt": {
-              "en": "Main view of the web portfolio",
-              "es": "Vista principal del portafolio web"
-            },
-            "caption": {
-              "en": "View of the personal portfolio built with Astro and Tailwind CSS.",
-              "es": "Vista del portafolio personal desarrollado con Astro y Tailwind CSS."
-            },
-            "src": "/portafolio-web.webp"
-          }
-        ],
-        "videos": []
-      },
-      "metrics": [
-        {
-          "label": {
-            "en": "Sections",
-            "es": "Secciones"
-          },
-          "value": "7"
-        },
-        {
-          "label": {
-            "en": "Languages",
-            "es": "Idiomas"
-          },
-          "value": "2"
-        },
-        {
-          "label": {
-            "en": "Responsive",
-            "es": "Responsivo"
-          },
-          "value": "100%"
-        }
-      ],
-      "modules": [
-        {
-          "description": {
-            "en": "The site communicates who Jonathan is, his professional focus, and his way of working through a direct and visual presentation.",
-            "es": "El sitio comunica quien es Jonathan, su enfoque profesional y su forma de trabajar mediante una presentacion directa y visual."
-          },
-          "title": {
-            "en": "Identity and profile",
-            "es": "Identidad y perfil"
-          }
-        },
-        {
-          "description": {
-            "en": "Each project has a detailed case study that can include summary, challenge, solution, process, results, stack, screenshots, videos, and links.",
-            "es": "Cada proyecto cuenta con una ficha detallada que puede incluir resumen, reto, solucion, proceso, resultados, stack, capturas, videos y enlaces."
-          },
-          "title": {
-            "en": "Project system",
-            "es": "Sistema de proyectos"
-          }
-        },
-        {
-          "description": {
-            "en": "The portfolio also integrates certificates, blog notes, personal interests, and contact information to offer a more complete view of the profile.",
-            "es": "El portafolio tambien integra certificados, notas de blog, intereses personales y datos de contacto para ofrecer una vision mas completa del perfil."
-          },
-          "title": {
-            "en": "Complementary content",
-            "es": "Contenido complementario"
-          }
-        },
-        {
-          "description": {
-            "en": "The interface is prepared for desktop and mobile, with light and dark themes, bilingual text, and components designed to stay clear across screen sizes.",
-            "es": "La interfaz esta preparada para escritorio y movil, con temas claro y oscuro, textos bilingues y componentes pensados para mantener claridad en distintos tamanos de pantalla."
-          },
-          "title": {
-            "en": "Adaptive experience",
-            "es": "Experiencia adaptable"
-          }
-        }
-      ],
-      "previewImage": "/portafolio-web.webp",
-      "sectionOrder": [
-        "modules",
-        "images",
-        "videos"
-      ],
-      "stack": [
-        "Astro",
-        "JavaScript",
-        "Tailwind CSS",
-        "HTML",
-        "CSS",
-        "Node.js",
-        "Git",
-        "GitHub"
-      ]
-    },
-    "featuredLevel": "featured",
-    "githubUrl": "https://github.com/Jonathan1Estiben2Acevedo3Lopez/Portafolio",
-    "href": "/proyectos/portafolio-web",
-    "media": {
-      "cover": "/portafolio-web.webp",
-      "gallery": [
-        {
-          "alt": {
-            "en": "Main view of the web portfolio",
-            "es": "Vista principal del portafolio web"
-          },
-          "caption": {
-            "en": "Home screen of the personal portfolio with projects, certificates, blog, interests, and contact sections.",
-            "es": "Pantalla inicial del portafolio personal con secciones de proyectos, certificados, blog, intereses y contacto."
-          },
-          "src": "/portafolio-web.webp"
-        }
-      ]
-    },
-    "modules": {
-      "content-system": {
-        "body": {
-          "en": "Projects are managed through JSON files and a synchronization script, making it possible to add new case studies with bilingual copy, stack, images, results, links, and custom modules.",
-          "es": "Los proyectos se gestionan mediante archivos JSON y un script de sincronizacion, permitiendo agregar nuevas fichas con informacion bilingue, stack, imagenes, resultados, enlaces y modulos personalizados."
-        },
-        "label": {
-          "en": "Content",
-          "es": "Contenido"
-        },
-        "title": {
-          "en": "Editable system for new projects",
-          "es": "Sistema editable para nuevos proyectos"
-        }
-      },
-      "experience": {
-        "body": {
-          "en": "Light and dark modes, language switching, section navigation, visual cards, project detail views, and components designed for desktop and mobile were implemented.",
-          "es": "Se implementaron modo claro y oscuro, cambio de idioma, navegacion por secciones, tarjetas visuales, vistas de detalle para proyectos y componentes pensados para funcionar bien en escritorio y movil."
-        },
-        "label": {
-          "en": "Experience",
-          "es": "Experiencia"
-        },
-        "title": {
-          "en": "Responsive and interactive interface",
-          "es": "Interfaz responsiva e interactiva"
-        }
-      },
-      "identity": {
-        "body": {
-          "en": "The portfolio was created to present Jonathan Acevedo's profile in a clear, professional, and approachable way, showing projects, education, interests, and contact channels in one web experience.",
-          "es": "El portafolio fue creado para presentar el perfil de Jonathan Acevedo de forma clara, profesional y cercana, mostrando proyectos, formacion, intereses y canales de contacto en una sola experiencia web."
-        },
-        "label": {
-          "en": "Identity",
-          "es": "Identidad"
-        },
-        "title": {
-          "en": "Personal presentation",
-          "es": "Presentacion personal"
-        }
-      },
-      "structure": {
-        "body": {
-          "en": "The structure separates home, about, projects, certificates, blog, interests, and contact so visitors can quickly find the most relevant information.",
-          "es": "La estructura separa inicio, sobre mi, proyectos, certificados, blog, intereses y contacto para que el visitante pueda encontrar rapidamente la informacion mas relevante."
-        },
-        "label": {
-          "en": "Architecture",
-          "es": "Arquitectura"
-        },
-        "title": {
-          "en": "Organized sections for exploration",
-          "es": "Secciones organizadas para explorar"
-        }
-      }
-    },
-    "modulesOrder": [
-      "identity",
-      "structure",
-      "experience",
-      "content-system"
-    ],
-    "order": 30,
-    "previewImage": "/portafolio-web.webp",
-    "slug": "portafolio-web",
-    "stack": [
-      "Astro",
-      "JavaScript",
-      "Tailwind CSS",
-      "HTML",
-      "CSS",
-      "Node.js",
-      "Git",
-      "GitHub"
-    ],
     "status": "completed",
     "visualClass": "visual-system",
     "year": "2026"
@@ -965,7 +669,7 @@
       "studio-module-3",
       "studio-module-4"
     ],
-    "order": 40,
+    "order": 20,
     "previewImage": "/project-assets/gluvi/chatgpt-image-27-may-2026-16-51-19.webp",
     "sectionOrder": [
       "images",
@@ -973,6 +677,302 @@
       "modules"
     ],
     "slug": "gluvi",
+    "status": "completed",
+    "visualClass": "visual-system",
+    "year": "2026"
+  },
+  {
+    "category": "portfolio",
+    "copy": {
+      "en": {
+        "accent": "Astro + Tailwind CSS",
+        "description": "Creation of a personal web portfolio to present professional profile, projects, certificates, interests, and contact information.",
+        "longDescription": "A project focused on building a personal digital presence with a modern visual experience, clear navigation, and editable content for future projects.",
+        "tag": "Personal portfolio",
+        "title": "Web Portfolio"
+      },
+      "es": {
+        "accent": "Astro + Tailwind CSS",
+        "description": "Creacion de un portafolio web personal para presentar perfil profesional, proyectos, certificados, intereses y contacto.",
+        "longDescription": "Proyecto enfocado en construir una presencia digital propia, con una experiencia visual moderna, navegacion clara y contenido editable para seguir incorporando nuevos proyectos.",
+        "tag": "Portafolio personal",
+        "title": "Portafolio Web"
+      }
+    },
+    "detail": {
+      "category": {
+        "en": "Portfolio",
+        "es": "Portafolio"
+      },
+      "collaborators": [],
+      "en": {
+        "challenge": "The main challenge was turning personal and technical information into an organized, visually attractive, and maintainable experience, avoiding a site that felt like a static page only.",
+        "deliverables": [
+          "Main portfolio page",
+          "Featured projects section",
+          "Project detail pages",
+          "JSON-based content system",
+          "Light and dark theme support",
+          "Spanish/English bilingual support",
+          "Certificates, blog, interests, and contact sections"
+        ],
+        "learnings": [
+          "Organizing content as data makes the portfolio easier to grow.",
+          "A good portfolio does not only show projects; it also explains decisions and process.",
+          "The mobile experience should be considered from the beginning to avoid late fixes.",
+          "Separating content, presentation, and scripts helps keep the project organized."
+        ],
+        "longDescription": "The portfolio was designed as a professional presentation tool and, at the same time, as a technical project of its own. The creation included experience design, content organization, responsive component implementation, light/dark theme handling, bilingual support, and a data structure prepared to grow with new projects.",
+        "overview": "This project consists of creating a personal web portfolio built with Astro, Tailwind CSS, and JavaScript. The goal was to build a clear and flexible digital presence capable of showcasing featured projects, professional information, certificates, articles, personal interests, and contact channels through a modern interface.\n\nThe site also includes an editable content system for projects, making it possible to keep adding new case studies with details, images, tech stack, modules, results, and links without restructuring the whole application.",
+        "process": [
+          "Defined the portfolio structure",
+          "Organized personal and professional information",
+          "Designed the main visual sections",
+          "Implemented the site with Astro, Tailwind CSS, and JavaScript",
+          "Created the project system from JSON files",
+          "Integrated certificates, blog, interests, and contact sections",
+          "Reviewed responsiveness and prepared the site for future content"
+        ],
+        "results": "The result is a functional, responsive, and extensible web portfolio that presents Jonathan Acevedo's professional profile in a more complete way. The solution makes it possible to show projects as case studies, highlight certificates, maintain bilingual content, and keep adding new pieces without changing the main structure of the site.",
+        "solution": "An Astro architecture was built with data separated by modules, Tailwind CSS styling, scripts to synchronize projects, and detail pages that turn each work into a navigable case study.",
+        "summary": "Personal web portfolio created to bring together professional profile, projects, certificates, blog, interests, and contact information in a modern responsive experience."
+      },
+      "es": {
+        "challenge": "El principal reto fue transformar informacion personal y tecnica en una experiencia ordenada, visualmente atractiva y facil de mantener, evitando que el sitio fuera solo una pagina estatica.",
+        "deliverables": [
+          "Pagina principal del portafolio",
+          "Seccion de proyectos destacados",
+          "Paginas de detalle para proyectos",
+          "Sistema de contenido basado en JSON",
+          "Soporte de tema claro y oscuro",
+          "Soporte bilingue espanol/ingles",
+          "Secciones de certificados, blog, intereses y contacto"
+        ],
+        "learnings": [
+          "Organizar contenido como datos facilita hacer crecer el portafolio.",
+          "Un buen portafolio no solo muestra proyectos, tambien explica decisiones y proceso.",
+          "La experiencia movil debe pensarse desde el inicio para evitar ajustes tardios.",
+          "Separar contenido, presentacion y scripts ayuda a mantener el proyecto ordenado."
+        ],
+        "longDescription": "El portafolio fue pensado como una herramienta de presentacion profesional y, al mismo tiempo, como un proyecto tecnico en si mismo. La creacion incluyo el diseno de la experiencia, la organizacion de la informacion, la implementacion de componentes responsivos, el manejo de tema claro/oscuro, soporte bilingue y una estructura de datos preparada para crecer con nuevos proyectos.",
+        "overview": "Este proyecto consiste en la creacion de un portafolio web personal desarrollado con Astro, Tailwind CSS y JavaScript. El objetivo fue construir una presencia digital clara y flexible, capaz de mostrar proyectos destacados, informacion profesional, certificados, articulos, intereses personales y canales de contacto desde una interfaz moderna.\n\nEl sitio tambien incorpora un sistema de contenido editable para proyectos, lo que permite seguir agregando nuevas fichas con detalle, imagenes, stack tecnologico, modulos, resultados y enlaces sin reestructurar toda la aplicacion.",
+        "process": [
+          "Definicion de la estructura del portafolio",
+          "Organizacion de informacion personal y profesional",
+          "Diseno visual de secciones principales",
+          "Implementacion con Astro, Tailwind CSS y JavaScript",
+          "Creacion del sistema de proyectos desde archivos JSON",
+          "Integracion de certificados, blog, intereses y contacto",
+          "Revision responsiva y preparacion para nuevos contenidos"
+        ],
+        "results": "El resultado es un portafolio web funcional, responsivo y ampliable que presenta el perfil profesional de Jonathan Acevedo de manera mas completa. La solucion permite mostrar proyectos como casos de estudio, destacar certificados, mantener contenido bilingue y seguir incorporando nuevas piezas sin cambiar la estructura principal del sitio.",
+        "solution": "Se construyo una arquitectura en Astro con datos separados por modulos, estilos en Tailwind CSS, scripts para sincronizar proyectos y paginas de detalle que convierten cada trabajo en un caso de estudio navegable.",
+        "summary": "Portafolio web personal creado para reunir perfil profesional, proyectos, certificados, blog, intereses y contacto en una experiencia moderna y responsiva."
+      },
+      "links": [
+        {
+          "href": "https://github.com/Jonathan1Estiben2Acevedo3Lopez/Portafolio",
+          "label": {
+            "en": "Repository",
+            "es": "Repositorio"
+          },
+          "type": "repo"
+        }
+      ],
+      "media": {
+        "images": [
+          {
+            "alt": {
+              "en": "Main view of the web portfolio",
+              "es": "Vista principal del portafolio web"
+            },
+            "caption": {
+              "en": "View of the personal portfolio built with Astro and Tailwind CSS.",
+              "es": "Vista del portafolio personal desarrollado con Astro y Tailwind CSS."
+            },
+            "src": "/portafolio-web.webp"
+          }
+        ],
+        "videos": []
+      },
+      "metrics": [
+        {
+          "label": {
+            "en": "Sections",
+            "es": "Secciones"
+          },
+          "value": "7"
+        },
+        {
+          "label": {
+            "en": "Languages",
+            "es": "Idiomas"
+          },
+          "value": "2"
+        },
+        {
+          "label": {
+            "en": "Responsive",
+            "es": "Responsivo"
+          },
+          "value": "100%"
+        }
+      ],
+      "modules": [
+        {
+          "description": {
+            "en": "The site communicates who Jonathan is, his professional focus, and his way of working through a direct and visual presentation.",
+            "es": "El sitio comunica quien es Jonathan, su enfoque profesional y su forma de trabajar mediante una presentacion directa y visual."
+          },
+          "title": {
+            "en": "Identity and profile",
+            "es": "Identidad y perfil"
+          }
+        },
+        {
+          "description": {
+            "en": "Each project has a detailed case study that can include summary, challenge, solution, process, results, stack, screenshots, videos, and links.",
+            "es": "Cada proyecto cuenta con una ficha detallada que puede incluir resumen, reto, solucion, proceso, resultados, stack, capturas, videos y enlaces."
+          },
+          "title": {
+            "en": "Project system",
+            "es": "Sistema de proyectos"
+          }
+        },
+        {
+          "description": {
+            "en": "The portfolio also integrates certificates, blog notes, personal interests, and contact information to offer a more complete view of the profile.",
+            "es": "El portafolio tambien integra certificados, notas de blog, intereses personales y datos de contacto para ofrecer una vision mas completa del perfil."
+          },
+          "title": {
+            "en": "Complementary content",
+            "es": "Contenido complementario"
+          }
+        },
+        {
+          "description": {
+            "en": "The interface is prepared for desktop and mobile, with light and dark themes, bilingual text, and components designed to stay clear across screen sizes.",
+            "es": "La interfaz esta preparada para escritorio y movil, con temas claro y oscuro, textos bilingues y componentes pensados para mantener claridad en distintos tamanos de pantalla."
+          },
+          "title": {
+            "en": "Adaptive experience",
+            "es": "Experiencia adaptable"
+          }
+        }
+      ],
+      "previewImage": "/portafolio-web.webp",
+      "sectionOrder": [
+        "modules",
+        "images",
+        "videos"
+      ],
+      "stack": [
+        "Astro",
+        "JavaScript",
+        "Tailwind CSS",
+        "HTML",
+        "CSS",
+        "Node.js",
+        "Git",
+        "GitHub"
+      ]
+    },
+    "featuredLevel": "featured",
+    "githubUrl": "https://github.com/Jonathan1Estiben2Acevedo3Lopez/Portafolio",
+    "href": "/proyectos/portafolio-web",
+    "media": {
+      "cover": "/portafolio-web.webp",
+      "gallery": [
+        {
+          "alt": {
+            "en": "Main view of the web portfolio",
+            "es": "Vista principal del portafolio web"
+          },
+          "caption": {
+            "en": "Home screen of the personal portfolio with projects, certificates, blog, interests, and contact sections.",
+            "es": "Pantalla inicial del portafolio personal con secciones de proyectos, certificados, blog, intereses y contacto."
+          },
+          "src": "/portafolio-web.webp"
+        }
+      ]
+    },
+    "modules": {
+      "content-system": {
+        "body": {
+          "en": "Projects are managed through JSON files and a synchronization script, making it possible to add new case studies with bilingual copy, stack, images, results, links, and custom modules.",
+          "es": "Los proyectos se gestionan mediante archivos JSON y un script de sincronizacion, permitiendo agregar nuevas fichas con informacion bilingue, stack, imagenes, resultados, enlaces y modulos personalizados."
+        },
+        "label": {
+          "en": "Content",
+          "es": "Contenido"
+        },
+        "title": {
+          "en": "Editable system for new projects",
+          "es": "Sistema editable para nuevos proyectos"
+        }
+      },
+      "experience": {
+        "body": {
+          "en": "Light and dark modes, language switching, section navigation, visual cards, project detail views, and components designed for desktop and mobile were implemented.",
+          "es": "Se implementaron modo claro y oscuro, cambio de idioma, navegacion por secciones, tarjetas visuales, vistas de detalle para proyectos y componentes pensados para funcionar bien en escritorio y movil."
+        },
+        "label": {
+          "en": "Experience",
+          "es": "Experiencia"
+        },
+        "title": {
+          "en": "Responsive and interactive interface",
+          "es": "Interfaz responsiva e interactiva"
+        }
+      },
+      "identity": {
+        "body": {
+          "en": "The portfolio was created to present Jonathan Acevedo's profile in a clear, professional, and approachable way, showing projects, education, interests, and contact channels in one web experience.",
+          "es": "El portafolio fue creado para presentar el perfil de Jonathan Acevedo de forma clara, profesional y cercana, mostrando proyectos, formacion, intereses y canales de contacto en una sola experiencia web."
+        },
+        "label": {
+          "en": "Identity",
+          "es": "Identidad"
+        },
+        "title": {
+          "en": "Personal presentation",
+          "es": "Presentacion personal"
+        }
+      },
+      "structure": {
+        "body": {
+          "en": "The structure separates home, about, projects, certificates, blog, interests, and contact so visitors can quickly find the most relevant information.",
+          "es": "La estructura separa inicio, sobre mi, proyectos, certificados, blog, intereses y contacto para que el visitante pueda encontrar rapidamente la informacion mas relevante."
+        },
+        "label": {
+          "en": "Architecture",
+          "es": "Arquitectura"
+        },
+        "title": {
+          "en": "Organized sections for exploration",
+          "es": "Secciones organizadas para explorar"
+        }
+      }
+    },
+    "modulesOrder": [
+      "identity",
+      "structure",
+      "experience",
+      "content-system"
+    ],
+    "order": 30,
+    "previewImage": "/portafolio-web.webp",
+    "slug": "portafolio-web",
+    "stack": [
+      "Astro",
+      "JavaScript",
+      "Tailwind CSS",
+      "HTML",
+      "CSS",
+      "Node.js",
+      "Git",
+      "GitHub"
+    ],
     "status": "completed",
     "visualClass": "visual-system",
     "year": "2026"
