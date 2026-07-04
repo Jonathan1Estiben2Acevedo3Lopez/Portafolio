@@ -2016,6 +2016,12 @@ html.light .about-work-card.about-profile-card,
   max-width: 100%;
 }
 
+.article-feature-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .article-list-card :is(h3, p),
 .article-feature-card :is(h3, p),
 .article-mobile-card :is(h3, p) {
@@ -2023,9 +2029,13 @@ html.light .about-work-card.about-profile-card,
   word-break: break-word;
 }
 
+.article-list-title,
+.article-feature-title {
+  width: 100%;
+}
+
 .article-list-excerpt,
-.article-mobile-excerpt,
-.article-feature-copy {
+.article-mobile-excerpt {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -2033,6 +2043,7 @@ html.light .about-work-card.about-profile-card,
 
 .article-list-excerpt {
   -webkit-line-clamp: 2;
+  text-align: justify;
 }
 
 .article-mobile-excerpt {
@@ -2040,7 +2051,22 @@ html.light .about-work-card.about-profile-card,
 }
 
 .article-feature-copy {
-  -webkit-line-clamp: 5;
+  min-height: 0;
+  overflow: visible;
+  hyphens: auto;
+  text-align: justify;
+}
+
+.article-feature-copy p {
+  margin: 0;
+}
+
+.article-feature-copy p + p {
+  margin-top: 0.48rem;
+}
+
+.article-feature-link {
+  align-self: flex-start;
 }
 
 .blog-article-page {
@@ -2115,8 +2141,9 @@ html.light .about-work-card.about-profile-card,
 .blog-article-prose {
   max-width: 44rem;
   color: rgb(var(--color-on-surface-variant));
-  font-size: clamp(0.96rem, 0.93rem + 0.14vw, 1.04rem);
-  line-height: 1.82;
+  font-size: clamp(0.88rem, 0.86rem + 0.12vw, 0.96rem);
+  font-weight: 430;
+  line-height: 1.76;
   text-align: justify;
 }
 
@@ -2125,21 +2152,103 @@ html.light .about-work-card.about-profile-card,
 }
 
 .blog-article-prose p + p {
-  margin-top: 1.35rem;
+  margin-top: 1rem;
+}
+
+.blog-article-text {
+  color: rgb(var(--color-on-surface-variant));
+  font-size: inherit;
+  font-weight: 430;
+  line-height: inherit;
+  text-align: justify;
 }
 
 .blog-article-main-point {
+  color: rgb(var(--color-on-surface-variant));
+  font-weight: 430;
+}
+
+.blog-article-short-body {
+  color: rgb(var(--color-on-surface-variant));
+  font-size: inherit;
+  font-weight: 430;
+  line-height: inherit;
+  text-align: justify;
+}
+
+.blog-article-short-body strong {
+  color: rgb(var(--color-on-surface));
+  font-weight: 850;
+}
+
+.blog-article-short-body + .blog-article-intro,
+.blog-article-short-body + .blog-article-section-title,
+.blog-article-short-body + .blog-article-main-point {
+  margin-top: 1.15rem;
+}
+
+.blog-article-section-title,
+.blog-article-block-title {
+  margin: 1.35rem 0 0.75rem;
+  color: rgb(var(--color-on-surface));
+  font-family: Space Grotesk, sans-serif;
+  font-size: clamp(1rem, 0.97rem + 0.16vw, 1.12rem);
+  font-weight: 850;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.blog-article-block-subtitle {
+  margin: 1.15rem 0 0.45rem;
+  color: rgb(var(--color-on-surface));
+  font-family: Space Grotesk, sans-serif;
+  font-size: clamp(0.94rem, 0.92rem + 0.12vw, 1.02rem);
+  font-weight: 820;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.blog-article-list {
+  margin: 1rem 0 0;
+  color: rgb(var(--color-on-surface-variant));
+  font-size: inherit;
+  font-weight: 430;
+  line-height: inherit;
+  text-align: justify;
+}
+
+.blog-article-list--unordered {
+  list-style: disc;
+  padding-left: 1.35rem;
+}
+
+.blog-article-list--ordered {
+  list-style: decimal;
+  padding-left: 1.45rem;
+}
+
+.blog-article-list li + li {
+  margin-top: 0.45rem;
+}
+
+.blog-article-list + .blog-article-text {
+  margin-top: 1.15rem;
+}
+
+.blog-article-list + .blog-article-list {
+  margin-top: 0.85rem;
+}
+
+.blog-article-list strong {
   color: rgb(var(--color-on-surface));
   font-weight: 850;
 }
 
 .blog-article-intro {
-  padding-bottom: 1.15rem;
-  border-bottom: 1px solid rgb(var(--color-outline-variant) / 0.16);
-  color: rgb(var(--color-on-surface));
-  font-size: clamp(1rem, 0.96rem + 0.18vw, 1.12rem);
-  font-weight: 620;
-  line-height: 1.78;
+  color: rgb(var(--color-on-surface-variant));
+  font-size: inherit;
+  font-weight: 430;
+  line-height: inherit;
   text-align: justify;
 }
 
@@ -2160,6 +2269,309 @@ html.light .about-work-card.about-profile-card,
     linear-gradient(180deg, rgb(var(--color-surface-container-highest) / 0.9), rgb(var(--color-surface-container-high) / 0.74));
   padding: 1rem;
   box-shadow: 0 14px 34px rgb(var(--color-background) / 0.12);
+}
+
+.blog-article-pixel-companion {
+  position: relative;
+  display: none;
+  min-height: 32rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.16);
+  border-radius: 1.05rem;
+  background:
+    linear-gradient(180deg, rgb(var(--color-surface-container-highest) / 0.82), rgb(var(--color-surface-container-low) / 0.54)),
+    repeating-linear-gradient(0deg, rgb(var(--color-outline-variant) / 0.07) 0 1px, transparent 1px 18px),
+    repeating-linear-gradient(90deg, rgb(var(--color-outline-variant) / 0.06) 0 1px, transparent 1px 18px);
+  box-shadow: 0 14px 34px rgb(var(--color-background) / 0.1);
+  isolation: isolate;
+}
+
+.blog-article-pixel-companion::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgb(var(--color-primary) / 0.1) 48% 54%, transparent 78%),
+    linear-gradient(180deg, rgb(var(--color-primary) / 0.08), transparent 36%, rgb(var(--color-secondary) / 0.1));
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.blog-pixel-tree,
+.blog-pixel-tree-layer,
+.blog-pixel-tree-ground,
+.blog-pixel-tree-glow {
+  image-rendering: pixelated;
+}
+
+.blog-pixel-tree {
+  position: absolute;
+  inset: 0.45rem 0.35rem 0.35rem;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.blog-pixel-tree::before {
+  content: "";
+  position: absolute;
+  inset: 0.3rem 0.25rem 0.4rem;
+  z-index: 0;
+  border: 1px solid rgb(var(--color-outline-variant) / 0.08);
+  background:
+    linear-gradient(180deg, rgb(var(--color-primary) / 0.08), transparent 34%, rgb(var(--color-secondary) / 0.08)),
+    repeating-linear-gradient(0deg, rgb(var(--color-outline-variant) / 0.05) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(90deg, rgb(var(--color-outline-variant) / 0.04) 0 1px, transparent 1px 16px);
+}
+
+.blog-pixel-tree::after {
+  content: "";
+  position: absolute;
+  inset: 0.5rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+html.dark .blog-pixel-tree::after {
+  inset: 0.55rem 0.45rem 2.35rem;
+  width: auto;
+  height: auto;
+  background:
+    linear-gradient(rgb(var(--color-secondary) / 0.82), rgb(var(--color-secondary) / 0.82)) 6% 5% / 0.28rem 0.28rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.66), rgb(var(--color-primary) / 0.66)) 28% 3% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.72), rgb(var(--color-secondary) / 0.72)) 52% 6% / 0.24rem 0.24rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.62), rgb(var(--color-primary) / 0.62)) 74% 4% / 0.22rem 0.22rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.76), rgb(var(--color-secondary) / 0.76)) 92% 8% / 0.28rem 0.28rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.58), rgb(var(--color-primary) / 0.58)) 16% 15% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.68), rgb(var(--color-secondary) / 0.68)) 41% 18% / 0.26rem 0.26rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.6), rgb(var(--color-secondary) / 0.6)) 64% 14% / 0.18rem 0.18rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.62), rgb(var(--color-primary) / 0.62)) 85% 20% / 0.22rem 0.22rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.78), rgb(var(--color-secondary) / 0.78)) 8% 28% / 0.26rem 0.26rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.5), rgb(var(--color-primary) / 0.5)) 31% 31% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.64), rgb(var(--color-secondary) / 0.64)) 56% 27% / 0.24rem 0.24rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.58), rgb(var(--color-primary) / 0.58)) 78% 34% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.7), rgb(var(--color-secondary) / 0.7)) 94% 30% / 0.28rem 0.28rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.58), rgb(var(--color-secondary) / 0.58)) 20% 43% / 0.22rem 0.22rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.54), rgb(var(--color-primary) / 0.54)) 46% 47% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.66), rgb(var(--color-secondary) / 0.66)) 68% 42% / 0.26rem 0.26rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.52), rgb(var(--color-secondary) / 0.52)) 88% 50% / 0.18rem 0.18rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.56), rgb(var(--color-primary) / 0.56)) 10% 58% / 0.22rem 0.22rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.68), rgb(var(--color-secondary) / 0.68)) 34% 62% / 0.26rem 0.26rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.5), rgb(var(--color-primary) / 0.5)) 59% 57% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.62), rgb(var(--color-secondary) / 0.62)) 81% 66% / 0.24rem 0.24rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.58), rgb(var(--color-secondary) / 0.58)) 5% 74% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.54), rgb(var(--color-primary) / 0.54)) 27% 80% / 0.22rem 0.22rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.7), rgb(var(--color-secondary) / 0.7)) 51% 76% / 0.28rem 0.28rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.52), rgb(var(--color-primary) / 0.52)) 72% 84% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.64), rgb(var(--color-secondary) / 0.64)) 95% 78% / 0.24rem 0.24rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.58), rgb(var(--color-primary) / 0.58)) 14% 91% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.72), rgb(var(--color-secondary) / 0.72)) 38% 94% / 0.26rem 0.26rem no-repeat,
+    linear-gradient(rgb(var(--color-primary) / 0.48), rgb(var(--color-primary) / 0.48)) 63% 90% / 0.2rem 0.2rem no-repeat,
+    linear-gradient(rgb(var(--color-secondary) / 0.62), rgb(var(--color-secondary) / 0.62)) 86% 96% / 0.24rem 0.24rem no-repeat;
+  box-shadow: none;
+  animation: blogPixelStars 3.6s steps(2, end) infinite;
+}
+
+html.light .blog-pixel-tree::after {
+  inset: 0.65rem 0.45rem 2.5rem;
+  width: auto;
+  height: auto;
+  background:
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.82), rgb(var(--color-surface-container-highest) / 0.82)) 4% 4% / 2.3rem 0.68rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.68), rgb(var(--color-surface-container-highest) / 0.68)) 9% 2.4% / 1.25rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.78), rgb(var(--color-surface-container-highest) / 0.78)) 17% 4.4% / 1.85rem 0.68rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.72), rgb(var(--color-surface-container-highest) / 0.72)) 62% 7% / 2.7rem 0.74rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.58), rgb(var(--color-surface-container-highest) / 0.58)) 67% 5.3% / 1.4rem 0.68rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.72), rgb(var(--color-surface-container-highest) / 0.72)) 78% 7.5% / 2rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.7), rgb(var(--color-surface-container-highest) / 0.7)) 25% 18% / 2.8rem 0.74rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.56), rgb(var(--color-surface-container-highest) / 0.56)) 31% 16.2% / 1.35rem 0.68rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.72), rgb(var(--color-surface-container-highest) / 0.72)) 43% 18.2% / 2rem 0.74rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.74), rgb(var(--color-surface-container-highest) / 0.74)) 80% 24% / 2.4rem 0.7rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.58), rgb(var(--color-surface-container-highest) / 0.58)) 85% 22.3% / 1.3rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.74), rgb(var(--color-surface-container-highest) / 0.74)) 93% 24.3% / 1.85rem 0.7rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.68), rgb(var(--color-surface-container-highest) / 0.68)) 7% 39% / 2.5rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.5), rgb(var(--color-surface-container-highest) / 0.5)) 13% 37.2% / 1.25rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.7), rgb(var(--color-surface-container-highest) / 0.7)) 22% 39.3% / 1.9rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.64), rgb(var(--color-surface-container-highest) / 0.64)) 58% 47% / 2.7rem 0.74rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.48), rgb(var(--color-surface-container-highest) / 0.48)) 64% 45.2% / 1.35rem 0.66rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.64), rgb(var(--color-surface-container-highest) / 0.64)) 75% 47.4% / 2rem 0.74rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.56), rgb(var(--color-surface-container-highest) / 0.56)) 18% 63% / 2.6rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.44), rgb(var(--color-surface-container-highest) / 0.44)) 24% 61.2% / 1.35rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.58), rgb(var(--color-surface-container-highest) / 0.58)) 34% 63.3% / 1.9rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.54), rgb(var(--color-surface-container-highest) / 0.54)) 76% 70% / 2.45rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.42), rgb(var(--color-surface-container-highest) / 0.42)) 82% 68.2% / 1.25rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.54), rgb(var(--color-surface-container-highest) / 0.54)) 91% 70.3% / 1.8rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.48), rgb(var(--color-surface-container-highest) / 0.48)) 5% 86% / 2.7rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.38), rgb(var(--color-surface-container-highest) / 0.38)) 11% 84.2% / 1.35rem 0.64rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.5), rgb(var(--color-surface-container-highest) / 0.5)) 23% 86.3% / 2rem 0.72rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.46), rgb(var(--color-surface-container-highest) / 0.46)) 56% 92% / 2.4rem 0.7rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.36), rgb(var(--color-surface-container-highest) / 0.36)) 62% 90.4% / 1.2rem 0.62rem no-repeat,
+    linear-gradient(rgb(var(--color-surface-container-highest) / 0.48), rgb(var(--color-surface-container-highest) / 0.48)) 72% 92.2% / 1.8rem 0.7rem no-repeat;
+  box-shadow: none;
+  opacity: 0.86;
+  animation: blogPixelClouds 12s linear infinite;
+}
+
+.blog-pixel-tree-layer {
+  position: absolute;
+  left: 50%;
+  display: block;
+  width: clamp(10.5rem, 86%, 13.5rem);
+  transform: translateX(-50%);
+  background-position: center;
+  background-size: 100% auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.blog-pixel-tree-layer--middle {
+  top: 12rem;
+  bottom: 9.8rem;
+  z-index: 2;
+  background-image: var(--blog-tree-middle);
+  background-repeat: repeat-y;
+}
+
+.blog-pixel-tree-layer--top {
+  top: 0;
+  z-index: 4;
+  aspect-ratio: 160 / 220;
+  background-image: var(--blog-tree-top);
+  background-repeat: no-repeat;
+  animation: blogPixelTreeTopSway 7s steps(3, end) infinite;
+}
+
+.blog-pixel-tree-layer--bottom {
+  bottom: 0.45rem;
+  z-index: 5;
+  aspect-ratio: 160 / 190;
+  background-image: var(--blog-tree-bottom);
+  background-repeat: no-repeat;
+}
+
+.blog-pixel-tree-ground {
+  position: absolute;
+  left: -0.35rem;
+  right: -0.35rem;
+  bottom: -0.45rem;
+  z-index: 4;
+  display: block;
+  height: 5.45rem;
+  background-image: var(--blog-tree-ground);
+  background-position: center bottom;
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.blog-pixel-tree-glow {
+  position: absolute;
+  z-index: 7;
+  display: block;
+  width: 0.46rem;
+  height: 0.46rem;
+  background: rgb(var(--color-secondary));
+  box-shadow:
+    0 0 0 1px rgb(var(--color-background) / 0.46),
+    0 0 18px rgb(var(--color-secondary) / 0.35);
+  animation: blogPixelTreeGlow 3.2s steps(3, end) infinite;
+}
+
+html.light .blog-pixel-tree-glow {
+  display: none;
+}
+
+.blog-pixel-tree-glow--top {
+  top: 3.15rem;
+  right: 2.35rem;
+}
+
+.blog-pixel-tree-glow--middle {
+  top: 48%;
+  left: 2.15rem;
+  animation-delay: 0.8s;
+}
+
+.blog-pixel-tree-glow--bottom {
+  right: 2.4rem;
+  bottom: 3.35rem;
+  background: rgb(var(--color-primary));
+  animation-delay: 1.6s;
+}
+
+@keyframes blogPixelTreeTopSway {
+  0%,
+  100% {
+    transform: translate3d(-50%, 0, 0);
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translate3d(-50%, -0.18rem, 0);
+    filter: brightness(1.06);
+  }
+}
+
+@keyframes blogPixelTreeGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes blogPixelStars {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate3d(0, -0.08rem, 0);
+  }
+}
+
+@keyframes blogPixelClouds {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0.72rem, 0, 0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .blog-article-shell {
+    align-items: stretch;
+  }
+
+  .blog-article-sidebar {
+    align-self: stretch;
+    grid-template-rows: auto auto minmax(32rem, 1fr);
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .blog-article-pixel-companion {
+    display: block;
+    height: 100%;
+    min-height: 32rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-pixel-tree-layer--top,
+  .blog-pixel-tree::after,
+  .blog-pixel-tree-glow {
+    animation: none;
+  }
 }
 
 .blog-article-author {

@@ -8,5 +8,10 @@
 
 [[redirects]]
   from = "/blog/:slug/"
-  to = "/blog/:slug"
-  status = 301
+  to = "/blog/:slug.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog/:slug"
+  to = "/blog/:slug.html"
+  status = 200

@@ -1,0 +1,6 @@
+Reading tree pixel assets
+
+These pixel assets were created specifically for this portfolio.
+No third-party sprite, image, or downloaded asset is included.
+
+The project owner may use, modify, publish, and distribute these files freely.

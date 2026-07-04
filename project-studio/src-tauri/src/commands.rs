@@ -1835,11 +1835,12 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
     let excerpt = clean_required(&input.excerpt, "El extracto de la nota es obligatorio.")?;
     let body = clean_required(&input.body, "El cuerpo corto de la nota es obligatorio.")?;
     let category = fallback(&input.category, "Contenido");
+    let filter = fallback(&input.filter, &category);
     let date = fallback(&input.date, "2026");
     let read_time = fallback(&input.read_time, "4 min de lectura");
-    let introduction = fallback(&input.introduction, &body);
-    let paragraphs = paragraphs_from_text(&input.paragraphs);
-    let highlights = paragraphs_from_text(&input.highlights);
+    let introduction = clean_optional(Some(input.introduction.as_str())).unwrap_or_default();
+    let paragraphs = blog_blocks_from_text(&input.paragraphs);
+    let highlights = lines_from_text(&input.highlights);
     let title_en = optional_or(&input.title_en, &title);
     let phrase_en = optional_or(&input.phrase_en, &phrase);
     let excerpt_en = optional_or(&input.excerpt_en, &excerpt);
@@ -1847,11 +1848,11 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
     let category_en = optional_or(&input.category_en, &category);
     let date_en = optional_or(&input.date_en, &date);
     let read_time_en = optional_or(&input.read_time_en, &read_time);
-    let introduction_en = optional_or(&input.introduction_en, &introduction);
+    let introduction_en = clean_optional(input.introduction_en.as_deref()).unwrap_or_else(|| introduction.clone());
     let image_credit = clean_optional(input.image_credit.as_deref());
     let image_credit_en = clean_optional(input.image_credit_en.as_deref()).or_else(|| image_credit.clone());
     let paragraphs_en = {
-        let parsed = paragraphs_from_text(input.paragraphs_en.as_deref().unwrap_or(""));
+        let parsed = blog_blocks_from_text(input.paragraphs_en.as_deref().unwrap_or(""));
         if parsed.is_empty() {
             paragraphs.clone()
         } else {
@@ -1859,7 +1860,7 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
         }
     };
     let highlights_en = {
-        let parsed = paragraphs_from_text(input.highlights_en.as_deref().unwrap_or(""));
+        let parsed = lines_from_text(input.highlights_en.as_deref().unwrap_or(""));
         if parsed.is_empty() {
             highlights.clone()
         } else {
@@ -1869,7 +1870,7 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
 
     let mut post = json!({
      "slug": slug,
-     "filter": fallback(&input.filter, "content"),
+     "filter": filter,
      "visualClass": fallback(&input.visual_class, "visual-notes"),
      "copy": {
       "es": {
@@ -1973,7 +1974,45 @@ fn build_interest_value(input: &InterestInput, title: &str) -> Result<Value, Str
     }))
 }
 
-fn paragraphs_from_text(value: &str) -> Vec<String> {
+fn blog_blocks_from_text(value: &str) -> Vec<String> {
+    const BLOG_BLOCKS_PREFIX: &str = "<!-- blog-blocks -->\n";
+    const BLOG_BLOCK_SEPARATOR: &str = "\n<!-- blog-block -->\n";
+    let normalized = value.replace("\r\n", "\n");
+
+    if let Some(serialized_blocks) = normalized.strip_prefix(BLOG_BLOCKS_PREFIX) {
+        return serialized_blocks
+            .split(BLOG_BLOCK_SEPARATOR)
+            .map(|block| block.trim_matches('\n'))
+            .filter(|block| !block.trim().is_empty())
+            .map(ToString::to_string)
+            .collect();
+    }
+
+    let mut paragraphs = Vec::new();
+    let mut current = Vec::new();
+
+    for line in normalized.lines() {
+        let line = line.trim();
+
+        if line.is_empty() {
+            if !current.is_empty() {
+                paragraphs.push(current.join("\n"));
+                current.clear();
+            }
+            continue;
+        }
+
+        current.push(line.to_string());
+    }
+
+    if !current.is_empty() {
+        paragraphs.push(current.join("\n"));
+    }
+
+    paragraphs
+}
+
+fn lines_from_text(value: &str) -> Vec<String> {
     value
         .lines()
         .map(str::trim)

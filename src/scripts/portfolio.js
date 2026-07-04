@@ -27,6 +27,11 @@ function withBase(path) {
   return `${basePath}${normalizedPath}`;
 }
 
+function getBlogHref(slug) {
+  const safeSlug = String(slug || "").replace(/^\/+|\/+$/g, "");
+  return withBase(`/blog/${safeSlug}.html`);
+}
+
 const getLocalizedItems = (items, language) =>
   items.map(({ copy, ...item }) => ({
     ...item,
@@ -975,6 +980,17 @@ function escapeAttribute(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => replacements[character]);
 }
 
+function escapeHtml(value) {
+  return escapeAttribute(value);
+}
+
+function formatInlineRichText(value) {
+  return escapeHtml(value)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br />");
+}
+
 function isPdfCertificate(item) {
   const fileName = item.fileName || "";
 
@@ -1470,6 +1486,33 @@ function renderArticleVisual(item, classNames) {
   return `<div class="${classNames} ${item.visualClass}"></div>`;
 }
 
+function renderArticleFeatureCopy(copy) {
+  const text = String(copy || "").trim();
+
+  if (!text) {
+    return "";
+  }
+
+  const paragraphs = text
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  return `
+    <div class="article-feature-copy mt-2.5 text-[0.78rem] leading-[1.55] text-on-surface-variant lg:text-[0.8rem] lg:leading-[1.56]">
+      ${paragraphs.map((paragraph) => `<p>${formatInlineRichText(paragraph)}</p>`).join("")}
+    </div>
+  `;
+}
+
+function getArticleCardCopy(article) {
+  return article.excerpt || "";
+}
+
+function getArticleFeaturedCopy(article) {
+  return article.excerpt || article.body || "";
+}
+
 function getProjectFeaturedRank(project) {
   if (project.featuredLevel === "main") {
     return 0;
@@ -1683,7 +1726,8 @@ function renderArticles(preserveScroll = false) {
   if (mobileLayout) {
     elements.articlesList.innerHTML = articles
       .map((article) => {
-        const detailHref = withBase(`/blog/${article.slug}`);
+        const detailHref = getBlogHref(article.slug);
+        const cardCopy = getArticleCardCopy(article);
 
         return `
           <a
@@ -1699,7 +1743,7 @@ function renderArticles(preserveScroll = false) {
                 </div>
                 ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
               </div>
-              <p class="article-mobile-excerpt mt-2 flex-1 text-[0.82rem] leading-5 text-on-surface-variant">${article.excerpt}</p>
+              <p class="article-mobile-excerpt mt-2 flex-1 text-[0.82rem] leading-5 text-on-surface-variant">${cardCopy}</p>
               <div class="mt-3 flex items-center gap-3 text-[0.62rem] font-black uppercase tracking-[0.17em] text-on-surface-variant">
                 <span>${article.date}</span>
               </div>
@@ -1724,6 +1768,7 @@ function renderArticles(preserveScroll = false) {
   elements.articlesList.innerHTML = articles
     .map((article) => {
       const activeClass = article.index === state.activeArticle ? "is-active" : "";
+      const cardCopy = getArticleCardCopy(article);
 
       return `
         <button
@@ -1732,14 +1777,14 @@ function renderArticles(preserveScroll = false) {
           data-article-index="${article.index}"
           aria-pressed="${article.index === state.activeArticle}"
         >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <p class="text-[0.58rem] font-black uppercase tracking-[0.18em] text-secondary">${article.category}</p>
-              <h3 class="mt-2 font-headline text-[0.92rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.98rem]">${article.title}</h3>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3">
+              <p class="min-w-0 text-[0.56rem] font-black uppercase tracking-[0.17em] text-secondary">${article.category}</p>
+              <span class="shrink-0 text-[0.56rem] font-black uppercase tracking-[0.15em] text-on-surface-variant">${article.date}</span>
             </div>
-            <span class="shrink-0 text-[0.58rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">${article.date}</span>
+            <h3 class="article-list-title mt-2 w-full font-headline text-[0.88rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.92rem]">${article.title}</h3>
           </div>
-          <p class="article-list-excerpt mt-2 text-[0.82rem] leading-5 text-on-surface-variant">${article.excerpt}</p>
+          <p class="article-list-excerpt mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${cardCopy}</p>
           <div class="mt-3 inline-flex items-center gap-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
             <span>${article.index === state.activeArticle ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
@@ -1753,26 +1798,26 @@ function renderArticles(preserveScroll = false) {
     elements.articlesList.scrollTop = listScrollOffset;
   }
 
-  const detailHref = withBase(`/blog/${active.slug}`);
-  const featureCopy = active.excerpt || active.body || "";
+  const detailHref = getBlogHref(active.slug);
+  const featureCopy = getArticleFeaturedCopy(active);
 
   elements.articleFeature.innerHTML = `
     <a
       href="${detailHref}"
-      class="article-feature-card group block min-w-0 overflow-hidden rounded-[1.4rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[19rem] lg:grid-cols-[minmax(9.5rem,0.6fr)_minmax(0,1.18fr)]"
+      class="article-feature-card group block min-w-0 overflow-hidden rounded-[1.4rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[21rem] lg:grid-cols-[minmax(9.5rem,0.6fr)_minmax(0,1.18fr)]"
     >
       ${renderArticleVisual(active, "article-visual min-h-[115px] lg:min-h-full")}
-      <div class="glass-panel min-w-0 border-t border-outline-variant/15 p-3.5 lg:border-l lg:border-t-0 lg:px-4 lg:py-3.5">
+      <div class="article-feature-content glass-panel min-w-0 border-t border-outline-variant/15 p-3.5 lg:border-l lg:border-t-0 lg:px-4 lg:py-3.5">
         <div class="flex flex-wrap items-center gap-3 text-[0.6rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
           <span class="text-primary">${getCopy("insights.cardLabel")}</span>
           <span>${active.category}</span>
           <span>${active.date}</span>
         </div>
-        <h3 class="mt-3 max-w-3xl font-headline text-[1.28rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[1.76rem]">
+        <h3 class="article-feature-title mt-2.5 max-w-3xl font-headline text-[1.08rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[1.34rem]">
           ${active.title}
         </h3>
-        <p class="article-feature-copy mt-3 max-w-3xl text-[0.86rem] leading-6 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${featureCopy}</p>
-        <div class="mt-4 inline-flex items-center gap-2 text-[0.8rem] font-bold tracking-tight text-primary transition group-hover:gap-3">
+        ${renderArticleFeatureCopy(featureCopy)}
+        <div class="article-feature-link mt-3 inline-flex items-center gap-2 text-[0.78rem] font-bold tracking-tight text-primary transition group-hover:gap-3">
           <span>${getCopy("insights.cta")}</span>
           ${renderIcon("arrow_forward", "text-base")}
         </div>

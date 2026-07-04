@@ -131,7 +131,7 @@ const defaultDevelopmentForm = (): DevelopmentFormState => ({
 
 const defaultBlogForm = (): BlogFormState => ({
   slug: "",
-  filter: "content",
+  filter: "Contenido",
   visualClass: "visual-notes",
   cover: "",
   articleImage: "",
@@ -282,17 +282,16 @@ const fieldHints = {
   blogTitle: "Titulo publico de la nota. Aparece en la lista, en el destacado y en la pagina del blog.",
   blogSlug: "Identificador de la URL. Usa minusculas, numeros y guiones. Ejemplo: automatizaciones-qa.",
   blogCategory: "Categoria visible y filtro publico de la nota. Ejemplo: Automatizaciones, QA, Diseno.",
-  blogFilter: "Campo legado opcional. El portafolio ahora filtra por Categoria, pero se conserva por compatibilidad.",
   blogDate: "Fecha visible de publicacion. Ejemplo: Mayo 2026.",
   blogReadTime: "Tiempo estimado de lectura. Ejemplo: 6 min de lectura.",
   blogVisualClass: "Estilo visual de respaldo si no agregas portada. Ejemplo: visual-notes.",
   blogCover: "Imagen de portada para el destacado y la tarjeta del blog. Usa una ruta de public o importa una imagen.",
   blogArticleImage: "Imagen horizontal para la pagina del articulo. Recomendado: formato 16:9 o panoramico.",
   blogPhrase: "Frase editorial que aparece bajo el titulo en el articulo completo. Es obligatoria y debe ser breve.",
-  blogExcerpt: "Resumen breve para la tarjeta del listado. Debe explicar de que trata la nota en pocas lineas.",
-  blogBody: "Texto corto que aparece en el destacado de la seccion Blog.",
-  blogIntroduction: "Primer parrafo de la pagina individual del blog. Presenta contexto y objetivo.",
-  blogParagraphs: "Contenido principal del articulo. Agrega cada parrafo como un bloque separado en espanol e ingles.",
+  blogExcerpt: "Texto para las cards iniciales/listado del blog en el portafolio.",
+  blogBody: "Texto inicial de la pagina completa del blog. Va sin titulo y aparece antes de la introduccion.",
+  blogIntroduction: "Introduccion de la pagina completa del blog. No se usa en las cards.",
+  blogParagraphs: "Bloques principales del blog completo. Usa # Titulo, ## Subtitulo, - item para listas con vineta y 1. item para listas numeradas.",
   blogHighlights: "Ideas clave mostradas en la pagina individual. Escribe un punto por linea.",
   blogImageCredit: "Nombre, herramienta o fuente que creo la imagen del articulo. Aparece debajo de la imagen.",
   contentHidden: "Oculta este contenido del portafolio publico sin eliminarlo del archivo. Puedes volver a mostrarlo cuando quieras.",
@@ -558,11 +557,29 @@ const normalizeProjectToForm = (project: Record<string, any>): ProjectFormState 
   };
 };
 
+const blogBlocksPrefix = "<!-- blog-blocks -->\n";
+const blogBlockSeparator = "\n<!-- blog-block -->\n";
+
+const serializeTextBlocks = (blocks: string[]) => `${blogBlocksPrefix}${blocks.join(blogBlockSeparator)}`;
+
 const joinTextLines = (value: unknown) =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").join("\n") : "";
 
+const joinTextBlocks = (value: unknown) =>
+  Array.isArray(value) ? serializeTextBlocks(value.filter((item): item is string => typeof item === "string")) : "";
+
 const joinCommaList = (value: unknown) =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === "string").join(", ") : "";
+
+const splitTextBlocks = (value: string) =>
+  value
+    ? value.startsWith(blogBlocksPrefix)
+      ? value.slice(blogBlocksPrefix.length).split(blogBlockSeparator)
+      : value
+          .split(/\r?\n\s*\r?\n/)
+          .map((block) => block.trim())
+          .filter(Boolean)
+    : [];
 
 const normalizeCertificateToForm = (certificate: Record<string, any>): CertificateFormState => {
   const form = defaultCertificateForm();
@@ -611,15 +628,16 @@ const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
   const form = defaultBlogForm();
   const copyEs = post.copy?.es ?? {};
   const copyEn = post.copy?.en ?? {};
+  const categoryEs = copyEs.category ?? form.category;
 
   return {
     ...form,
     slug: post.slug ?? "",
-    filter: post.filter ?? form.filter,
+    filter: categoryEs || post.filter || form.filter,
     visualClass: post.visualClass ?? form.visualClass,
     cover: post.cover ?? "",
     articleImage: post.articleImage ?? "",
-    category: copyEs.category ?? form.category,
+    category: categoryEs,
     date: copyEs.date ?? form.date,
     readTime: copyEs.readTime ?? form.readTime,
     title: copyEs.title ?? "",
@@ -627,7 +645,7 @@ const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
     excerpt: copyEs.excerpt ?? "",
     body: copyEs.body ?? "",
     introduction: copyEs.introduction ?? "",
-    paragraphs: joinTextLines(copyEs.paragraphs),
+    paragraphs: joinTextBlocks(copyEs.paragraphs),
     highlights: joinTextLines(copyEs.highlights),
     categoryEn: copyEn.category ?? "",
     dateEn: copyEn.date ?? "",
@@ -637,7 +655,7 @@ const normalizeBlogToForm = (post: Record<string, any>): BlogFormState => {
     excerptEn: copyEn.excerpt ?? "",
     bodyEn: copyEn.body ?? "",
     introductionEn: copyEn.introduction ?? "",
-    paragraphsEn: joinTextLines(copyEn.paragraphs),
+    paragraphsEn: joinTextBlocks(copyEn.paragraphs),
     highlightsEn: joinTextLines(copyEn.highlights),
     imageCredit: copyEs.imageCredit ?? "",
     imageCreditEn: copyEn.imageCredit ?? "",
@@ -1048,14 +1066,14 @@ function BlogParagraphEditor({
   valueEn: string;
   valueEs: string;
 }) {
-  const rawEs = valueEs ? valueEs.split(/\r?\n/) : [];
-  const rawEn = valueEn ? valueEn.split(/\r?\n/) : [];
+  const rawEs = splitTextBlocks(valueEs);
+  const rawEn = splitTextBlocks(valueEn);
   const rowCount = Math.max(rawEs.length, rawEn.length, 1);
   const linesEs = Array.from({ length: rowCount }, (_, index) => rawEs[index] ?? "");
   const linesEn = Array.from({ length: rowCount }, (_, index) => rawEn[index] ?? "");
 
   const commit = (nextEs: string[], nextEn: string[]) => {
-    onChange(nextEs.join("\n"), nextEn.join("\n"));
+    onChange(serializeTextBlocks(nextEs), serializeTextBlocks(nextEn));
   };
 
   const updateLine = (index: number, lang: "es" | "en", nextValue: string) => {
@@ -1104,8 +1122,8 @@ function BlogParagraphEditor({
     <div className="optional-group field-wide blog-paragraph-editor">
       <div className="optional-group-head">
         <div>
-          <FieldLabel hint={hint}>Parrafos del articulo</FieldLabel>
-          <p>Agrega cada parrafo por separado y conserva el mismo orden para espanol e ingles.</p>
+          <FieldLabel hint={hint}>Bloques del articulo</FieldLabel>
+          <p>Usa # para titulo, ## para subtitulo, - para vineta y 1. para lista numerada.</p>
         </div>
         <button type="button" className="add-row-button" onClick={addParagraph}>
           <Plus size={16} strokeWidth={2.2} />
@@ -1117,33 +1135,33 @@ function BlogParagraphEditor({
         {linesEs.map((lineEs, index) => (
           <div className="optional-item" key={`blog-paragraph-${index}`}>
             <div className="optional-item-head">
-              <strong>Parrafo {index + 1}</strong>
+              <strong>Bloque {index + 1}</strong>
               <OptionalItemActions
                 canMoveUp={index > 0}
                 canMoveDown={index < rowCount - 1}
                 onMoveUp={() => moveParagraph(index, -1)}
                 onMoveDown={() => moveParagraph(index, 1)}
                 onRemove={() => removeParagraph(index)}
-                removeLabel={`Quitar parrafo ${index + 1}`}
+                removeLabel={`Quitar bloque ${index + 1}`}
               />
             </div>
             <div className="optional-item-grid">
               <label className="field">
-                <span className="compact-label">Parrafo ES</span>
+                <span className="compact-label">Bloque ES</span>
                 <textarea
                   value={lineEs}
                   onChange={(event) => updateLine(index, "es", event.target.value)}
-                  rows={4}
-                  placeholder="Escribe el parrafo en espanol"
+                  rows={6}
+                  placeholder={"Texto del parrafo\n\n# Titulo centrado\n\n## Subtitulo a la izquierda\n\n- Elemento de lista\n- Otro elemento\n\n1. Primer paso\n2. Segundo paso"}
                 />
               </label>
               <label className="field">
-                <span className="compact-label">Paragraph EN</span>
+                <span className="compact-label">Block EN</span>
                 <textarea
                   value={linesEn[index]}
                   onChange={(event) => updateLine(index, "en", event.target.value)}
-                  rows={4}
-                  placeholder="Write the paragraph in English"
+                  rows={6}
+                  placeholder={"Paragraph text\n\n# Centered title\n\n## Left subtitle\n\n- List item\n- Another item\n\n1. First step\n2. Second step"}
                 />
               </label>
             </div>
@@ -1280,10 +1298,6 @@ function App() {
   const blogCategoryEnOptions = useMemo(
     () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.categoryEn), blogForm.categoryEn]),
     [blogForm.categoryEn, contentItems.blog],
-  );
-  const blogFilterOptions = useMemo(
-    () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.filter), blogForm.filter]),
-    [blogForm.filter, contentItems.blog],
   );
   const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
   const aboutWorkItems = contentItems.about.filter((item) => item.key.startsWith("work:"));
@@ -1471,6 +1485,10 @@ function App() {
 
       if (field === "slug" && typeof value === "string") {
         next.slug = slugify(value);
+      }
+
+      if (field === "category" && typeof value === "string") {
+        next.filter = value;
       }
 
       return next;
@@ -2135,9 +2153,13 @@ function App() {
     setIsSavingContent(true);
 
     try {
+      const blogInput = {
+        ...blogForm,
+        filter: blogForm.category || blogForm.filter,
+      };
       const result = await invoke<SavedContent>("save_blog_post", {
         existingSlug: editingBlogSlug,
-        input: blogForm,
+        input: blogInput,
       });
       setContentResult(result);
       await loadContent("blog");
@@ -4315,11 +4337,6 @@ function App() {
                       <option key={option} value={option} />
                     ))}
                   </datalist>
-                  <datalist id="blog-filter-options">
-                    {blogFilterOptions.map((option) => (
-                      <option key={option} value={option} />
-                    ))}
-                  </datalist>
                   <datalist id="blog-category-en-options">
                     {blogCategoryEnOptions.map((option) => (
                       <option key={option} value={option} />
@@ -4350,15 +4367,6 @@ function App() {
                         value={blogForm.category}
                         onChange={(event) => updateBlogField("category", event.target.value)}
                         placeholder="Elige una existente o escribe una nueva"
-                      />
-                    </label>
-                    <label className="field">
-                      <FieldLabel hint={fieldHints.blogFilter}>Filtro</FieldLabel>
-                      <input
-                        list="blog-filter-options"
-                        value={blogForm.filter}
-                        onChange={(event) => updateBlogField("filter", event.target.value)}
-                        placeholder="Elige uno existente o escribe uno nuevo"
                       />
                     </label>
                     <label className="field">
@@ -4404,15 +4412,15 @@ function App() {
                       />
                     </label>
                     <label className="field field-wide">
-                      <FieldLabel hint={fieldHints.blogExcerpt}>Extracto ES</FieldLabel>
+                      <FieldLabel hint={fieldHints.blogExcerpt}>Extracto ES (cards iniciales)</FieldLabel>
                       <textarea value={blogForm.excerpt} onChange={(event) => updateBlogField("excerpt", event.target.value)} rows={3} required />
                     </label>
                     <label className="field field-wide">
-                      <FieldLabel hint={fieldHints.blogBody}>Cuerpo corto ES</FieldLabel>
+                      <FieldLabel hint={fieldHints.blogBody}>Cuerpo corto ES (blog completo)</FieldLabel>
                       <textarea value={blogForm.body} onChange={(event) => updateBlogField("body", event.target.value)} rows={4} required />
                     </label>
                     <label className="field field-wide">
-                      <FieldLabel hint={fieldHints.blogIntroduction}>Introduccion ES</FieldLabel>
+                      <FieldLabel hint={fieldHints.blogIntroduction}>Introduccion ES (blog completo)</FieldLabel>
                       <textarea value={blogForm.introduction} onChange={(event) => updateBlogField("introduction", event.target.value)} rows={4} />
                     </label>
                     <BlogParagraphEditor

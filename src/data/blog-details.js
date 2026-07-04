@@ -1,14 +1,7 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-
-const blogDataPath = path.join(process.cwd(), "src", "data", "blog.json");
-
-function readBlogPosts() {
-  return JSON.parse(readFileSync(blogDataPath, "utf8"));
-}
+import blogPosts from "./blog.json";
 
 export function getBlogDetails() {
-  return readBlogPosts().map(({ copy, ...post }) => ({
+  return blogPosts.map(({ copy, ...post }) => ({
     ...post,
     ...copy.es,
   }));

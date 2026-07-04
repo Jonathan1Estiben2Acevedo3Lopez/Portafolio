@@ -12,13 +12,120 @@ export function getStaticPaths() {
 
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
+const getBlogHref = (slug) => withBase(`/blog/${String(slug || "").replace(/^\/+|\/+$/g, "")}.html`);
 const post = getBlogDetailBySlug(Astro.params.slug);
 const relatedPosts = getBlogDetails().filter((item) => item.slug !== post.slug).slice(0, 3);
 const articleImage = post.articleImage || post.cover || "";
 const articlePhrase = post.phrase || "";
 const articleImageCredit = post.imageCredit || "";
+const articleBodyParagraphs = String(post.body || "")
+  .trim()
+  .split(/\r?\n\s*\r?\n/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
 const articleParagraphs = Array.isArray(post.paragraphs) ? post.paragraphs : [];
 const articleHighlights = Array.isArray(post.highlights) ? post.highlights.filter(Boolean) : [];
+const escapeHtml = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+const formatInlineRichText = (value) =>
+  escapeHtml(value)
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/\n/g, "<br />");
+const parseArticleBlocks = (block) => {
+  const blocks = [];
+  let paragraphLines = [];
+  let listItems = [];
+  let listKind = "unordered";
+
+  const flushParagraph = () => {
+    if (!paragraphLines.length) {
+      return;
+    }
+
+    blocks.push({
+      kind: "paragraph",
+      content: paragraphLines.join("\n"),
+    });
+    paragraphLines = [];
+  };
+
+  const flushList = () => {
+    if (!listItems.length) {
+      return;
+    }
+
+    blocks.push({
+      kind: listKind === "ordered" ? "ordered-list" : "unordered-list",
+      items: listItems,
+      content: listItems.join("\n"),
+    });
+    listItems = [];
+    listKind = "unordered";
+  };
+
+  String(block || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .forEach((line) => {
+      if (!line) {
+        flushParagraph();
+        flushList();
+        return;
+      }
+
+      const orderedListMatch = line.match(/^\d+[.)]\s+(.+)$/);
+      const unorderedListMatch = line.match(/^[-*•]\s+(.+)$/);
+
+      if (line.startsWith("## ")) {
+        flushParagraph();
+        flushList();
+        blocks.push({ kind: "subtitle", content: line.slice(3).trim() });
+        return;
+      }
+
+      if (line.startsWith("# ")) {
+        flushParagraph();
+        flushList();
+        blocks.push({ kind: "title", content: line.slice(2).trim() });
+        return;
+      }
+
+      if (orderedListMatch) {
+        flushParagraph();
+        if (listItems.length && listKind !== "ordered") {
+          flushList();
+        }
+        listKind = "ordered";
+        listItems.push(orderedListMatch[1].trim());
+        return;
+      }
+
+      if (unorderedListMatch) {
+        flushParagraph();
+        if (listItems.length && listKind !== "unordered") {
+          flushList();
+        }
+        listKind = "unordered";
+        listItems.push(unorderedListMatch[1].trim());
+        return;
+      }
+
+      flushList();
+      paragraphLines.push(line);
+    });
+
+  flushParagraph();
+  flushList();
+  return blocks.filter((item) => item.content);
+};
+const articleContentBlocks = articleParagraphs.flatMap(parseArticleBlocks);
 const blogAuthorName = "Jonathan Acevedo López";
 ---
 
@@ -105,10 +212,36 @@ const blogAuthorName = "Jonathan Acevedo López";
         ) : null}
       </section>
 
-      <section class="site-shell site-shell--main blog-article-shell mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-start lg:gap-10">
+      <section class="site-shell site-shell--main blog-article-shell mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-stretch lg:gap-10">
         <article class="blog-article-prose" aria-labelledby="blog-article-title">
-          <p class="blog-article-intro">{post.introduction}</p>
-          {articleParagraphs.map((paragraph) => <p class="blog-article-main-point">{paragraph}</p>)}
+          {articleBodyParagraphs.length ? (
+            <div class="blog-article-short-body">
+              {articleBodyParagraphs.map((paragraph) => <p class="blog-article-text" set:html={formatInlineRichText(paragraph)} />)}
+            </div>
+          ) : null}
+          {post.introduction ? (
+            <>
+              <h2 class="blog-article-section-title">Introducción</h2>
+              <p class="blog-article-intro blog-article-text">{post.introduction}</p>
+            </>
+          ) : null}
+          {articleContentBlocks.map((block) =>
+            block.kind === "title" ? (
+              <h2 class="blog-article-block-title" set:html={formatInlineRichText(block.content)} />
+            ) : block.kind === "subtitle" ? (
+              <h3 class="blog-article-block-subtitle" set:html={formatInlineRichText(block.content)} />
+            ) : block.kind === "ordered-list" ? (
+              <ol class="blog-article-list blog-article-list--ordered">
+                {block.items.map((item) => <li set:html={formatInlineRichText(item)} />)}
+              </ol>
+            ) : block.kind === "unordered-list" ? (
+              <ul class="blog-article-list blog-article-list--unordered">
+                {block.items.map((item) => <li set:html={formatInlineRichText(item)} />)}
+              </ul>
+            ) : (
+              <p class="blog-article-main-point blog-article-text" set:html={formatInlineRichText(block.content)} />
+            )
+          )}
           <div class="blog-article-author" aria-label={`Blog creado por ${blogAuthorName}`}>
             <Image
               src={authorImage}
@@ -127,7 +260,7 @@ const blogAuthorName = "Jonathan Acevedo López";
           </div>
         </article>
 
-        <aside class="blog-article-sidebar lg:sticky lg:top-28">
+        <aside class="blog-article-sidebar">
           <div class="blog-article-info">
             <p class="detail-section-label">Lectura</p>
             <dl class="mt-5 grid gap-4">
@@ -159,6 +292,21 @@ const blogAuthorName = "Jonathan Acevedo López";
               </ul>
             </div>
           ) : null}
+
+          <div class="blog-article-pixel-companion" aria-hidden="true">
+            <div
+              class="blog-pixel-tree"
+              style={`--blog-tree-top: url("${withBase("/blog-pixels/reading-tree/tree-top.svg")}"); --blog-tree-middle: url("${withBase("/blog-pixels/reading-tree/tree-middle.svg")}"); --blog-tree-bottom: url("${withBase("/blog-pixels/reading-tree/tree-bottom.svg")}"); --blog-tree-ground: url("${withBase("/blog-pixels/reading-tree/tree-ground.svg")}");`}
+            >
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--middle"></span>
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--top"></span>
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--bottom"></span>
+              <span class="blog-pixel-tree-ground"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--top"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--middle"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--bottom"></span>
+            </div>
+          </div>
         </aside>
       </section>
 
@@ -187,7 +335,7 @@ const blogAuthorName = "Jonathan Acevedo López";
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {relatedPosts.map((item) => (
               <a
-                href={withBase(`/blog/${item.slug}`)}
+                href={getBlogHref(item.slug)}
                 class="blog-related-card article-list-card flex min-h-[9.5rem] flex-col justify-between rounded-[1rem] border border-outline-variant/15 bg-surface-container-highest/88 p-3.5 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_20px_44px_rgba(0,0,0,0.16)]"
               >
                 <div>
