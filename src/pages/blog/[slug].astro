@@ -12,7 +12,7 @@ export function getStaticPaths() {
 
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
-const getBlogHref = (slug) => withBase(`/blog/${String(slug || "").replace(/^\/+|\/+$/g, "")}.html`);
+const getBlogHref = (slug) => withBase(`/blog/${String(slug || "").replace(/^\/+|\/+$/g, "")}`);
 const post = getBlogDetailBySlug(Astro.params.slug);
 const relatedPosts = getBlogDetails().filter((item) => item.slug !== post.slug).slice(0, 3);
 const articleImage = post.articleImage || post.cover || "";
@@ -38,6 +38,18 @@ const formatInlineRichText = (value) =>
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
     .replace(/\n/g, "<br />");
+const splitTableRow = (line) =>
+  line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+const isPotentialTableRow = (line) => splitTableRow(line).length > 1;
+const isTableSeparator = (line) => {
+  const cells = splitTableRow(line);
+  return cells.length > 1 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, "")));
+};
 const parseArticleBlocks = (block) => {
   const blocks = [];
   let paragraphLines = [];
@@ -125,7 +137,39 @@ const parseArticleBlocks = (block) => {
   flushList();
   return blocks.filter((item) => item.content);
 };
-const articleContentBlocks = articleParagraphs.flatMap(parseArticleBlocks);
+const parseArticleTableBlock = (block) => {
+  if (block.kind !== "paragraph") {
+    return block;
+  }
+
+  const lines = String(block.content || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (
+    lines.length < 3 ||
+    !isPotentialTableRow(lines[0]) ||
+    !isTableSeparator(lines[1]) ||
+    !lines.slice(2).every(isPotentialTableRow)
+  ) {
+    return block;
+  }
+
+  const headers = splitTableRow(lines[0]);
+  const rows = lines.slice(2).map((line) => {
+    const cells = splitTableRow(line);
+    return headers.map((_, cellIndex) => cells[cellIndex] ?? "");
+  });
+
+  return {
+    kind: "table",
+    headers,
+    rows,
+    content: block.content,
+  };
+};
+const articleContentBlocks = articleParagraphs.flatMap(parseArticleBlocks).map(parseArticleTableBlock);
 const blogAuthorName = "Jonathan Acevedo López";
 ---
 
@@ -184,6 +228,19 @@ const blogAuthorName = "Jonathan Acevedo López";
         <div class="flex items-center gap-3">
           <button
             type="button"
+            id="detail-language-toggle"
+            class="lang-toggle border border-outline-variant/20 bg-surface-container-highest/50"
+            aria-label="Switch to English"
+            title="Switch to English"
+          >
+            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="#FCD116" />
+              <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+              <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+            </svg>
+          </button>
+          <button
+            type="button"
             id="detail-theme-toggle"
             class="theme-toggle border border-outline-variant/20 bg-surface-container-highest/50 text-on-surface transition hover:border-secondary hover:text-secondary"
             aria-label="Cambiar a modo claro"
@@ -198,15 +255,15 @@ const blogAuthorName = "Jonathan Acevedo López";
     <main class="detail-page-main blog-article-page px-5 pb-20 pt-9 sm:px-6 lg:px-8 lg:pt-12">
       <section class="site-shell site-shell--main blog-article-hero mx-auto max-w-5xl text-center">
         <div class="blog-article-meta justify-center">
-          <span class="text-primary">{post.category}</span>
-          <span>{post.date}</span>
-          <span>{post.readTime}</span>
+          <span id="blog-article-meta-category" class="text-primary">{post.category}</span>
+          <span id="blog-article-meta-date">{post.date}</span>
+          <span id="blog-article-meta-read-time">{post.readTime}</span>
         </div>
         <h1 id="blog-article-title" class="blog-article-title mx-auto mt-5 max-w-4xl font-headline font-bold leading-[1.08] tracking-tight text-on-surface">
           {post.title}
         </h1>
         {articlePhrase ? (
-          <p class="blog-article-phrase mx-auto mt-5 max-w-3xl text-on-surface-variant">
+          <p id="blog-article-phrase" class="blog-article-phrase mx-auto mt-5 max-w-3xl text-on-surface-variant">
             {articlePhrase}
           </p>
         ) : null}
@@ -214,6 +271,7 @@ const blogAuthorName = "Jonathan Acevedo López";
 
       <section class="site-shell site-shell--main blog-article-shell mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-stretch lg:gap-10">
         <article class="blog-article-prose" aria-labelledby="blog-article-title">
+          <div id="blog-article-content">
           {articleBodyParagraphs.length ? (
             <div class="blog-article-short-body">
               {articleBodyParagraphs.map((paragraph) => <p class="blog-article-text" set:html={formatInlineRichText(paragraph)} />)}
@@ -238,10 +296,28 @@ const blogAuthorName = "Jonathan Acevedo López";
               <ul class="blog-article-list blog-article-list--unordered">
                 {block.items.map((item) => <li set:html={formatInlineRichText(item)} />)}
               </ul>
+            ) : block.kind === "table" ? (
+              <div class="blog-article-table-scroll">
+                <table class="blog-article-table">
+                  <thead>
+                    <tr>
+                      {block.headers.map((header) => <th scope="col" set:html={formatInlineRichText(header)} />)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row) => (
+                      <tr>
+                        {block.headers.map((_, cellIndex) => <td set:html={formatInlineRichText(row[cellIndex] ?? "")} />)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <p class="blog-article-main-point blog-article-text" set:html={formatInlineRichText(block.content)} />
             )
           )}
+          </div>
           <div class="blog-article-author" aria-label={`Blog creado por ${blogAuthorName}`}>
             <Image
               src={authorImage}
@@ -254,7 +330,7 @@ const blogAuthorName = "Jonathan Acevedo López";
               decoding="async"
             />
             <div class="blog-article-author-copy">
-              <p>Blog creado por</p>
+              <p id="blog-article-author-label">Blog creado por</p>
               <strong>{blogAuthorName}</strong>
             </div>
           </div>
@@ -262,27 +338,27 @@ const blogAuthorName = "Jonathan Acevedo López";
 
         <aside class="blog-article-sidebar">
           <div class="blog-article-info">
-            <p class="detail-section-label">Lectura</p>
+            <p id="blog-article-info-title" class="detail-section-label">Lectura</p>
             <dl class="mt-5 grid gap-4">
               <div>
-                <dt>Categoria</dt>
-                <dd>{post.category}</dd>
+                <dt id="blog-article-info-category-label">Categoria</dt>
+                <dd id="blog-article-info-category">{post.category}</dd>
               </div>
               <div>
-                <dt>Publicado</dt>
-                <dd>{post.date}</dd>
+                <dt id="blog-article-info-date-label">Publicado</dt>
+                <dd id="blog-article-info-date">{post.date}</dd>
               </div>
               <div>
-                <dt>Tiempo</dt>
-                <dd>{post.readTime}</dd>
+                <dt id="blog-article-info-time-label">Tiempo</dt>
+                <dd id="blog-article-info-read-time">{post.readTime}</dd>
               </div>
             </dl>
           </div>
 
           {articleHighlights.length ? (
-            <div class="blog-article-key-ideas" aria-labelledby="blog-article-key-ideas-title">
+            <div id="blog-article-key-ideas" class="blog-article-key-ideas" aria-labelledby="blog-article-key-ideas-title">
               <p id="blog-article-key-ideas-title" class="detail-section-label">Ideas clave</p>
-              <ul class="mt-5 grid list-none gap-3 p-0" role="list">
+              <ul id="blog-article-highlights-list" class="mt-5 grid list-none gap-3 p-0" role="list">
                 {articleHighlights.map((highlight) => (
                   <li class="blog-article-highlight">
                     <span class="material-symbols-outlined blog-article-highlight-icon" aria-hidden="true">check_circle</span>
@@ -314,12 +390,13 @@ const blogAuthorName = "Jonathan Acevedo López";
         <section class="site-shell site-shell--main mx-auto mt-12 max-w-5xl">
           <figure class="blog-article-media">
             <img
+              id="blog-article-image"
               src={withBase(articleImage)}
               alt={post.title}
               loading="lazy"
               decoding="async"
             />
-            {articleImageCredit ? <figcaption>{articleImageCredit}</figcaption> : null}
+            {articleImageCredit ? <figcaption id="blog-article-image-credit">{articleImageCredit}</figcaption> : null}
           </figure>
         </section>
       ) : null}
@@ -332,7 +409,7 @@ const blogAuthorName = "Jonathan Acevedo López";
             </h2>
           </div>
 
-          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div id="blog-related-grid" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {relatedPosts.map((item) => (
               <a
                 href={getBlogHref(item.slug)}
@@ -356,15 +433,45 @@ const blogAuthorName = "Jonathan Acevedo López";
       ) : null}
     </main>
 
-    <script is:inline>
+    <script define:vars={{ postLocales: post.locales, relatedPostsData: relatedPosts, baseUrl }}>
       (() => {
-        const copy = {
-          themeToDark: "Cambiar a modo oscuro",
-          themeToLight: "Cambiar a modo claro",
+        const labels = {
+          es: {
+            back: "Volver al blog",
+            author: "Blog creado por",
+            info: "Lectura",
+            category: "Categoría",
+            published: "Publicado",
+            time: "Tiempo",
+            keyIdeas: "Ideas clave",
+            introduction: "Introducción",
+            related: "Otros artículos",
+            themeToDark: "Cambiar a modo oscuro",
+            themeToLight: "Cambiar a modo claro",
+            languageTitle: "Switch to English",
+            imageAlt: "Imagen del artículo",
+          },
+          en: {
+            back: "Back to blog",
+            author: "Blog created by",
+            info: "Reading",
+            category: "Category",
+            published: "Published",
+            time: "Time",
+            keyIdeas: "Key ideas",
+            introduction: "Introduction",
+            related: "Related articles",
+            themeToDark: "Switch to dark mode",
+            themeToLight: "Switch to light mode",
+            languageTitle: "Cambiar a español",
+            imageAlt: "Article image",
+          },
         };
 
         const themeToggle = document.getElementById("detail-theme-toggle");
         const themeToggleIcon = document.getElementById("detail-theme-toggle-icon");
+        const languageToggle = document.getElementById("detail-language-toggle");
+        const basePath = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 
         const themeIconMarkup = {
           dark: `
@@ -387,12 +494,228 @@ const blogAuthorName = "Jonathan Acevedo López";
           `,
         };
 
+        const renderLanguageFlag = (lang) => {
+          if (lang === "es") {
+            return `
+              <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="#FCD116" />
+                <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+                <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+              </svg>
+            `;
+          }
+
+          return `
+            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <clipPath id="blog-usa-flag-circle">
+                  <circle cx="12" cy="12" r="10" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#blog-usa-flag-circle)">
+                <rect x="2" y="2" width="20" height="20" fill="#fff" />
+                <rect x="2" y="2" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="5.08" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="8.15" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="11.23" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="14.31" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="17.38" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="20.46" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="2" width="9.2" height="10.8" fill="#3C3B6E" />
+                <g fill="#fff">
+                  <circle cx="3.4" cy="3.6" r="0.28" /><circle cx="5" cy="3.6" r="0.28" /><circle cx="6.6" cy="3.6" r="0.28" /><circle cx="8.2" cy="3.6" r="0.28" /><circle cx="9.8" cy="3.6" r="0.28" />
+                  <circle cx="4.2" cy="5.1" r="0.28" /><circle cx="5.8" cy="5.1" r="0.28" /><circle cx="7.4" cy="5.1" r="0.28" /><circle cx="9" cy="5.1" r="0.28" />
+                  <circle cx="3.4" cy="6.6" r="0.28" /><circle cx="5" cy="6.6" r="0.28" /><circle cx="6.6" cy="6.6" r="0.28" /><circle cx="8.2" cy="6.6" r="0.28" /><circle cx="9.8" cy="6.6" r="0.28" />
+                  <circle cx="4.2" cy="8.1" r="0.28" /><circle cx="5.8" cy="8.1" r="0.28" /><circle cx="7.4" cy="8.1" r="0.28" /><circle cx="9" cy="8.1" r="0.28" />
+                  <circle cx="3.4" cy="9.6" r="0.28" /><circle cx="5" cy="9.6" r="0.28" /><circle cx="6.6" cy="9.6" r="0.28" /><circle cx="8.2" cy="9.6" r="0.28" /><circle cx="9.8" cy="9.6" r="0.28" />
+                </g>
+              </g>
+              <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" />
+            </svg>
+          `;
+        };
+
+        const withBase = (path) => {
+          if (!path || /^(?:[a-z][a-z\d+\-.]*:|#)/i.test(path)) {
+            return path;
+          }
+
+          const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+          if (!basePath || basePath === "/") {
+            return normalizedPath;
+          }
+
+          return normalizedPath.startsWith(`${basePath}/`) ? normalizedPath : `${basePath}${normalizedPath}`;
+        };
+
+        const getBlogHref = (slug) => withBase(`/blog/${String(slug || "").replace(/^\/+|\/+$/g, "")}`);
+        const escapeHtml = (value) =>
+          String(value ?? "").replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[character]);
+        const formatInlineRichText = (value) =>
+          escapeHtml(value)
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.*?)\*/g, "<em>$1</em>")
+            .replace(/\n/g, "<br />");
+        const splitTableRow = (line) =>
+          line
+            .trim()
+            .replace(/^\|/, "")
+            .replace(/\|$/, "")
+            .split("|")
+            .map((cell) => cell.trim());
+        const isPotentialTableRow = (line) => splitTableRow(line).length > 1;
+        const isTableSeparator = (line) => {
+          const cells = splitTableRow(line);
+          return cells.length > 1 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, "")));
+        };
+        const parseArticleBlocks = (block) => {
+          const blocks = [];
+          let paragraphLines = [];
+          let listItems = [];
+          let listKind = "unordered";
+
+          const flushParagraph = () => {
+            if (!paragraphLines.length) return;
+            blocks.push({ kind: "paragraph", content: paragraphLines.join("\n") });
+            paragraphLines = [];
+          };
+          const flushList = () => {
+            if (!listItems.length) return;
+            blocks.push({
+              kind: listKind === "ordered" ? "ordered-list" : "unordered-list",
+              items: listItems,
+              content: listItems.join("\n"),
+            });
+            listItems = [];
+            listKind = "unordered";
+          };
+
+          String(block || "")
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .forEach((line) => {
+              if (!line) {
+                flushParagraph();
+                flushList();
+                return;
+              }
+
+              const orderedListMatch = line.match(/^\d+[.)]\s+(.+)$/);
+              const unorderedListMatch = line.match(/^[-*•]\s+(.+)$/);
+
+              if (line.startsWith("## ")) {
+                flushParagraph();
+                flushList();
+                blocks.push({ kind: "subtitle", content: line.slice(3).trim() });
+                return;
+              }
+
+              if (line.startsWith("# ")) {
+                flushParagraph();
+                flushList();
+                blocks.push({ kind: "title", content: line.slice(2).trim() });
+                return;
+              }
+
+              if (orderedListMatch) {
+                flushParagraph();
+                if (listItems.length && listKind !== "ordered") flushList();
+                listKind = "ordered";
+                listItems.push(orderedListMatch[1].trim());
+                return;
+              }
+
+              if (unorderedListMatch) {
+                flushParagraph();
+                if (listItems.length && listKind !== "unordered") flushList();
+                listKind = "unordered";
+                listItems.push(unorderedListMatch[1].trim());
+                return;
+              }
+
+              flushList();
+              paragraphLines.push(line);
+            });
+
+          flushParagraph();
+          flushList();
+          return blocks.filter((item) => item.content);
+        };
+        const parseArticleTableBlock = (block) => {
+          if (block.kind !== "paragraph") return block;
+
+          const lines = String(block.content || "")
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+
+          if (lines.length < 3 || !isPotentialTableRow(lines[0]) || !isTableSeparator(lines[1]) || !lines.slice(2).every(isPotentialTableRow)) {
+            return block;
+          }
+
+          const headers = splitTableRow(lines[0]);
+          const rows = lines.slice(2).map((line) => {
+            const cells = splitTableRow(line);
+            return headers.map((_, cellIndex) => cells[cellIndex] ?? "");
+          });
+
+          return { kind: "table", headers, rows, content: block.content };
+        };
+        const renderArticleContent = (copy, lang) => {
+          const contentBlocks = Array.isArray(copy.paragraphs) ? copy.paragraphs.flatMap(parseArticleBlocks).map(parseArticleTableBlock) : [];
+          const bodyParagraphs = String(copy.body || "")
+            .trim()
+            .split(/\r?\n\s*\r?\n/)
+            .map((paragraph) => paragraph.trim())
+            .filter(Boolean);
+
+          return [
+            bodyParagraphs.length
+              ? `<div class="blog-article-short-body">${bodyParagraphs.map((paragraph) => `<p class="blog-article-text">${formatInlineRichText(paragraph)}</p>`).join("")}</div>`
+              : "",
+            copy.introduction
+              ? `<h2 class="blog-article-section-title">${labels[lang].introduction}</h2><p class="blog-article-intro blog-article-text">${formatInlineRichText(copy.introduction)}</p>`
+              : "",
+            ...contentBlocks.map((block) => {
+              if (block.kind === "title") return `<h2 class="blog-article-block-title">${formatInlineRichText(block.content)}</h2>`;
+              if (block.kind === "subtitle") return `<h3 class="blog-article-block-subtitle">${formatInlineRichText(block.content)}</h3>`;
+              if (block.kind === "ordered-list") return `<ol class="blog-article-list blog-article-list--ordered">${block.items.map((item) => `<li>${formatInlineRichText(item)}</li>`).join("")}</ol>`;
+              if (block.kind === "unordered-list") return `<ul class="blog-article-list blog-article-list--unordered">${block.items.map((item) => `<li>${formatInlineRichText(item)}</li>`).join("")}</ul>`;
+              if (block.kind === "table") {
+                return `
+                  <div class="blog-article-table-scroll">
+                    <table class="blog-article-table">
+                      <thead><tr>${block.headers.map((header) => `<th scope="col">${formatInlineRichText(header)}</th>`).join("")}</tr></thead>
+                      <tbody>${block.rows.map((row) => `<tr>${block.headers.map((_, cellIndex) => `<td>${formatInlineRichText(row[cellIndex] ?? "")}</td>`).join("")}</tr>`).join("")}</tbody>
+                    </table>
+                  </div>
+                `;
+              }
+              return `<p class="blog-article-main-point blog-article-text">${formatInlineRichText(block.content)}</p>`;
+            }),
+          ].join("");
+        };
+        const getPostCopy = (lang) => postLocales?.[lang] || postLocales?.es || {};
+        const getRelatedCopy = (item, lang) => ({
+          ...item,
+          ...(item.locales?.[lang] || item.locales?.es || {}),
+        });
+        const setText = (id, value) => {
+          const element = document.getElementById(id);
+          if (element) element.textContent = value || "";
+        };
+
         const storedTheme = document.documentElement.dataset.theme || window.localStorage.getItem("portfolio-theme") || "dark";
         const state = {
           theme: storedTheme,
+          lang: window.localStorage.getItem("portfolio-lang") === "en" ? "en" : "es",
         };
-
-        document.documentElement.lang = "es";
 
         const applyTheme = (theme, persist = true) => {
           state.theme = theme;
@@ -409,17 +732,119 @@ const blogAuthorName = "Jonathan Acevedo López";
           }
 
           if (themeToggle) {
-            const label = theme === "dark" ? copy.themeToLight : copy.themeToDark;
+            const label = theme === "dark" ? labels[state.lang].themeToLight : labels[state.lang].themeToDark;
             themeToggle.setAttribute("aria-label", label);
             themeToggle.setAttribute("title", label);
           }
         };
+        const applyLanguage = (requestedLang, persist = true) => {
+          const lang = postLocales?.[requestedLang] ? requestedLang : "es";
+          const copy = getPostCopy(lang);
+          const label = labels[lang];
+          state.lang = lang;
+
+          if (persist) {
+            window.localStorage.setItem("portfolio-lang", lang);
+          }
+
+          document.documentElement.lang = lang;
+          document.title = `${copy.title || ""} | Blog Jonathan Acevedo`;
+          document.querySelector('meta[name="description"]')?.setAttribute("content", copy.excerpt || "");
+
+          setText("detail-back-label", label.back);
+          setText("blog-article-meta-category", copy.category);
+          setText("blog-article-meta-date", copy.date);
+          setText("blog-article-meta-read-time", copy.readTime);
+          setText("blog-article-title", copy.title);
+          setText("blog-article-info-title", label.info);
+          setText("blog-article-info-category-label", label.category);
+          setText("blog-article-info-date-label", label.published);
+          setText("blog-article-info-time-label", label.time);
+          setText("blog-article-info-category", copy.category);
+          setText("blog-article-info-date", copy.date);
+          setText("blog-article-info-read-time", copy.readTime);
+          setText("blog-article-key-ideas-title", label.keyIdeas);
+          setText("blog-article-author-label", label.author);
+          setText("detail-related-title", label.related);
+
+          const phrase = document.getElementById("blog-article-phrase");
+          if (phrase) {
+            phrase.textContent = copy.phrase || "";
+            phrase.hidden = !copy.phrase;
+          }
+
+          const content = document.getElementById("blog-article-content");
+          if (content) {
+            content.innerHTML = renderArticleContent(copy, lang);
+          }
+
+          const highlights = Array.isArray(copy.highlights) ? copy.highlights.filter(Boolean) : [];
+          const keyIdeas = document.getElementById("blog-article-key-ideas");
+          const highlightsList = document.getElementById("blog-article-highlights-list");
+          if (keyIdeas) keyIdeas.hidden = !highlights.length;
+          if (highlightsList) {
+            highlightsList.innerHTML = highlights
+              .map((highlight) => `
+                <li class="blog-article-highlight">
+                  <span class="material-symbols-outlined blog-article-highlight-icon" aria-hidden="true">check_circle</span>
+                  <p>${escapeHtml(highlight)}</p>
+                </li>
+              `)
+              .join("");
+          }
+
+          const articleImage = document.getElementById("blog-article-image");
+          if (articleImage) {
+            articleImage.setAttribute("alt", copy.title || label.imageAlt);
+          }
+
+          const imageCredit = document.getElementById("blog-article-image-credit");
+          if (imageCredit) {
+            imageCredit.textContent = copy.imageCredit || "";
+            imageCredit.hidden = !copy.imageCredit;
+          }
+
+          const relatedGrid = document.getElementById("blog-related-grid");
+          if (relatedGrid) {
+            relatedGrid.innerHTML = relatedPostsData
+              .map((item) => {
+                const related = getRelatedCopy(item, lang);
+                return `
+                  <a href="${getBlogHref(item.slug)}" class="blog-related-card article-list-card flex min-h-[9.5rem] flex-col justify-between rounded-[1rem] border border-outline-variant/15 bg-surface-container-highest/88 p-3.5 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_20px_44px_rgba(0,0,0,0.16)]">
+                    <div>
+                      <p class="text-[0.58rem] font-black uppercase tracking-[0.18em] text-secondary">${escapeHtml(related.category)}</p>
+                      <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface">${escapeHtml(related.title)}</h3>
+                      <p class="mt-2.5 text-[0.8rem] leading-5 text-on-surface-variant">${escapeHtml(related.excerpt)}</p>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between gap-4 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                      <span>${escapeHtml(related.date)}</span>
+                      <span class="material-symbols-outlined text-primary">arrow_outward</span>
+                    </div>
+                  </a>
+                `;
+              })
+              .join("");
+          }
+
+          if (languageToggle) {
+            languageToggle.innerHTML = renderLanguageFlag(lang);
+            languageToggle.setAttribute("aria-label", label.languageTitle);
+            languageToggle.setAttribute("title", label.languageTitle);
+          }
+
+          applyTheme(state.theme, false);
+        };
 
         applyTheme(state.theme, false);
+        applyLanguage(state.lang, false);
 
         themeToggle?.addEventListener("click", () => {
           state.theme = state.theme === "dark" ? "light" : "dark";
           applyTheme(state.theme);
+        });
+
+        languageToggle?.addEventListener("click", () => {
+          applyLanguage(state.lang === "es" ? "en" : "es");
         });
       })();
     </script>

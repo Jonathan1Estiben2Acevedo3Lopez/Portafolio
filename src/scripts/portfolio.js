@@ -29,7 +29,7 @@ function withBase(path) {
 
 function getBlogHref(slug) {
   const safeSlug = String(slug || "").replace(/^\/+|\/+$/g, "");
-  return withBase(`/blog/${safeSlug}.html`);
+  return withBase(`/blog/${safeSlug}`);
 }
 
 const getLocalizedItems = (items, language) =>

@@ -20,6 +20,7 @@ import {
   Plus,
   Save,
   Sun,
+  Table2,
   Trash2,
   X,
 } from "lucide-react";
@@ -291,7 +292,7 @@ const fieldHints = {
   blogExcerpt: "Texto para las cards iniciales/listado del blog en el portafolio.",
   blogBody: "Texto inicial de la pagina completa del blog. Va sin titulo y aparece antes de la introduccion.",
   blogIntroduction: "Introduccion de la pagina completa del blog. No se usa en las cards.",
-  blogParagraphs: "Bloques principales del blog completo. Usa # Titulo, ## Subtitulo, - item para listas con vineta y 1. item para listas numeradas.",
+  blogParagraphs: "Bloques principales del blog completo. Usa # Titulo, ## Subtitulo, - item para listas, 1. item para listas numeradas y tablas con columnas separadas por |.",
   blogHighlights: "Ideas clave mostradas en la pagina individual. Escribe un punto por linea.",
   blogImageCredit: "Nombre, herramienta o fuente que creo la imagen del articulo. Aparece debajo de la imagen.",
   contentHidden: "Oculta este contenido del portafolio publico sin eliminarlo del archivo. Puedes volver a mostrarlo cuando quieras.",
@@ -580,6 +581,37 @@ const splitTextBlocks = (value: string) =>
           .map((block) => block.trim())
           .filter(Boolean)
     : [];
+
+type BlogTableDraft = {
+  headers: string[];
+  rows: string[][];
+};
+
+const createBlogTableDraft = (lang: "es" | "en"): BlogTableDraft => ({
+  headers: lang === "es" ? ["Campo", "Descripcion"] : ["Field", "Description"],
+  rows: [
+    ["", ""],
+    ["", ""],
+  ],
+});
+
+const tableCellToMarkdown = (value: string) => value.replace(/\|/g, "/").replace(/\r?\n/g, " ").trim();
+
+const buildBlogTableMarkdown = (draft: BlogTableDraft, lang: "es" | "en" = "es") => {
+  const defaultHeader = lang === "es" ? "Columna" : "Column";
+  const headers = draft.headers.map((header, index) => tableCellToMarkdown(header) || `${defaultHeader} ${index + 1}`);
+  const rows = draft.rows
+    .map((row) => headers.map((_, cellIndex) => tableCellToMarkdown(row[cellIndex] ?? "")))
+    .filter((row) => row.some(Boolean));
+
+  if (!headers.length || !rows.length) {
+    return "";
+  }
+
+  return [`| ${headers.join(" | ")} |`, `| ${headers.map(() => "---").join(" | ")} |`, ...rows.map((row) => `| ${row.join(" | ")} |`)].join("\n");
+};
+
+const appendBlockSnippet = (value: string, snippet: string) => (value.trim() ? `${value.trimEnd()}\n\n${snippet}` : snippet);
 
 const normalizeCertificateToForm = (certificate: Record<string, any>): CertificateFormState => {
   const form = defaultCertificateForm();
@@ -1071,6 +1103,8 @@ function BlogParagraphEditor({
   const rowCount = Math.max(rawEs.length, rawEn.length, 1);
   const linesEs = Array.from({ length: rowCount }, (_, index) => rawEs[index] ?? "");
   const linesEn = Array.from({ length: rowCount }, (_, index) => rawEn[index] ?? "");
+  const [tableTarget, setTableTarget] = useState<{ index: number; lang: "es" | "en" } | null>(null);
+  const [tableDraft, setTableDraft] = useState<BlogTableDraft>(() => createBlogTableDraft("es"));
 
   const commit = (nextEs: string[], nextEn: string[]) => {
     onChange(serializeTextBlocks(nextEs), serializeTextBlocks(nextEn));
@@ -1087,6 +1121,84 @@ function BlogParagraphEditor({
     }
 
     commit(nextEs, nextEn);
+  };
+
+  const openTableBuilder = (index: number, lang: "es" | "en") => {
+    setTableTarget({ index, lang });
+    setTableDraft(createBlogTableDraft(lang));
+  };
+
+  const updateTableHeader = (columnIndex: number, value: string) => {
+    setTableDraft((current) => ({
+      ...current,
+      headers: current.headers.map((header, index) => (index === columnIndex ? value : header)),
+    }));
+  };
+
+  const updateTableCell = (rowIndex: number, columnIndex: number, value: string) => {
+    setTableDraft((current) => ({
+      ...current,
+      rows: current.rows.map((row, currentRowIndex) =>
+        currentRowIndex === rowIndex ? current.headers.map((_, currentColumnIndex) => (currentColumnIndex === columnIndex ? value : row[currentColumnIndex] ?? "")) : row,
+      ),
+    }));
+  };
+
+  const addTableColumn = () => {
+    setTableDraft((current) => ({
+      headers: [...current.headers, ""],
+      rows: current.rows.map((row) => [...row, ""]),
+    }));
+  };
+
+  const removeTableColumn = (columnIndex: number) => {
+    setTableDraft((current) => {
+      if (current.headers.length <= 2) {
+        return current;
+      }
+
+      return {
+        headers: current.headers.filter((_, index) => index !== columnIndex),
+        rows: current.rows.map((row) => row.filter((_, index) => index !== columnIndex)),
+      };
+    });
+  };
+
+  const addTableRow = () => {
+    setTableDraft((current) => ({
+      ...current,
+      rows: [...current.rows, current.headers.map(() => "")],
+    }));
+  };
+
+  const removeTableRow = (rowIndex: number) => {
+    setTableDraft((current) => ({
+      ...current,
+      rows: current.rows.length <= 1 ? current.rows : current.rows.filter((_, index) => index !== rowIndex),
+    }));
+  };
+
+  const insertTable = () => {
+    if (!tableTarget) {
+      return;
+    }
+
+    const markdown = buildBlogTableMarkdown(tableDraft, tableTarget.lang);
+    if (!markdown) {
+      return;
+    }
+
+    const nextEs = [...linesEs];
+    const nextEn = [...linesEn];
+
+    if (tableTarget.lang === "es") {
+      nextEs[tableTarget.index] = appendBlockSnippet(nextEs[tableTarget.index] ?? "", markdown);
+    } else {
+      nextEn[tableTarget.index] = appendBlockSnippet(nextEn[tableTarget.index] ?? "", markdown);
+    }
+
+    commit(nextEs, nextEn);
+    setTableTarget(null);
   };
 
   const addParagraph = () => {
@@ -1123,7 +1235,7 @@ function BlogParagraphEditor({
       <div className="optional-group-head">
         <div>
           <FieldLabel hint={hint}>Bloques del articulo</FieldLabel>
-          <p>Usa # para titulo, ## para subtitulo, - para vineta y 1. para lista numerada.</p>
+          <p>Usa # para titulo, ## para subtitulo, - para lista, 1. para lista numerada y | para tablas.</p>
         </div>
         <button type="button" className="add-row-button" onClick={addParagraph}>
           <Plus size={16} strokeWidth={2.2} />
@@ -1147,24 +1259,136 @@ function BlogParagraphEditor({
             </div>
             <div className="optional-item-grid">
               <label className="field">
-                <span className="compact-label">Bloque ES</span>
+                <span className="blog-block-field-head">
+                  <span className="compact-label">Bloque ES</span>
+                  <button
+                    type="button"
+                    className="table-builder-toggle"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      openTableBuilder(index, "es");
+                    }}
+                  >
+                    <Table2 size={14} strokeWidth={2.2} />
+                    Tabla ES
+                  </button>
+                </span>
                 <textarea
                   value={lineEs}
                   onChange={(event) => updateLine(index, "es", event.target.value)}
-                  rows={6}
-                  placeholder={"Texto del parrafo\n\n# Titulo centrado\n\n## Subtitulo a la izquierda\n\n- Elemento de lista\n- Otro elemento\n\n1. Primer paso\n2. Segundo paso"}
+                  rows={8}
+                  placeholder={"Texto del parrafo\n\n# Titulo centrado\n\n## Subtitulo a la izquierda\n\n- Elemento de lista\n- Otro elemento\n\n1. Primer paso\n2. Segundo paso\n\n| Campo | Descripcion |\n| --- | --- |\n| QA Manual | Pruebas exploratorias |\n| QA Automation | Pruebas automatizadas |"}
                 />
               </label>
               <label className="field">
-                <span className="compact-label">Block EN</span>
+                <span className="blog-block-field-head">
+                  <span className="compact-label">Block EN</span>
+                  <button
+                    type="button"
+                    className="table-builder-toggle"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      openTableBuilder(index, "en");
+                    }}
+                  >
+                    <Table2 size={14} strokeWidth={2.2} />
+                    Table EN
+                  </button>
+                </span>
                 <textarea
                   value={linesEn[index]}
                   onChange={(event) => updateLine(index, "en", event.target.value)}
-                  rows={6}
-                  placeholder={"Paragraph text\n\n# Centered title\n\n## Left subtitle\n\n- List item\n- Another item\n\n1. First step\n2. Second step"}
+                  rows={8}
+                  placeholder={"Paragraph text\n\n# Centered title\n\n## Left subtitle\n\n- List item\n- Another item\n\n1. First step\n2. Second step\n\n| Field | Description |\n| --- | --- |\n| Manual QA | Exploratory testing |\n| QA Automation | Automated tests |"}
                 />
               </label>
             </div>
+            {tableTarget?.index === index ? (
+              <div className="blog-table-builder">
+                <div className="blog-table-builder-head">
+                  <div>
+                    <strong>{tableTarget.lang === "es" ? "Constructor de tabla ES" : "Table builder EN"}</strong>
+                    <p>{tableTarget.lang === "es" ? "Llena la tabla con campos normales. Al insertar, se agregara al bloque." : "Fill the table with normal fields. Insert will add it to the block."}</p>
+                  </div>
+                  <button type="button" className="move-row-button" onClick={() => setTableTarget(null)} aria-label="Cerrar constructor de tabla" title="Cerrar">
+                    <X size={15} strokeWidth={2.3} />
+                  </button>
+                </div>
+
+                <div className="blog-table-builder-scroll">
+                  <table className="blog-table-builder-grid">
+                    <thead>
+                      <tr>
+                        {tableDraft.headers.map((header, columnIndex) => (
+                          <th key={`table-header-${columnIndex}`}>
+                            <div className="blog-table-builder-cell-head">
+                              <input
+                                value={header}
+                                onChange={(event) => updateTableHeader(columnIndex, event.target.value)}
+                                placeholder={tableTarget.lang === "es" ? `Columna ${columnIndex + 1}` : `Column ${columnIndex + 1}`}
+                              />
+                              <button
+                                type="button"
+                                className="remove-row-button"
+                                onClick={() => removeTableColumn(columnIndex)}
+                                disabled={tableDraft.headers.length <= 2}
+                                aria-label="Quitar columna"
+                                title="Quitar columna"
+                              >
+                                <Trash2 size={13} strokeWidth={2.2} />
+                              </button>
+                            </div>
+                          </th>
+                        ))}
+                        <th className="blog-table-builder-row-actions"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableDraft.rows.map((row, rowIndex) => (
+                        <tr key={`table-row-${rowIndex}`}>
+                          {tableDraft.headers.map((_, columnIndex) => (
+                            <td key={`table-cell-${rowIndex}-${columnIndex}`}>
+                              <input
+                                value={row[columnIndex] ?? ""}
+                                onChange={(event) => updateTableCell(rowIndex, columnIndex, event.target.value)}
+                                placeholder={tableTarget.lang === "es" ? `Fila ${rowIndex + 1}` : `Row ${rowIndex + 1}`}
+                              />
+                            </td>
+                          ))}
+                          <td className="blog-table-builder-row-actions">
+                            <button
+                              type="button"
+                              className="remove-row-button"
+                              onClick={() => removeTableRow(rowIndex)}
+                              disabled={tableDraft.rows.length <= 1}
+                              aria-label="Quitar fila"
+                              title="Quitar fila"
+                            >
+                              <Trash2 size={13} strokeWidth={2.2} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="blog-table-builder-actions">
+                  <button type="button" className="add-row-button" onClick={addTableColumn}>
+                    <Plus size={15} strokeWidth={2.2} />
+                    Columna
+                  </button>
+                  <button type="button" className="add-row-button" onClick={addTableRow}>
+                    <Plus size={15} strokeWidth={2.2} />
+                    Fila
+                  </button>
+                  <button type="button" className="add-row-button table-builder-insert" onClick={insertTable} disabled={!buildBlogTableMarkdown(tableDraft, tableTarget.lang)}>
+                    <Table2 size={15} strokeWidth={2.2} />
+                    Insertar tabla
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
@@ -4417,7 +4641,7 @@ function App() {
                     </label>
                     <label className="field field-wide">
                       <FieldLabel hint={fieldHints.blogBody}>Cuerpo corto ES (blog completo)</FieldLabel>
-                      <textarea value={blogForm.body} onChange={(event) => updateBlogField("body", event.target.value)} rows={4} required />
+                      <textarea value={blogForm.body} onChange={(event) => updateBlogField("body", event.target.value)} rows={4} />
                     </label>
                     <label className="field field-wide">
                       <FieldLabel hint={fieldHints.blogIntroduction}>Introduccion ES (blog completo)</FieldLabel>

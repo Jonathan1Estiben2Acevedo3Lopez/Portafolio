@@ -3,6 +3,7 @@ import blogPosts from "./blog.json";
 export function getBlogDetails() {
   return blogPosts.map(({ copy, ...post }) => ({
     ...post,
+    locales: copy,
     ...copy.es,
   }));
 }

@@ -279,6 +279,7 @@ pub struct BlogInput {
     title: String,
     phrase: String,
     excerpt: String,
+    #[serde(default)]
     body: String,
     introduction: String,
     paragraphs: String,
@@ -1833,7 +1834,7 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
     let title = clean_required(&input.title, "El titulo de la nota es obligatorio.")?;
     let phrase = clean_required(&input.phrase, "La frase del articulo es obligatoria.")?;
     let excerpt = clean_required(&input.excerpt, "El extracto de la nota es obligatorio.")?;
-    let body = clean_required(&input.body, "El cuerpo corto de la nota es obligatorio.")?;
+    let body = clean_optional(Some(input.body.as_str())).unwrap_or_default();
     let category = fallback(&input.category, "Contenido");
     let filter = fallback(&input.filter, &category);
     let date = fallback(&input.date, "2026");

@@ -10,7 +10,7 @@ export default defineConfig({
   base,
   trailingSlash: "ignore",
   build: {
-    format: "file",
+    format: "directory",
   },
   server: {
     host: true,

@@ -7,11 +7,6 @@
   ASTRO_BASE = "/"
 
 [[redirects]]
-  from = "/blog/:slug/"
-  to = "/blog/:slug.html"
-  status = 200
-
-[[redirects]]
-  from = "/blog/:slug"
-  to = "/blog/:slug.html"
-  status = 200
+  from = "/blog/:slug.html"
+  to = "/blog/:slug"
+  status = 301
