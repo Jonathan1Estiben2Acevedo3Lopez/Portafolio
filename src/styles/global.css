@@ -6006,15 +6006,16 @@ header,
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    overscroll-behavior-x: contain;
+    overscroll-behavior-x: auto;
     padding: 0.2rem 0 0.5rem;
     scroll-padding-left: 0.15rem;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: none;
+    touch-action: pan-y pinch-zoom;
   }
 
   #articles-list.articles-scroll-column > * {
     flex: 0 0 min(72vw, 17rem);
-    scroll-snap-align: start;
+    scroll-snap-align: none;
   }
 
   #article-feature.article-feature-mobile-hidden {
@@ -6027,15 +6028,30 @@ header,
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    overscroll-behavior-x: contain;
+    overscroll-behavior-x: auto;
     padding: 0.2rem 0 0.5rem;
     scroll-padding-left: 0.15rem;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: none;
+    touch-action: pan-y pinch-zoom;
   }
 
   #interests-media-list.articles-scroll-column > * {
     flex: 0 0 min(78vw, 18rem);
-    scroll-snap-align: start;
+    scroll-snap-align: none;
+  }
+
+  #projects-grid.projects-scroll-row,
+  #certificates-grid.certificates-grid {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    overscroll-behavior-x: auto;
+    scroll-snap-type: none;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  #projects-grid.projects-scroll-row > *,
+  #certificates-grid.certificates-grid > .certificate-card {
+    scroll-snap-align: none;
   }
 
   #interests-media-feature.interests-feature-mobile-hidden {
