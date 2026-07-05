@@ -1398,44 +1398,48 @@ html.light .hero-focus-card {
   .about-git-card .about-git-timeline {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.95rem;
+    gap: 1.05rem;
     width: auto;
     min-width: 0;
-    padding-bottom: 0.2rem;
+    padding: 0.25rem 0 0.2rem;
   }
 
   .about-git-card .about-git-timeline::before {
-    bottom: 0.25rem;
+    bottom: 0.6rem;
     height: auto;
-    left: 1rem;
+    left: 1.05rem;
     right: auto;
-    top: 0.25rem;
+    top: 0.35rem;
     width: 2px;
     background: linear-gradient(
       180deg,
-      rgb(var(--color-secondary) / 0.18),
-      rgb(var(--color-secondary) / 0.82) 18%,
-      rgb(var(--color-primary) / 0.78) 55%,
-      rgb(var(--color-tertiary) / 0.82)
+      rgb(var(--color-secondary) / 0.12),
+      rgb(var(--color-secondary) / 0.9) 18%,
+      rgb(var(--color-primary) / 0.86) 54%,
+      rgb(var(--color-tertiary) / 0.88)
     );
+    box-shadow: 0 0 20px rgb(var(--color-primary) / 0.18);
   }
 
   .about-git-card .about-git-node {
     flex: initial;
-    grid-template-columns: 2.65rem minmax(0, 1fr);
+    grid-template-columns: 2.75rem minmax(0, 1fr);
     align-items: start;
     row-gap: 0;
     width: auto;
-    padding-top: 0;
+    padding: 0.05rem 0 0;
   }
 
   .about-git-card .about-git-node::before,
   .about-git-card .about-git-node:nth-child(2)::before,
   .about-git-card .about-git-node:nth-child(3)::before {
-    left: 1rem;
-    top: 1.55rem;
-    height: 1.15rem;
-    width: 1.75rem;
+    left: 1.05rem;
+    top: 1.72rem;
+    height: 1.05rem;
+    width: 1.9rem;
+    border-width: 0 0 2px 2px;
+    border-bottom-left-radius: 0.95rem;
+    opacity: 0.82;
     transform: none;
   }
 
@@ -1446,21 +1450,35 @@ html.light .hero-focus-card {
   }
 
   .about-git-card .about-git-dot {
-    left: 0.44rem;
-    top: 0.92rem;
+    left: 0.45rem;
+    top: 0.98rem;
+    height: 1.22rem;
+    width: 1.22rem;
     transform: none;
   }
 
   .about-git-info {
     grid-column: 2;
     width: 100%;
-    padding: 0.35rem 0.45rem 0;
+    padding: 0.35rem 0.45rem 0.1rem;
+    text-align: left;
+  }
+
+  .about-git-date {
+    width: fit-content;
+    min-width: 4.6rem;
+    margin: 0 auto 0.42rem;
+    padding: 0.18rem 0.55rem;
+    border: 1px solid rgb(var(--color-outline-variant) / 0.18);
+    border-radius: 999px;
+    background: rgb(var(--color-surface-container-highest) / 0.34);
     text-align: center;
   }
 
   .about-git-place {
     max-width: 18rem;
-    margin-inline: auto;
+    margin-inline: 0 auto;
+    text-align: left;
     overflow-wrap: break-word;
     word-break: normal;
   }
@@ -1469,9 +1487,12 @@ html.light .hero-focus-card {
     grid-column: 2;
     grid-row: 2;
     justify-self: center;
+    display: none;
     position: static;
     width: min(100%, 20.5rem);
+    height: 0;
     max-height: 0;
+    margin-top: 0;
     margin-inline: auto;
     overflow: hidden;
     border: 0;
@@ -1494,11 +1515,16 @@ html.light .hero-focus-card {
   }
 
   .about-git-node--expandable.is-open .about-git-detail {
+    display: block;
+    height: auto;
     max-height: 55rem;
-    margin-top: 0.85rem;
+    margin-top: 0.9rem;
     border: 1px solid rgb(var(--color-outline-variant) / 0.16);
-    border-radius: 1.05rem;
-    background: rgb(var(--color-surface-container-highest) / 0.42);
+    border-radius: 1rem;
+    background:
+      linear-gradient(180deg, rgb(var(--color-surface-container-highest) / 0.58), rgb(var(--color-surface-container-high) / 0.32)),
+      rgb(var(--color-surface-container-highest) / 0.34);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
     opacity: 1;
     padding: 0.95rem;
     pointer-events: auto;
