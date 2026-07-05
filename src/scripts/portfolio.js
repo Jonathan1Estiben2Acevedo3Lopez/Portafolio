@@ -372,6 +372,7 @@ const state = {
   headerOffset: 88,
   sectionMetrics: [],
   deferredSectionsReady: false,
+  initialMobileHomeResetActive: window.matchMedia("(max-width: 767px)").matches,
 };
 
 const projectFilterPriority = [
@@ -2580,6 +2581,35 @@ function syncActiveSectionLink() {
 let activeSectionFrame = null;
 let sectionMetricsFrame = null;
 let deferredSectionsFrame = null;
+let initialMobileHomeResetTimer = null;
+
+function resetInitialMobileScrollToHome() {
+  if (!state.initialMobileHomeResetActive || !isMobileViewport()) {
+    return;
+  }
+
+  if (window.location.hash) {
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
+
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  syncActiveSectionLink();
+}
+
+function queueInitialMobileHomeReset() {
+  if (!state.initialMobileHomeResetActive || initialMobileHomeResetTimer !== null) {
+    return;
+  }
+
+  [0, 80, 220, 520, 900].forEach((delay) => {
+    window.setTimeout(resetInitialMobileScrollToHome, delay);
+  });
+
+  initialMobileHomeResetTimer = window.setTimeout(() => {
+    state.initialMobileHomeResetActive = false;
+    initialMobileHomeResetTimer = null;
+  }, 1100);
+}
 
 function renderDeferredSections() {
   renderDevelopment();
@@ -2590,6 +2620,7 @@ function renderDeferredSections() {
   renderContacts();
   state.deferredSectionsReady = true;
   queueSectionMetricsRefresh();
+  queueInitialMobileHomeReset();
 }
 
 function scheduleDeferredSections() {
@@ -3171,7 +3202,14 @@ function wireEvents() {
     queueSectionMetricsRefresh();
   });
 
-  window.addEventListener("load", queueSectionMetricsRefresh, { once: true });
+  window.addEventListener(
+    "load",
+    () => {
+      queueSectionMetricsRefresh();
+      queueInitialMobileHomeReset();
+    },
+    { once: true }
+  );
   document.fonts?.ready?.then(() => {
     updateAboutAcademicScrollHints();
     updateAboutWorkScrollHints();
@@ -3179,6 +3217,7 @@ function wireEvents() {
   });
 
   queueSectionMetricsRefresh();
+  queueInitialMobileHomeReset();
   wireScrollButtons();
   [
     elements.developmentGrid,
