@@ -1385,7 +1385,16 @@ function renderCertificates() {
 let certificatePdfPreviewObserver = null;
 
 function scheduleCertificatePdfPreviews() {
-  const schedule = window.requestIdleCallback || ((callback) => window.setTimeout(callback, 120));
+  const schedule = (callback) => {
+    const runWhenIdle = window.requestIdleCallback || ((idleCallback) => window.setTimeout(idleCallback, 120));
+
+    if (isMobileViewport()) {
+      window.setTimeout(() => runWhenIdle(callback, { timeout: 1600 }), 900);
+      return;
+    }
+
+    runWhenIdle(callback, { timeout: 900 });
+  };
 
   schedule(() => {
     const covers = Array.from(
@@ -2625,6 +2634,14 @@ function renderDeferredSections() {
 
 function scheduleDeferredSections() {
   if (state.deferredSectionsReady || deferredSectionsFrame !== null) {
+    return;
+  }
+
+  if (isMobileViewport()) {
+    deferredSectionsFrame = window.requestAnimationFrame(() => {
+      deferredSectionsFrame = null;
+      renderDeferredSections();
+    });
     return;
   }
 
