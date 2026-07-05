@@ -71,7 +71,7 @@
     "copy": {
       "en": {
         "body": "",
-        "category": "Content",
+        "category": "QA Testing",
         "date": "July 4, 2026",
         "excerpt": "When talking about software testing, it is common to hear the terms Manual QA and QA Automation, and even to think that both perform exactly the same work or that one will eventually replace the other. However, the reality is very different. Although both share the same goal of ensuring software quality, each one provides a different approach, set of tools, and responsibilities within the development process.\n\nIn this article, we will explore the main differences between Manual QA and QA Automation, the skills each profile requires, their advantages, the scenarios where they are most effective, and how both complement each other to build more reliable applications. If you are thinking about starting a career in the world of QA or simply want to better understand these two areas, this guide will help you understand which one may best fit your interests and professional goals.",
         "highlights": [

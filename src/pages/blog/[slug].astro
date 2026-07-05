@@ -23,6 +23,7 @@ const articleBodyParagraphs = String(post.body || "")
   .split(/\r?\n\s*\r?\n/)
   .map((paragraph) => paragraph.trim())
   .filter(Boolean);
+const hasArticleShortBody = articleBodyParagraphs.length > 0;
 const articleParagraphs = Array.isArray(post.paragraphs) ? post.paragraphs : [];
 const articleHighlights = Array.isArray(post.highlights) ? post.highlights.filter(Boolean) : [];
 const escapeHtml = (value) =>
@@ -269,7 +270,7 @@ const blogAuthorName = "Jonathan Acevedo López";
         ) : null}
       </section>
 
-      <section class="site-shell site-shell--main blog-article-shell mx-auto mt-10 grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-stretch lg:gap-10">
+      <section class={`site-shell site-shell--main blog-article-shell mx-auto ${hasArticleShortBody ? "mt-10" : "mt-4"} grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,43rem)_minmax(18rem,1fr)] lg:items-stretch lg:gap-10`}>
         <article class="blog-article-prose" aria-labelledby="blog-article-title">
           <div id="blog-article-content">
           {articleBodyParagraphs.length ? (

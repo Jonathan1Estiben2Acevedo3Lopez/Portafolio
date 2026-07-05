@@ -416,7 +416,7 @@ const sectionScrollNudges = {
   projects: 8,
   certificates: 0,
   insights: 0,
-  interests: 0,
+  interests: -10,
 };
 
 function getCopy(path) {
@@ -2280,22 +2280,22 @@ function renderInterestMedia(preserveScroll = false) {
     elements.interestsMediaList.innerHTML = mediaItems
       .map(
         (item) => `
-          <article class="project-card about-mobile-card flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-outline-variant/18 bg-surface-container-highest/90 p-3.5">
-            ${renderInterestVisual(item, "project-visual aspect-[16/10] rounded-[1.3rem]")}
-            <div class="flex h-full flex-col px-1.5 pb-1 pt-4">
-              <div class="flex items-start justify-between gap-4">
+          <article class="project-card about-mobile-card flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-outline-variant/18 bg-surface-container-highest/90 p-2.5">
+            ${renderInterestVisual(item, "project-visual aspect-[16/10] rounded-[1.05rem]")}
+            <div class="flex h-full flex-col px-1 pb-1 pt-3">
+              <div class="flex items-start justify-between gap-3">
                 <div>
-                  <p class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-secondary">${item.category}</p>
-                  <h3 class="mt-2 font-headline text-[1.18rem] font-bold leading-6 tracking-tight text-on-surface">${item.title}</h3>
+                  <p class="text-[0.58rem] font-black uppercase tracking-[0.17em] text-secondary">${item.category}</p>
+                  <h3 class="mt-1.5 font-headline text-[1.02rem] font-bold leading-5 tracking-tight text-on-surface">${item.title}</h3>
                 </div>
-                <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${item.meta}</span>
+                <span class="text-[0.58rem] font-black uppercase tracking-[0.15em] text-on-surface-variant">${item.meta}</span>
               </div>
-              <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
-              <div class="mt-4 flex flex-wrap gap-2">
+              <p class="mt-2.5 text-[0.82rem] leading-5 text-on-surface-variant">${item.description}</p>
+              <div class="mt-3 flex flex-wrap gap-1.5">
                 ${item.tags
                   .map(
                     (tag) => `
-                      <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                      <span class="rounded-full border border-outline-variant/18 bg-background/55 px-2.5 py-1.5 text-[0.56rem] font-black uppercase tracking-[0.14em] text-on-surface-variant">
                         ${tag}
                       </span>
                     `
@@ -2327,19 +2327,19 @@ function renderInterestMedia(preserveScroll = false) {
       return `
         <button
           type="button"
-          class="article-list-card ${activeClass} flex min-h-[9.75rem] flex-col justify-between rounded-[1.45rem] border border-outline-variant/15 bg-surface-container-high/78 p-4 text-left lg:min-h-[10.35rem]"
+          class="article-list-card ${activeClass} flex min-h-[7.2rem] w-full min-w-0 max-w-full flex-col justify-between overflow-hidden rounded-[1.05rem] border border-outline-variant/15 bg-surface-container-high/78 p-2.5 text-left lg:min-h-[7.8rem]"
           data-interest-index="${item.index}"
           aria-pressed="${item.index === state.activeInterest}"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-[0.62rem] font-black uppercase tracking-[0.2em] text-secondary">${item.category}</p>
-              <h3 class="mt-2.5 font-headline text-[1rem] font-bold leading-6 tracking-tight text-on-surface sm:text-[1.08rem]">${item.title}</h3>
+          <div class="min-w-0">
+            <div class="flex items-center justify-between gap-3">
+              <p class="min-w-0 text-[0.56rem] font-black uppercase tracking-[0.17em] text-secondary">${item.category}</p>
+              <span class="shrink-0 text-[0.56rem] font-black uppercase tracking-[0.15em] text-on-surface-variant">${item.meta}</span>
             </div>
-            <span class="text-[0.65rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">${item.meta}</span>
+            <h3 class="article-list-title mt-2 w-full font-headline text-[0.88rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.92rem]">${item.title}</h3>
           </div>
-          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
-          <div class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.18em] ${item.index === state.activeInterest ? "text-primary" : "text-on-surface-variant"}">
+          <p class="article-list-excerpt mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${item.description}</p>
+          <div class="mt-3 inline-flex items-center gap-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] ${item.index === state.activeInterest ? "text-primary" : "text-on-surface-variant"}">
             <span>${item.index === state.activeInterest ? getCopy("interests.cardLabel") : getCopy("interests.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
           </div>
@@ -2353,23 +2353,23 @@ function renderInterestMedia(preserveScroll = false) {
   }
 
   elements.interestsMediaFeature.innerHTML = `
-    <div class="article-feature-card overflow-hidden rounded-[2rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[23.75rem] lg:grid-cols-[minmax(13rem,0.7fr)_minmax(0,1.2fr)]">
-      ${renderInterestVisual(active, "article-visual min-h-[145px] lg:min-h-full")}
-      <div class="glass-panel border-t border-outline-variant/15 p-5 lg:border-l lg:border-t-0 lg:px-6 lg:py-4.5">
-        <div class="flex flex-wrap items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.22em] text-on-surface-variant">
+    <div class="article-feature-card overflow-hidden rounded-[1.4rem] border border-outline-variant/18 bg-surface-container-highest/90 lg:grid lg:min-h-[21rem] lg:grid-cols-[minmax(10rem,0.62fr)_minmax(0,1.18fr)]">
+      ${renderInterestVisual(active, "article-visual min-h-[115px] lg:min-h-full")}
+      <div class="article-feature-content glass-panel min-w-0 border-t border-outline-variant/15 p-3.5 lg:border-l lg:border-t-0 lg:px-4 lg:py-3.5">
+        <div class="flex flex-wrap items-center gap-3 text-[0.6rem] font-black uppercase tracking-[0.18em] text-on-surface-variant">
           <span class="text-primary">${active.category}</span>
           <span>${active.meta}</span>
         </div>
-        <h3 class="mt-4 max-w-3xl font-headline text-[1.7rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[2.35rem]">
+        <h3 class="article-feature-title mt-2.5 max-w-3xl font-headline text-[1.08rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[1.34rem]">
           ${active.title}
         </h3>
-        <p class="mt-4 max-w-3xl text-[0.98rem] leading-7 text-on-surface-variant lg:text-[1.02rem] lg:leading-7">${active.description}</p>
-        <p class="mt-4 max-w-3xl text-[0.96rem] leading-7 text-on-surface-variant lg:text-[1rem] lg:leading-7">${active.body}</p>
-        <div class="mt-5 flex flex-wrap gap-2">
+        <p class="mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.description}</p>
+        <p class="mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.body}</p>
+        <div class="mt-4 flex flex-wrap gap-1.5">
           ${active.tags
             .map(
               (tag) => `
-                <span class="rounded-full border border-outline-variant/18 bg-background/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-on-surface-variant">
+                <span class="rounded-full border border-outline-variant/18 bg-background/55 px-2.5 py-1.5 text-[0.56rem] font-black uppercase tracking-[0.14em] text-on-surface-variant">
                   ${tag}
                 </span>
               `
