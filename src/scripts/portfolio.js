@@ -2076,6 +2076,7 @@ function renderAboutWorkTimeline(group) {
                   const rowClass = index % 2 === 0 ? "about-work-item--top" : "about-work-item--bottom";
                   const branchClass = index % 2 === 0 ? "about-work-branch--top" : "about-work-branch--bottom";
                   const toneClass = `about-work-tone-${index % 3}`;
+                  const hasDetail = Boolean(item.description || item.stack?.length || item.focus?.length || item.skills?.length);
 
                   return `
                     <article
@@ -2083,6 +2084,7 @@ function renderAboutWorkTimeline(group) {
                         item.detailPlacement === "right" ? "about-work-item--detail-right" : ""
                       }"
                       style="--work-column: ${index + 1}"
+                      ${hasDetail ? 'role="button" tabindex="0" aria-expanded="false" data-work-toggle' : ""}
                     >
                       <div class="about-work-summary">
                         <div class="about-work-summary-core">
@@ -2263,6 +2265,35 @@ function toggleAboutAcademicItem(item) {
   });
 
   setAboutAcademicItemOpen(item, shouldOpen);
+}
+
+function setAboutWorkItemOpen(item, open) {
+  item.classList.toggle("is-open", open);
+  item.setAttribute("aria-expanded", String(open));
+
+  if (isMobileViewport()) {
+    if (!open && document.activeElement === item) {
+      item.blur();
+    }
+
+    window.setTimeout(queueSectionMetricsRefresh, 280);
+  }
+}
+
+function toggleAboutWorkItem(item) {
+  if (!isMobileViewport()) {
+    return;
+  }
+
+  const shouldOpen = !item.classList.contains("is-open");
+
+  elements.aboutProfileGrid?.querySelectorAll("[data-work-toggle].is-open").forEach((openItem) => {
+    if (openItem !== item) {
+      setAboutWorkItemOpen(openItem, false);
+    }
+  });
+
+  setAboutWorkItemOpen(item, shouldOpen);
 }
 
 function renderInterestFilters() {
@@ -2591,6 +2622,27 @@ let activeSectionFrame = null;
 let sectionMetricsFrame = null;
 let deferredSectionsFrame = null;
 let initialMobileHomeResetTimer = null;
+let initialMobileHomeResetTimeouts = [];
+
+function cancelInitialMobileHomeReset() {
+  if (!state.initialMobileHomeResetActive && initialMobileHomeResetTimer === null) {
+    return;
+  }
+
+  state.initialMobileHomeResetActive = false;
+  initialMobileHomeResetTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+  initialMobileHomeResetTimeouts = [];
+
+  if (initialMobileHomeResetTimer !== null) {
+    window.clearTimeout(initialMobileHomeResetTimer);
+    initialMobileHomeResetTimer = null;
+  }
+
+  window.removeEventListener("touchstart", cancelInitialMobileHomeReset);
+  window.removeEventListener("wheel", cancelInitialMobileHomeReset);
+  window.removeEventListener("keydown", cancelInitialMobileHomeReset);
+  window.removeEventListener("pointerdown", cancelInitialMobileHomeReset);
+}
 
 function resetInitialMobileScrollToHome() {
   if (!state.initialMobileHomeResetActive || !isMobileViewport()) {
@@ -2610,13 +2662,17 @@ function queueInitialMobileHomeReset() {
     return;
   }
 
-  [0, 80, 220, 520, 900].forEach((delay) => {
-    window.setTimeout(resetInitialMobileScrollToHome, delay);
+  window.addEventListener("touchstart", cancelInitialMobileHomeReset, { passive: true });
+  window.addEventListener("wheel", cancelInitialMobileHomeReset, { passive: true });
+  window.addEventListener("keydown", cancelInitialMobileHomeReset);
+  window.addEventListener("pointerdown", cancelInitialMobileHomeReset, { passive: true });
+
+  initialMobileHomeResetTimeouts = [0, 80, 220, 520, 900].map((delay) => {
+    return window.setTimeout(resetInitialMobileScrollToHome, delay);
   });
 
   initialMobileHomeResetTimer = window.setTimeout(() => {
-    state.initialMobileHomeResetActive = false;
-    initialMobileHomeResetTimer = null;
+    cancelInitialMobileHomeReset();
   }, 1100);
 }
 
@@ -3136,9 +3192,15 @@ function wireEvents() {
   elements.aboutProfileGrid?.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
     const academicItem = target?.closest("[data-academic-toggle]");
+    const workItem = target?.closest("[data-work-toggle]");
 
     if (academicItem) {
       toggleAboutAcademicItem(academicItem);
+      return;
+    }
+
+    if (workItem) {
+      toggleAboutWorkItem(workItem);
     }
   });
 
@@ -3148,10 +3210,17 @@ function wireEvents() {
     }
 
     const academicItem = event.target.closest("[data-academic-toggle]");
+    const workItem = event.target.closest("[data-work-toggle]");
 
     if (academicItem) {
       event.preventDefault();
       toggleAboutAcademicItem(academicItem);
+      return;
+    }
+
+    if (workItem) {
+      event.preventDefault();
+      toggleAboutWorkItem(workItem);
     }
   });
 
