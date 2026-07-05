@@ -1,7 +1,18 @@
-import { BookOpenText, Boxes, FileBadge2, Rocket, Sparkles, UserRound } from "lucide-react";
+import { BookOpenText, Boxes, FileBadge2, IdCard, Rocket, Sparkles, UserRound } from "lucide-react";
 import type { StudioSection } from "../types";
 
 export const studioSections: StudioSection[] = [
+  {
+    id: "profile",
+    title: "Perfil",
+    eyebrow: "Identidad",
+    description: "Edita texto principal, frase humana, correo, CV y enlaces sociales del portafolio.",
+    metric: "Datos base",
+    detail: "Contenido base en src/data/profile.json",
+    accent: "violet",
+    icon: IdCard,
+    actions: ["Editar perfil"],
+  },
   {
     id: "about",
     title: "Sobre mi",

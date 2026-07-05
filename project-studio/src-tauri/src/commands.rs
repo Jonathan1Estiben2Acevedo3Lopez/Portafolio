@@ -14,6 +14,7 @@ use std::os::windows::process::CommandExt;
 
 const IMAGE_EXTENSIONS: &[&str] = &["png", "jpg", "jpeg", "webp", "gif", "svg"];
 const CERTIFICATE_EXTENSIONS: &[&str] = &["pdf", "png", "jpg", "jpeg", "webp"];
+const PDF_EXTENSIONS: &[&str] = &["pdf"];
 const PREVIEW_SLUG: &str = "studio-preview";
 const PREVIEW_PORT: u16 = 4321;
 #[cfg(target_os = "windows")]
@@ -303,6 +304,7 @@ pub struct BlogInput {
 pub struct InterestInput {
     filter: String,
     visual_class: String,
+    image: Option<String>,
     category: String,
     title: String,
     meta: String,
@@ -315,6 +317,23 @@ pub struct InterestInput {
     description_en: Option<String>,
     body_en: Option<String>,
     tags_en: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProfileInput {
+    name: String,
+    full_name: String,
+    initials: String,
+    email: String,
+    linkedin: String,
+    github: String,
+    gitlab: String,
+    cv_path: String,
+    description: String,
+    focus: String,
+    description_en: Option<String>,
+    focus_en: Option<String>,
 }
 
 #[tauri::command]
@@ -473,6 +492,29 @@ pub fn get_studio_content(kind: String, key: String) -> Result<Value, String> {
 }
 
 #[tauri::command]
+pub fn get_profile() -> Result<Value, String> {
+    let root_dir = portfolio_root()?;
+    let file_path = profile_file(&root_dir);
+
+    read_json_value(&file_path)
+}
+
+#[tauri::command]
+pub fn save_profile(input: ProfileInput) -> Result<SavedContent, String> {
+    let root_dir = portfolio_root()?;
+    let file_path = profile_file(&root_dir);
+    let profile = build_profile_value(&input)?;
+
+    write_json_file(&file_path, &profile)?;
+
+    Ok(SavedContent {
+        key: "profile".to_string(),
+        file_path: display_path(&file_path),
+        total_items: 1,
+    })
+}
+
+#[tauri::command]
 pub fn set_studio_content_hidden(
     kind: String,
     key: String,
@@ -556,6 +598,42 @@ pub fn pick_certificate_file(source: String) -> Result<Option<PickedCertificateF
         file_type,
         mime,
     }))
+}
+
+#[tauri::command]
+pub fn pick_profile_cv(source: String) -> Result<Option<String>, String> {
+    let source = source.trim().to_lowercase();
+    let root_dir = portfolio_root()?;
+    let public_dir = root_dir.join("public");
+    let cv_dir = public_dir.join("cv");
+    fs::create_dir_all(&cv_dir).map_err(|error| error.to_string())?;
+
+    let mut dialog = rfd::FileDialog::new().add_filter("PDF", PDF_EXTENSIONS);
+    if source == "existing" {
+        dialog = dialog.set_directory(&public_dir);
+    }
+
+    let Some(selected_path) = dialog.pick_file() else {
+        return Ok(None);
+    };
+
+    if !is_pdf_file(&selected_path) {
+        return Err("Selecciona un archivo PDF valido.".to_string());
+    }
+
+    if source == "existing" {
+        if let Some(url) = public_url_for_path(&public_dir, &selected_path)? {
+            return Ok(Some(url));
+        }
+
+        return copy_profile_cv_to_assets(&public_dir, &selected_path).map(Some);
+    }
+
+    if source == "import" {
+        return copy_profile_cv_to_assets(&public_dir, &selected_path).map(Some);
+    }
+
+    Err("Origen de CV no valido.".to_string())
 }
 
 #[tauri::command]
@@ -1247,6 +1325,10 @@ fn about_file(root_dir: &Path) -> PathBuf {
     root_dir.join("src").join("data").join("about.json")
 }
 
+fn profile_file(root_dir: &Path) -> PathBuf {
+    root_dir.join("src").join("data").join("profile.json")
+}
+
 fn list_about_items(root_dir: &Path) -> Result<Vec<StudioContentItem>, String> {
     let file_path = about_file(root_dir);
     let about = read_json_value(&file_path)?;
@@ -1849,9 +1931,11 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
     let category_en = optional_or(&input.category_en, &category);
     let date_en = optional_or(&input.date_en, &date);
     let read_time_en = optional_or(&input.read_time_en, &read_time);
-    let introduction_en = clean_optional(input.introduction_en.as_deref()).unwrap_or_else(|| introduction.clone());
+    let introduction_en =
+        clean_optional(input.introduction_en.as_deref()).unwrap_or_else(|| introduction.clone());
     let image_credit = clean_optional(input.image_credit.as_deref());
-    let image_credit_en = clean_optional(input.image_credit_en.as_deref()).or_else(|| image_credit.clone());
+    let image_credit_en =
+        clean_optional(input.image_credit_en.as_deref()).or_else(|| image_credit.clone());
     let paragraphs_en = {
         let parsed = blog_blocks_from_text(input.paragraphs_en.as_deref().unwrap_or(""));
         if parsed.is_empty() {
@@ -1928,6 +2012,46 @@ fn build_blog_value(input: &BlogInput, slug: &str) -> Result<Value, String> {
     Ok(post)
 }
 
+fn build_profile_value(input: &ProfileInput) -> Result<Value, String> {
+    let name = clean_required(&input.name, "El nombre visible del perfil es obligatorio.")?;
+    let full_name = clean_required(
+        &input.full_name,
+        "El nombre completo del perfil es obligatorio.",
+    )?;
+    let email = clean_required(
+        &input.email,
+        "El correo electronico del perfil es obligatorio.",
+    )?;
+    let description = clean_required(
+        &input.description,
+        "El texto principal del perfil es obligatorio.",
+    )?;
+    let focus = clean_required(&input.focus, "La frase del perfil es obligatoria.")?;
+    let description_en = optional_or(&input.description_en, &description);
+    let focus_en = optional_or(&input.focus_en, &focus);
+
+    Ok(json!({
+     "name": name,
+     "fullName": full_name,
+     "initials": fallback(&input.initials, "JEAL"),
+     "email": email,
+     "linkedin": fallback(&input.linkedin, ""),
+     "github": fallback(&input.github, ""),
+     "gitlab": fallback(&input.gitlab, ""),
+     "cvPath": fallback(&input.cv_path, ""),
+     "copy": {
+      "es": {
+       "description": description,
+       "focus": focus
+      },
+      "en": {
+       "description": description_en,
+       "focus": focus_en
+      }
+     }
+    }))
+}
+
 fn build_interest_value(input: &InterestInput, title: &str) -> Result<Value, String> {
     let category = fallback(&input.category, "Intereses");
     let meta = fallback(&input.meta, "Referencia");
@@ -1951,7 +2075,7 @@ fn build_interest_value(input: &InterestInput, title: &str) -> Result<Value, Str
         }
     };
 
-    Ok(json!({
+    let mut interest = json!({
      "filter": fallback(&input.filter, "movies"),
      "visualClass": fallback(&input.visual_class, "visual-cinema"),
      "copy": {
@@ -1972,7 +2096,13 @@ fn build_interest_value(input: &InterestInput, title: &str) -> Result<Value, Str
        "tags": tags_en
       }
      }
-    }))
+    });
+
+    if let Some(image) = clean_optional(input.image.as_deref()) {
+        interest["image"] = json!(image);
+    }
+
+    Ok(interest)
 }
 
 fn blog_blocks_from_text(value: &str) -> Vec<String> {
@@ -2346,6 +2476,17 @@ fn is_certificate_file(path: &Path) -> bool {
         .unwrap_or(false)
 }
 
+fn is_pdf_file(path: &Path) -> bool {
+    path.extension()
+        .and_then(|extension| extension.to_str())
+        .map(|extension| {
+            PDF_EXTENSIONS
+                .iter()
+                .any(|allowed| extension.eq_ignore_ascii_case(allowed))
+        })
+        .unwrap_or(false)
+}
+
 fn copy_image_to_assets(
     public_dir: &Path,
     source_path: &Path,
@@ -2374,6 +2515,27 @@ fn copy_image_to_assets(
     fs::copy(source_path, &destination).map_err(|error| error.to_string())?;
     public_url_for_path(public_dir, &destination)?
         .ok_or_else(|| "No se pudo generar la ruta publica de la imagen.".to_string())
+}
+
+fn copy_profile_cv_to_assets(public_dir: &Path, source_path: &Path) -> Result<String, String> {
+    let cv_dir = public_dir.join("cv");
+    fs::create_dir_all(&cv_dir).map_err(|error| error.to_string())?;
+    let stem = source_path
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .map(slugify)
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| "cv".to_string());
+    let extension = source_path
+        .extension()
+        .and_then(|value| value.to_str())
+        .map(|value| value.to_lowercase())
+        .ok_or_else(|| "El PDF seleccionado no tiene extension.".to_string())?;
+    let destination = unique_asset_path(&cv_dir, &stem, &extension);
+
+    fs::copy(source_path, &destination).map_err(|error| error.to_string())?;
+    public_url_for_path(public_dir, &destination)?
+        .ok_or_else(|| "No se pudo generar la ruta publica del CV.".to_string())
 }
 
 fn copy_certificate_to_dir(certificates_dir: &Path, source_path: &Path) -> Result<PathBuf, String> {

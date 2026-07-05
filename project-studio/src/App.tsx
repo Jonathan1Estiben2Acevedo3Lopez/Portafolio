@@ -34,6 +34,7 @@ import type {
   CreatedProject,
   DevelopmentFormState,
   InterestFormState,
+  ProfileFormState,
   PickedCertificateFile,
   ProjectPreviewResult,
   ProjectExtraLink,
@@ -163,6 +164,7 @@ const defaultBlogForm = (): BlogFormState => ({
 const defaultInterestForm = (): InterestFormState => ({
   filter: "movies",
   visualClass: "visual-cinema",
+  image: "",
   category: "Peliculas",
   title: "",
   meta: "",
@@ -175,6 +177,23 @@ const defaultInterestForm = (): InterestFormState => ({
   descriptionEn: "",
   bodyEn: "",
   tagsEn: "",
+});
+
+const defaultProfileForm = (): ProfileFormState => ({
+  name: "JONATHAN ACEVEDO",
+  fullName: "Jonathan Estiben Acevedo López",
+  initials: "JEAL",
+  email: "jonalopezacevedo@gmail.com",
+  linkedin: "https://www.linkedin.com/in/jonathan-estiben-acevedo-l%C3%B3pez-066b3226a",
+  github: "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
+  gitlab: "https://gitlab.com/JonathanAcevedo",
+  cvPath: "/CV_Jonathan_Acevedo.pdf",
+  description:
+    "Me considero una persona curiosa, apasionada por los retos y por encontrar soluciones innovadoras. Disfruto relacionarme con las personas, enfrentar nuevos desafíos y trabajar en equipo para crecer, aportar y generar un impacto positivo.",
+  focus: "\"Lo profesional empieza por lo humano.\"",
+  descriptionEn:
+    "I consider myself a curious person, passionate about challenges and about finding innovative solutions. I enjoy connecting with people, facing new challenges and working as a team to grow, contribute and create a positive impact.",
+  focusEn: "\"Professional work starts with the human side.\"",
 });
 
 const defaultAboutForm = (group: AboutGroupKind = "education"): AboutFormState => ({
@@ -280,6 +299,11 @@ const fieldHints = {
   developmentCover: "Imagen de portada para la tarjeta de En desarrollo. Puede ser una ruta de public o una URL.",
   developmentProgress: "Porcentaje de avance visible en la tarjeta. Usa un numero entre 0 y 100.",
   developmentCertificateUrl: "Enlace opcional al certificado online. Solo se muestra cuando el tipo es Certificado.",
+  interestImage: "Imagen de portada del interes. Puede ser una ruta de public o una URL externa.",
+  profileDescription: "Texto principal que aparece en el hero del portafolio.",
+  profileFocus: "Frase corta que aparece en la tarjeta de enfoque del hero.",
+  profileCvPath: "Ruta del CV en public o URL externa. Ejemplo: /CV_Jonathan_Acevedo.pdf.",
+  profileLink: "Enlace usado en los botones y en la seccion de contacto.",
   blogTitle: "Titulo publico de la nota. Aparece en la lista, en el destacado y en la pagina del blog.",
   blogSlug: "Identificador de la URL. Usa minusculas, numeros y guiones. Ejemplo: automatizaciones-qa.",
   blogCategory: "Categoria visible y filtro publico de la nota. Ejemplo: Automatizaciones, QA, Diseno.",
@@ -321,6 +345,7 @@ type ImagePickTarget =
   | { kind: "developmentCover" }
   | { kind: "blogCover" }
   | { kind: "blogArticleImage" }
+  | { kind: "interestImage" }
   | { kind: "gallery"; index: number }
   | { kind: "videoPoster"; index: number }
   | { kind: "collaboratorPhoto"; index: number };
@@ -703,6 +728,7 @@ const normalizeInterestToForm = (interest: Record<string, any>): InterestFormSta
     ...form,
     filter: interest.filter ?? form.filter,
     visualClass: interest.visualClass ?? form.visualClass,
+    image: interest.image ?? "",
     category: copyEs.category ?? form.category,
     title: copyEs.title ?? "",
     meta: copyEs.meta ?? "",
@@ -715,6 +741,28 @@ const normalizeInterestToForm = (interest: Record<string, any>): InterestFormSta
     descriptionEn: copyEn.description ?? "",
     bodyEn: copyEn.body ?? "",
     tagsEn: joinCommaList(copyEn.tags),
+  };
+};
+
+const normalizeProfileToForm = (profile: Record<string, any>): ProfileFormState => {
+  const form = defaultProfileForm();
+  const copyEs = profile.copy?.es ?? {};
+  const copyEn = profile.copy?.en ?? {};
+
+  return {
+    ...form,
+    name: profile.name ?? form.name,
+    fullName: profile.fullName ?? form.fullName,
+    initials: profile.initials ?? form.initials,
+    email: profile.email ?? form.email,
+    linkedin: profile.linkedin ?? form.linkedin,
+    github: profile.github ?? form.github,
+    gitlab: profile.gitlab ?? form.gitlab,
+    cvPath: profile.cvPath ?? form.cvPath,
+    description: copyEs.description ?? form.description,
+    focus: copyEs.focus ?? form.focus,
+    descriptionEn: copyEn.description ?? "",
+    focusEn: copyEn.focus ?? "",
   };
 };
 
@@ -1459,6 +1507,7 @@ function App() {
   const [workspaceView, setWorkspaceView] = useState<
     | "home"
     | "section-detail"
+    | "profile-edit"
     | "project-create"
     | "about-edit"
     | "development-edit"
@@ -1466,6 +1515,7 @@ function App() {
     | "blog-edit"
     | "interest-edit"
   >("home");
+  const [profileForm, setProfileForm] = useState<ProfileFormState>(() => defaultProfileForm());
   const [projectForm, setProjectForm] = useState<ProjectFormState>(() => defaultProjectForm());
   const [aboutForm, setAboutForm] = useState<AboutFormState>(() => defaultAboutForm());
   const [developmentForm, setDevelopmentForm] = useState<DevelopmentFormState>(() => defaultDevelopmentForm());
@@ -1558,7 +1608,17 @@ function App() {
     }
   };
 
+  const loadProfile = async () => {
+    try {
+      const profile = await invoke<Record<string, any>>("get_profile");
+      setProfileForm(normalizeProfileToForm(profile));
+    } catch {
+      setProfileForm(defaultProfileForm());
+    }
+  };
+
   useEffect(() => {
+    loadProfile();
     loadProjects();
   }, []);
 
@@ -1730,6 +1790,13 @@ function App() {
     setInterestForm((current) => ({ ...current, [field]: value }));
   };
 
+  const updateProfileField = <Key extends keyof ProfileFormState>(
+    field: Key,
+    value: ProfileFormState[Key],
+  ) => {
+    setProfileForm((current) => ({ ...current, [field]: value }));
+  };
+
   const addOptionalItem = (listKey: OptionalListKey) => {
     setProjectForm((current) => ({
       ...current,
@@ -1803,6 +1870,8 @@ function App() {
         ? developmentForm.id || slugify(developmentForm.title) || "en-desarrollo"
         : target.kind === "blogCover" || target.kind === "blogArticleImage"
           ? blogForm.slug || slugify(blogForm.title) || "blog"
+        : target.kind === "interestImage"
+          ? slugify(interestForm.title) || "interes"
         : projectForm.slug || slugify(projectForm.title) || "nuevo-proyecto";
       const pickedImage = await invoke<string | null>("pick_project_image", {
         source,
@@ -1821,6 +1890,8 @@ function App() {
         updateBlogField("cover", pickedImage);
       } else if (target.kind === "blogArticleImage") {
         updateBlogField("articleImage", pickedImage);
+      } else if (target.kind === "interestImage") {
+        updateInterestField("image", pickedImage);
       } else if (target.kind === "gallery") {
         updateOptionalItem("images", target.index, "src", pickedImage);
       } else if (target.kind === "videoPoster") {
@@ -1864,6 +1935,34 @@ function App() {
       </button>
     </div>
   );
+
+  const pickProfileCv = async (source: ImagePickSource) => {
+    setContentError("");
+    setContentResult(null);
+    setImagePickMessage(null);
+
+    try {
+      const pickedCv = await invoke<string | null>("pick_profile_cv", { source });
+
+      if (!pickedCv) {
+        return;
+      }
+
+      updateProfileField("cvPath", pickedCv);
+      setImagePickMessage({
+        tone: "success",
+        text:
+          source === "import"
+            ? `PDF importado: ${pickedCv}`
+            : `PDF seleccionado: ${pickedCv}`,
+      });
+    } catch (error) {
+      setImagePickMessage({
+        tone: "error",
+        text: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
 
   const handleOpenLivePreview = async () => {
     setProjectError("");
@@ -1977,6 +2076,15 @@ function App() {
     }
   };
 
+  const openProfileEditor = async () => {
+    setActiveSection("profile");
+    setWorkspaceView("profile-edit");
+    setContentError("");
+    setContentResult(null);
+    setImagePickMessage(null);
+    await loadProfile();
+  };
+
   const openDevelopmentEditor = (mode: "new" | "edit" = "new") => {
     setActiveSection("development");
     setWorkspaceView("development-edit");
@@ -2023,6 +2131,7 @@ function App() {
     setWorkspaceView("interest-edit");
     setContentError("");
     setContentResult(null);
+    setImagePickMessage(null);
 
     if (mode === "new") {
       setInterestForm(defaultInterestForm());
@@ -2075,6 +2184,11 @@ function App() {
   };
 
   const handleSectionAction = (action: string) => {
+    if (selected.id === "profile" && action === "Editar perfil") {
+      openProfileEditor();
+      return;
+    }
+
     if (selected.id === "development") {
       if (action === "Agregar elemento") {
         openDevelopmentEditor("new");
@@ -2137,6 +2251,23 @@ function App() {
       if (action === "Ajustar etiquetas") {
         loadContent("interests");
       }
+    }
+  };
+
+  const handleSaveProfile = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContentError("");
+    setContentResult(null);
+    setIsSavingContent(true);
+
+    try {
+      const result = await invoke<SavedContent>("save_profile", { input: profileForm });
+      setContentResult(result);
+      await loadProfile();
+    } catch (error) {
+      setContentError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsSavingContent(false);
     }
   };
 
@@ -2505,6 +2636,8 @@ function App() {
   const editorTitle =
     workspaceView === "section-detail"
       ? selected.title
+      : workspaceView === "profile-edit"
+      ? "Editar perfil"
       : workspaceView === "project-create"
       ? editingSlug
         ? "Editar proyecto"
@@ -2535,6 +2668,8 @@ function App() {
   const editorEyebrow =
     workspaceView === "section-detail"
       ? selected.eyebrow
+      : workspaceView === "profile-edit"
+      ? "Perfil"
       : workspaceView === "project-create"
       ? "Proyectos"
       : workspaceView === "about-edit"
@@ -2549,7 +2684,9 @@ function App() {
             ? "Intereses"
             : "";
   const resetCurrentEditor = () => {
-    if (workspaceView === "project-create") {
+    if (workspaceView === "profile-edit") {
+      loadProfile();
+    } else if (workspaceView === "project-create") {
       resetProjectForm();
     } else if (workspaceView === "about-edit") {
       openAboutEditor("new", aboutForm.group);
@@ -3055,7 +3192,173 @@ function App() {
             className="project-creator-layout"
             aria-label="Formulario de contenido"
           >
-            {workspaceView === "project-create" ? (
+            {workspaceView === "profile-edit" ? (
+              <form className="project-form-panel" onSubmit={handleSaveProfile}>
+                <div className="form-scroll">
+                  <div className="form-section-heading">
+                    <span className="section-label">Perfil</span>
+                    <h3>Identidad y hero del portafolio</h3>
+                  </div>
+
+                  <div className="form-grid">
+                    <label className="field">
+                      <span className="compact-label">Nombre visible</span>
+                      <input
+                        value={profileForm.name}
+                        onChange={(event) => updateProfileField("name", event.target.value)}
+                        required
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Nombre completo</span>
+                      <input
+                        value={profileForm.fullName}
+                        onChange={(event) => updateProfileField("fullName", event.target.value)}
+                        required
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Iniciales</span>
+                      <input
+                        value={profileForm.initials}
+                        onChange={(event) => updateProfileField("initials", event.target.value)}
+                      />
+                    </label>
+                    <label className="field">
+                      <span className="compact-label">Correo electronico</span>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(event) => updateProfileField("email", event.target.value)}
+                        required
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileDescription}>Texto principal ES</FieldLabel>
+                      <textarea
+                        value={profileForm.description}
+                        onChange={(event) => updateProfileField("description", event.target.value)}
+                        rows={4}
+                        required
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileFocus}>Frase ES</FieldLabel>
+                      <input
+                        value={profileForm.focus}
+                        onChange={(event) => updateProfileField("focus", event.target.value)}
+                        required
+                      />
+                    </label>
+                    <div className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileCvPath}>CV para descargar / visualizar</FieldLabel>
+                      <div className="media-picker-row">
+                        <input
+                          value={profileForm.cvPath}
+                          onChange={(event) => updateProfileField("cvPath", event.target.value)}
+                          placeholder="/CV_Jonathan_Acevedo.pdf o https://..."
+                        />
+                        <div className="media-picker-actions">
+                          <button
+                            type="button"
+                            className="media-picker-button"
+                            onClick={() => {
+                              updateProfileField("cvPath", "");
+                              setContentResult(null);
+                              setImagePickMessage(null);
+                            }}
+                            disabled={!profileForm.cvPath.trim()}
+                          >
+                            <Trash2 size={15} strokeWidth={2.2} />
+                            Quitar
+                          </button>
+                          <button
+                            type="button"
+                            className="media-picker-button"
+                            onClick={() => pickProfileCv("import")}
+                          >
+                            <FolderOpen size={15} strokeWidth={2.2} />
+                            Importar PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="media-picker-button"
+                            onClick={() => pickProfileCv("existing")}
+                          >
+                            <FolderOpen size={15} strokeWidth={2.2} />
+                            Elegir del portafolio
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileLink}>LinkedIn</FieldLabel>
+                      <input
+                        value={profileForm.linkedin}
+                        onChange={(event) => updateProfileField("linkedin", event.target.value)}
+                        placeholder="https://www.linkedin.com/in/..."
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileLink}>GitHub</FieldLabel>
+                      <input
+                        value={profileForm.github}
+                        onChange={(event) => updateProfileField("github", event.target.value)}
+                        placeholder="https://github.com/..."
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.profileLink}>GitLab</FieldLabel>
+                      <input
+                        value={profileForm.gitlab}
+                        onChange={(event) => updateProfileField("gitlab", event.target.value)}
+                        placeholder="https://gitlab.com/..."
+                      />
+                    </label>
+                  </div>
+
+                  <div className="form-section-heading">
+                    <span className="section-label">English</span>
+                    <h3>Textos del hero en ingles</h3>
+                  </div>
+                  <div className="form-grid">
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.englishFallback}>Main text EN</FieldLabel>
+                      <textarea
+                        value={profileForm.descriptionEn}
+                        onChange={(event) => updateProfileField("descriptionEn", event.target.value)}
+                        rows={4}
+                      />
+                    </label>
+                    <label className="field field-wide">
+                      <FieldLabel hint={fieldHints.englishFallback}>Focus phrase EN</FieldLabel>
+                      <input
+                        value={profileForm.focusEn}
+                        onChange={(event) => updateProfileField("focusEn", event.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  {imagePickMessage && (
+                    <p className={`form-message is-${imagePickMessage.tone}`}>{imagePickMessage.text}</p>
+                  )}
+                  {contentError && <p className="form-message is-error">{contentError}</p>}
+                  {contentResult && (
+                    <div className="form-message is-success">
+                      <strong>Perfil guardado</strong>
+                      <span>{contentResult.filePath}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="form-footer">
+                  <button type="button" className="secondary-button" onClick={loadProfile}>Restaurar archivo</button>
+                  <button type="submit" className="primary-button" disabled={isSavingContent}>
+                    <Save size={17} strokeWidth={2.2} />
+                    {isSavingContent ? "Guardando..." : "Guardar perfil"}
+                  </button>
+                </div>
+              </form>
+            ) : workspaceView === "project-create" ? (
             <form className="project-form-panel" onSubmit={handleCreateProject}>
               <div className="form-scroll">
                 <div className="form-section-heading">
@@ -4774,6 +5077,17 @@ function App() {
                       <span className="compact-label">Visual class</span>
                       <input value={interestForm.visualClass} onChange={(event) => updateInterestField("visualClass", event.target.value)} />
                     </label>
+                    <div className="field field-wide">
+                      <FieldLabel hint={fieldHints.interestImage}>Imagen de portada</FieldLabel>
+                      <div className="media-picker-row">
+                        <input
+                          value={interestForm.image}
+                          onChange={(event) => updateInterestField("image", event.target.value)}
+                          placeholder="/interest-assets/mi-interes.webp o https://..."
+                        />
+                        {renderImagePickerActions({ kind: "interestImage" })}
+                      </div>
+                    </div>
                     <label className="field field-wide">
                       <span className="compact-label">Meta ES</span>
                       <input value={interestForm.meta} onChange={(event) => updateInterestField("meta", event.target.value)} placeholder="Serie / estructura narrativa" />
@@ -4823,6 +5137,9 @@ function App() {
                     </label>
                   </div>
 
+                  {imagePickMessage && (
+                    <p className={`form-message is-${imagePickMessage.tone}`}>{imagePickMessage.text}</p>
+                  )}
                   {contentError && <p className="form-message is-error">{contentError}</p>}
                   {contentResult && (
                     <div className="form-message is-success">

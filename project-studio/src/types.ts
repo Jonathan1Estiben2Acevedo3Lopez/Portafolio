@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-export type StudioSectionId = "about" | "development" | "projects" | "certificates" | "blog" | "interests";
+export type StudioSectionId = "profile" | "about" | "development" | "projects" | "certificates" | "blog" | "interests";
 
 export type StudioAccent = "cyan" | "violet" | "rose" | "mint";
 
@@ -250,6 +250,7 @@ export interface BlogFormState {
 export interface InterestFormState {
   filter: string;
   visualClass: string;
+  image: string;
   category: string;
   title: string;
   meta: string;
@@ -262,4 +263,19 @@ export interface InterestFormState {
   descriptionEn: string;
   bodyEn: string;
   tagsEn: string;
+}
+
+export interface ProfileFormState {
+  name: string;
+  fullName: string;
+  initials: string;
+  email: string;
+  linkedin: string;
+  github: string;
+  gitlab: string;
+  cvPath: string;
+  description: string;
+  focus: string;
+  descriptionEn: string;
+  focusEn: string;
 }

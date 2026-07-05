@@ -3,9 +3,14 @@ import { Image } from "astro:assets";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import portraitImage from "../assets/Jonathan_Acevedo.webp";
+import profileData from "../data/profile.json";
 import "../styles/global.css";
 
-const cvFileExists = existsSync(resolve(process.cwd(), "public", "CV_Jonathan_Acevedo.pdf"));
+const profileCvPath = typeof profileData.cvPath === "string" ? profileData.cvPath.trim() : "";
+const cvFileExists = profileCvPath
+  ? /^(?:[a-z][a-z\d+\-.]*:|#)/i.test(profileCvPath) ||
+    existsSync(resolve(process.cwd(), "public", profileCvPath.replace(/^\//, "")))
+  : false;
 const baseUrl = import.meta.env.BASE_URL || "/";
 const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${path.replace(/^\//, "")}`;
 ---

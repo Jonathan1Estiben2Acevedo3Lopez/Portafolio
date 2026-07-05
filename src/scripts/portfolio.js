@@ -3,6 +3,7 @@ import blogPosts from "../data/blog.json";
 import certificateCards from "../data/certificates.json";
 import developmentItems from "../data/development.json";
 import interestCards from "../data/interests.json";
+import profileData from "../data/profile.json";
 import projectCards from "../data/projects.generated.json";
 import pdfJsWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 
@@ -45,7 +46,7 @@ const getLocalizedSection = ({ copy, ...section }, language) => ({
   ...(copy?.[language] ?? copy?.es ?? {}),
 });
 
-const profile = {
+const defaultProfile = {
   name: "JONATHAN ACEVEDO",
   fullName: "Jonathan Estiben Acevedo López",
   initials: "JEAL",
@@ -54,6 +55,32 @@ const profile = {
   github: "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
   gitlab: "https://gitlab.com/JonathanAcevedo",
   cvPath: "/CV_Jonathan_Acevedo.pdf",
+  copy: {
+    es: {
+      description:
+        "Me considero una persona curiosa, apasionada por los retos y por encontrar soluciones innovadoras. Disfruto relacionarme con las personas, enfrentar nuevos desafíos y trabajar en equipo para crecer, aportar y generar un impacto positivo.",
+      focus: '"Lo profesional empieza por lo humano."',
+    },
+    en: {
+      description:
+        "I consider myself a curious person, passionate about challenges and about finding innovative solutions. I enjoy connecting with people, facing new challenges and working as a team to grow, contribute and create a positive impact.",
+      focus: '"Professional work starts with the human side."',
+    },
+  },
+};
+const profile = {
+  ...defaultProfile,
+  ...profileData,
+  copy: {
+    es: {
+      ...defaultProfile.copy.es,
+      ...(profileData.copy?.es ?? {}),
+    },
+    en: {
+      ...defaultProfile.copy.en,
+      ...(profileData.copy?.en ?? profileData.copy?.es ?? {}),
+    },
+  },
 };
 
 const content = {

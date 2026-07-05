@@ -1,0 +1,20 @@
+{
+  "name": "JONATHAN ACEVEDO",
+  "fullName": "Jonathan Estiben Acevedo López",
+  "initials": "JEAL",
+  "email": "jonalopezacevedo@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/jonathan-estiben-acevedo-l%C3%B3pez-066b3226a",
+  "github": "https://github.com/Jonathan1Estiben2Acevedo3Lopez",
+  "gitlab": "https://gitlab.com/JonathanAcevedo",
+  "cvPath": "/CV_Jonathan_Acevedo.pdf",
+  "copy": {
+    "es": {
+      "description": "Me considero una persona curiosa, apasionada por los retos y por encontrar soluciones innovadoras. Disfruto relacionarme con las personas, enfrentar nuevos desafíos y trabajar en equipo para crecer, aportar y generar un impacto positivo.",
+      "focus": "\"Lo profesional empieza por lo humano.\""
+    },
+    "en": {
+      "description": "I consider myself a curious person, passionate about challenges and about finding innovative solutions. I enjoy connecting with people, facing new challenges and working as a team to grow, contribute and create a positive impact.",
+      "focus": "\"Professional work starts with the human side.\""
+    }
+  }
+}
