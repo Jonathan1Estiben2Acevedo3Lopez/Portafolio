@@ -3306,7 +3306,6 @@ function wireEvents() {
   queueInitialMobileHomeReset();
   wireScrollButtons();
   [
-    elements.developmentGrid,
     elements.projectsGrid,
     elements.certificatesGrid,
     elements.articlesList,

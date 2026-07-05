@@ -4237,6 +4237,18 @@ body.project-preview-open {
   }
 }
 
+@media (max-width: 767px) {
+  .development-grid {
+    overscroll-behavior-x: auto;
+    scroll-snap-type: none;
+    touch-action: auto;
+  }
+
+  .development-grid > .development-card {
+    scroll-snap-align: none;
+  }
+}
+
 @media (min-width: 1024px) {
   .development-grid {
     --development-card-width: min(29vw, 18.5rem);
@@ -5928,7 +5940,11 @@ header,
   }
 
   #development-filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
     margin-top: 0.15rem;
+    overflow: visible;
     padding-top: 0.22rem;
   }
 
@@ -5955,6 +5971,31 @@ header,
   #interests-media-filters .filter-chip {
     flex: 0 0 auto;
     white-space: nowrap;
+  }
+
+  #development-filters .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    width: 100%;
+    padding: 0.66rem 0.42rem;
+    font-size: clamp(0.52rem, 2.55vw, 0.66rem);
+    letter-spacing: clamp(0.02em, 0.75vw, 0.1em);
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 359px) {
+    #development-filters {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #development-filters .filter-chip:first-child {
+      grid-column: 1 / -1;
+    }
   }
 
   #articles-list.articles-scroll-column {
