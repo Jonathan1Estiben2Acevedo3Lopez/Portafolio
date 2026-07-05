@@ -408,6 +408,7 @@ const elements = {
   mobileMenu: document.getElementById("mobile-menu"),
   mobileLinks: document.querySelectorAll(".mobile-link"),
   headerNav: document.querySelector("header nav"),
+  header: document.querySelector("header"),
 };
 
 const sectionIds = ["home", "about", "development", "projects", "certificates", "insights", "interests", "contact"];
@@ -416,7 +417,10 @@ const sectionScrollNudges = {
   projects: 8,
   certificates: 0,
   insights: 0,
-  interests: 8,
+  interests: 0,
+};
+const sectionTitleLandingGaps = {
+  interests: 34,
 };
 
 function getCopy(path) {
@@ -2594,8 +2598,28 @@ function queueSectionMetricsRefresh() {
   });
 }
 
+function getHeaderBottom() {
+  const headerBottom = elements.header?.getBoundingClientRect().bottom || 0;
+  const navBottom = elements.headerNav?.getBoundingClientRect().bottom || 0;
+
+  return Math.ceil(Math.max(headerBottom, navBottom));
+}
+
 function scrollToSection(selector) {
   const sectionId = selector.replace("#", "");
+  const section = document.querySelector(selector);
+  const titleLandingGap = sectionTitleLandingGaps[sectionId];
+
+  if (typeof titleLandingGap === "number") {
+    const title = section?.querySelector("h2");
+
+    if (title) {
+      const top = Math.max(title.getBoundingClientRect().top + window.scrollY - getHeaderBottom() - titleLandingGap, 0);
+      window.scrollTo({ top, behavior: "smooth" });
+      return;
+    }
+  }
+
   const metric = state.sectionMetrics.find((item) => item.id === sectionId);
   const scrollNudge = sectionScrollNudges[sectionId] || 0;
 
@@ -2605,7 +2629,6 @@ function scrollToSection(selector) {
     return;
   }
 
-  const section = document.querySelector(selector);
   const target = section?.querySelector("[data-section-anchor]") || section?.firstElementChild || section;
 
   if (!target) {
