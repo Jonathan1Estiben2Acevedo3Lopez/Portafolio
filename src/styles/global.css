@@ -1423,6 +1423,8 @@ html.light .hero-focus-card {
   .about-git-card .about-git-node {
     flex: initial;
     grid-template-columns: 2.65rem minmax(0, 1fr);
+    align-items: start;
+    row-gap: 0;
     width: auto;
     padding-top: 0;
   }
@@ -1438,6 +1440,8 @@ html.light .hero-focus-card {
   }
 
   .about-git-card .about-git-lane {
+    grid-column: 1;
+    grid-row: 1 / span 2;
     min-height: 3.4rem;
   }
 
@@ -1448,14 +1452,27 @@ html.light .hero-focus-card {
   }
 
   .about-git-info {
-    padding-top: 0.35rem;
-    text-align: left;
+    grid-column: 2;
+    width: 100%;
+    padding: 0.35rem 0.45rem 0;
+    text-align: center;
+  }
+
+  .about-git-place {
+    max-width: 18rem;
+    margin-inline: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   .about-git-detail {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: center;
     position: static;
-    width: auto;
+    width: min(100%, 20.5rem);
     max-height: 0;
+    margin-inline: auto;
     overflow: hidden;
     border: 0;
     border-radius: 0;
@@ -1466,23 +1483,48 @@ html.light .hero-focus-card {
     pointer-events: none;
     transform: none;
     visibility: hidden;
+    word-break: normal;
+    overflow-wrap: break-word;
     transition:
       max-height 260ms ease,
       margin-top 220ms ease,
       opacity 180ms ease,
-      padding-top 220ms ease,
+      padding 220ms ease,
       visibility 180ms ease;
   }
 
   .about-git-node--expandable.is-open .about-git-detail {
     max-height: 55rem;
     margin-top: 0.85rem;
-    border-top: 1px solid rgb(var(--color-outline-variant) / 0.14);
+    border: 1px solid rgb(var(--color-outline-variant) / 0.16);
+    border-radius: 1.05rem;
+    background: rgb(var(--color-surface-container-highest) / 0.42);
     opacity: 1;
-    padding-top: 0.95rem;
+    padding: 0.95rem;
     pointer-events: auto;
     transform: none;
     visibility: visible;
+  }
+
+  .about-git-detail-description {
+    max-width: 100%;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .about-git-detail-description + .about-git-detail-description {
+    margin-top: 0.65rem;
+  }
+
+  .about-git-skill-line {
+    margin-top: 0.85rem;
+    text-align: center;
+  }
+
+  .about-git-skill-line span {
+    margin-inline: auto;
+    max-width: 17rem;
+    text-align: center;
   }
 }
 

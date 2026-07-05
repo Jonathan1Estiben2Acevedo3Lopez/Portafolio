@@ -2233,6 +2233,14 @@ function wireAboutWorkScrollHints() {
 function setAboutAcademicItemOpen(item, open) {
   item.classList.toggle("is-open", open);
   item.setAttribute("aria-expanded", String(open));
+
+  if (isMobileViewport()) {
+    if (!open && document.activeElement === item) {
+      item.blur();
+    }
+
+    window.setTimeout(queueSectionMetricsRefresh, 280);
+  }
 }
 
 function toggleAboutAcademicItem(item) {
