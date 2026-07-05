@@ -2224,7 +2224,7 @@ function renderInterestFilters() {
   const labels = getCopy("interests.filters");
   const mediaItems = getCopy("interests.mediaItems") || [];
   const availableFilters = new Set(mediaItems.map((item) => item.filter));
-  const shouldShowFilters = availableFilters.size > 1;
+  const shouldShowFilters = mediaItems.length > 0;
 
   if (state.interestFilter !== "all" && !availableFilters.has(state.interestFilter)) {
     state.interestFilter = "all";
