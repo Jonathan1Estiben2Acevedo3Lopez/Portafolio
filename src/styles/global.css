@@ -4243,7 +4243,7 @@ body.project-preview-open {
     overflow-y: hidden;
     overscroll-behavior-x: auto;
     scroll-snap-type: none;
-    touch-action: pan-x pan-y pinch-zoom;
+    touch-action: pan-y pinch-zoom;
   }
 
   .development-grid > .development-card {
