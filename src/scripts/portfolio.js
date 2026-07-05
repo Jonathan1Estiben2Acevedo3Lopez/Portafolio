@@ -416,7 +416,7 @@ const sectionScrollNudges = {
   projects: 8,
   certificates: 0,
   insights: 0,
-  interests: -10,
+  interests: 8,
 };
 
 function getCopy(path) {
