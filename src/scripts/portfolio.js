@@ -173,6 +173,7 @@ const content = {
     },
     insights: {
       title: "Blog",
+      filterButton: "Filtro",
       cardLabel: "Seleccionado",
       cardAction: "Abrir",
       emptyTitle: "Blog en preparacion",
@@ -308,6 +309,7 @@ const content = {
     },
     insights: {
       title: "Blog",
+      filterButton: "Filter",
       cardLabel: "Selected",
       cardAction: "Open",
       emptyTitle: "Blog in progress",
@@ -368,6 +370,7 @@ const state = {
   menuOpen: false,
   projectPreviewOpen: false,
   projectFiltersOpen: false,
+  articleFiltersOpen: false,
   activeProjectPreviewTitle: "Docqee",
   activeProjectPreviewUrl: "https://docqee.vercel.app/",
   articleMobileLayout: window.matchMedia("(max-width: 767px)").matches,
@@ -870,13 +873,42 @@ function getArticleFilterOptions() {
   });
 }
 
-function createArticleFilterButton(filter, label) {
+function createArticleFilterButton(filter, label, className = "filter-chip") {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "filter-chip";
+  button.className = className;
   button.dataset.articleFilter = filter;
   button.textContent = label;
   button.classList.toggle("is-active", filter === state.articleFilter);
+
+  return button;
+}
+
+function createArticleFilterMobileToggle(activeLabel) {
+  const button = document.createElement("button");
+  const icon = document.createElement("span");
+  const copy = document.createElement("span");
+  const kicker = document.createElement("span");
+  const label = document.createElement("span");
+
+  button.type = "button";
+  button.className = "filter-chip filter-chip-more project-filter-mobile-toggle article-filter-mobile-toggle";
+  button.dataset.articleFilterToggle = "true";
+  button.classList.toggle("is-active", state.articleFilter !== "all");
+  button.setAttribute("aria-haspopup", "true");
+  button.setAttribute("aria-expanded", String(state.articleFiltersOpen));
+
+  icon.className = "project-filter-mobile-icon article-filter-mobile-icon";
+  icon.innerHTML = renderIcon("filter");
+
+  copy.className = "project-filter-mobile-copy article-filter-mobile-copy";
+  kicker.className = "project-filter-mobile-kicker article-filter-mobile-kicker";
+  kicker.textContent = getCopy("insights.filterButton") || "Filtro";
+  label.className = "project-filter-mobile-label article-filter-mobile-label";
+  label.textContent = activeLabel;
+
+  copy.append(kicker, label);
+  button.append(icon, copy);
 
   return button;
 }
@@ -973,12 +1005,31 @@ function renderArticleFilters() {
     state.articleFilter = "all";
   }
 
+  const allFilters = [{ filter: "all", label: labels.all }, ...filters];
+  const activeFilter = allFilters.find((item) => item.filter === state.articleFilter) || allFilters[0];
+  const desktopFilters = document.createElement("div");
+  const mobileFilters = document.createElement("div");
+  const mobileMenu = document.createElement("div");
+
   elements.articleFilters.innerHTML = "";
-  elements.articleFilters.append(createArticleFilterButton("all", labels.all));
+  desktopFilters.className = "project-filter-desktop article-filter-desktop";
+  mobileFilters.className = "project-filter-mobile project-filter-more article-filter-mobile";
+  mobileFilters.classList.toggle("is-open", state.articleFiltersOpen);
+  mobileMenu.className = "project-filter-menu article-filter-mobile-menu";
+  mobileMenu.setAttribute("role", "menu");
+
+  desktopFilters.append(createArticleFilterButton("all", labels.all));
 
   filters.forEach((item) => {
-    elements.articleFilters.append(createArticleFilterButton(item.filter, item.label));
+    desktopFilters.append(createArticleFilterButton(item.filter, item.label));
   });
+
+  allFilters.forEach((item) => {
+    mobileMenu.append(createArticleFilterButton(item.filter, item.label, "project-filter-menu-item"));
+  });
+
+  mobileFilters.append(createArticleFilterMobileToggle(activeFilter.label), mobileMenu);
+  elements.articleFilters.append(desktopFilters, mobileFilters);
 }
 
 function syncProjectPreviewModalCopy() {
@@ -1240,7 +1291,7 @@ function renderDevelopment() {
             ${renderIcon(isCertificate ? "workspace_premium" : "north_east", isCertificate ? "text-secondary" : "text-primary")}
           </div>
           <h3 class="mt-2 font-headline text-[1.42rem] font-bold tracking-tight text-on-surface">${item.title}</h3>
-          <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+          <p class="development-card-description mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
           <div class="development-card-progress" style="--development-progress: ${progress}%;">
             <div class="development-progress-head">
               <span>${labels.progressLabel}</span>
@@ -1687,7 +1738,7 @@ function renderProjects() {
                 </div>
                 ${renderIcon("north_east", "text-primary")}
               </div>
-              <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+              <p class="project-card-description mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
               <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
                 <span>${item.tag}</span>
                 <span class="h-1 w-1 rounded-full bg-outline"></span>
@@ -1735,7 +1786,7 @@ function renderProjects() {
               </div>
               ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
             </div>
-            <p class="mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
+            <p class="project-card-description mt-3 text-sm leading-6 text-on-surface-variant">${item.description}</p>
             <div class="mt-4 flex items-center gap-4 text-[0.68rem] font-black uppercase tracking-[0.19em] text-on-surface-variant">
               <span>${item.tag}</span>
               <span class="h-1 w-1 rounded-full bg-outline"></span>
@@ -1837,7 +1888,7 @@ function renderArticles(preserveScroll = false) {
                 </div>
                 ${renderIcon("north_east", "text-primary transition duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5")}
               </div>
-              <p class="article-mobile-excerpt mt-2 flex-1 text-[0.82rem] leading-5 text-on-surface-variant">${cardCopy}</p>
+              <p class="article-mobile-excerpt card-justified-text mt-2 flex-1 text-[0.82rem] leading-5 text-on-surface-variant">${cardCopy}</p>
               <div class="mt-3 flex items-center gap-3 text-[0.62rem] font-black uppercase tracking-[0.17em] text-on-surface-variant">
                 <span>${article.date}</span>
               </div>
@@ -1878,7 +1929,7 @@ function renderArticles(preserveScroll = false) {
             </div>
             <h3 class="article-list-title mt-2 w-full font-headline text-[0.88rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.92rem]">${article.title}</h3>
           </div>
-          <p class="article-list-excerpt mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${cardCopy}</p>
+          <p class="article-list-excerpt card-justified-text mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${cardCopy}</p>
           <div class="mt-3 inline-flex items-center gap-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] ${article.index === state.activeArticle ? "text-primary" : "text-on-surface-variant"}">
             <span>${article.index === state.activeArticle ? getCopy("insights.cardLabel") : getCopy("insights.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
@@ -2423,7 +2474,7 @@ function renderInterestMedia(preserveScroll = false) {
                 </div>
                 <span class="text-[0.58rem] font-black uppercase tracking-[0.15em] text-on-surface-variant">${item.meta}</span>
               </div>
-              <p class="mt-2.5 text-[0.82rem] leading-5 text-on-surface-variant">${item.description}</p>
+              <p class="interest-card-description mt-2.5 text-[0.82rem] leading-5 text-on-surface-variant">${item.description}</p>
               <div class="mt-3 flex flex-wrap gap-1.5">
                 ${item.tags
                   .map(
@@ -2471,7 +2522,7 @@ function renderInterestMedia(preserveScroll = false) {
             </div>
             <h3 class="article-list-title mt-2 w-full font-headline text-[0.88rem] font-bold leading-5 tracking-tight text-on-surface sm:text-[0.92rem]">${item.title}</h3>
           </div>
-          <p class="article-list-excerpt mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${item.description}</p>
+          <p class="article-list-excerpt interest-card-description mt-2 text-[0.78rem] leading-5 text-on-surface-variant">${item.description}</p>
           <div class="mt-3 inline-flex items-center gap-1.5 text-[0.62rem] font-black uppercase tracking-[0.16em] ${item.index === state.activeInterest ? "text-primary" : "text-on-surface-variant"}">
             <span>${item.index === state.activeInterest ? getCopy("interests.cardLabel") : getCopy("interests.cardAction")}</span>
             ${renderIcon("arrow_outward", "text-sm")}
@@ -2496,8 +2547,8 @@ function renderInterestMedia(preserveScroll = false) {
         <h3 class="article-feature-title mt-2.5 max-w-3xl font-headline text-[1.08rem] font-bold leading-tight tracking-tight text-on-surface lg:text-[1.34rem]">
           ${active.title}
         </h3>
-        <p class="mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.description}</p>
-        <p class="mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.body}</p>
+        <p class="interest-card-description mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.description}</p>
+        <p class="interest-card-description mt-3 max-w-3xl text-[0.84rem] leading-5 text-on-surface-variant lg:text-[0.9rem] lg:leading-6">${active.body}</p>
         <div class="mt-4 flex flex-wrap gap-1.5">
           ${active.tags
             .map(
@@ -3210,6 +3261,15 @@ function wireEvents() {
 
   elements.articleFilters?.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
+    const toggle = target?.closest("[data-article-filter-toggle]");
+
+    if (toggle && elements.articleFilters.contains(toggle)) {
+      event.stopPropagation();
+      state.articleFiltersOpen = !state.articleFiltersOpen;
+      renderArticleFilters();
+      return;
+    }
+
     const button = target?.closest("[data-article-filter]");
 
     if (!button || !elements.articleFilters.contains(button)) {
@@ -3217,6 +3277,7 @@ function wireEvents() {
     }
 
     state.articleFilter = button.dataset.articleFilter || "all";
+    state.articleFiltersOpen = false;
     renderArticleFilters();
     renderArticles();
     wireScrollButtons();
@@ -3314,16 +3375,24 @@ function wireEvents() {
         state.projectFiltersOpen = false;
         renderFilters();
       }
+
+      if (state.articleFiltersOpen) {
+        state.articleFiltersOpen = false;
+        renderArticleFilters();
+      }
     }
   });
 
   document.addEventListener("click", (event) => {
-    if (!state.projectFiltersOpen || elements.projectFilters?.contains(event.target)) {
-      return;
+    if (state.projectFiltersOpen && !elements.projectFilters?.contains(event.target)) {
+      state.projectFiltersOpen = false;
+      renderFilters();
     }
 
-    state.projectFiltersOpen = false;
-    renderFilters();
+    if (state.articleFiltersOpen && !elements.articleFilters?.contains(event.target)) {
+      state.articleFiltersOpen = false;
+      renderArticleFilters();
+    }
   });
 
   window.addEventListener("scroll", queueActiveSectionSync, { passive: true });

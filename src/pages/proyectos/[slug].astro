@@ -96,11 +96,15 @@ const youtubeEmbedUrl = youtube?.youtubeId
           <button
             type="button"
             id="detail-language-toggle"
-            class="inline-flex min-h-10 items-center justify-center rounded-full border border-outline-variant/20 bg-surface-container-highest/50 px-4 text-sm font-black tracking-tight text-on-surface transition hover:border-secondary hover:text-secondary"
+            class="lang-toggle border border-outline-variant/20 bg-surface-container-highest/50"
             aria-label="Cambiar a ingles"
             title="Cambiar a ingles"
           >
-            English
+            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="#FCD116" />
+              <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+              <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+            </svg>
           </button>
           <button
             type="button"
@@ -531,6 +535,49 @@ const youtubeEmbedUrl = youtube?.youtubeId
               <path d="M21 12.8A9 9 0 1 1 11.2 3a7.2 7.2 0 1 0 9.8 9.8Z"></path>
             </svg>
           `,
+        };
+
+        const renderLanguageFlag = (lang) => {
+          if (lang === "es") {
+            return `
+              <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="#FCD116" />
+                <path d="M2 12a10 10 0 0 0 20 0Z" fill="#003893" />
+                <path d="M3.34 16.99a10 10 0 0 0 17.32 0Z" fill="#CE1126" />
+              </svg>
+            `;
+          }
+
+          return `
+            <svg class="lang-flag" viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <clipPath id="detail-usa-flag-circle">
+                  <circle cx="12" cy="12" r="10" />
+                </clipPath>
+              </defs>
+              <g clip-path="url(#detail-usa-flag-circle)">
+                <rect x="2" y="2" width="20" height="20" fill="#fff" />
+                <rect x="2" y="2" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="5.08" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="8.15" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="11.23" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="14.31" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="17.38" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="20.46" width="20" height="1.54" fill="#B22234" />
+                <rect x="2" y="2" width="9" height="8.62" fill="#3C3B6E" />
+                <g fill="#fff">
+                  <circle cx="4" cy="4" r="0.55" />
+                  <circle cx="6.1" cy="4" r="0.55" />
+                  <circle cx="8.2" cy="4" r="0.55" />
+                  <circle cx="5.05" cy="5.8" r="0.55" />
+                  <circle cx="7.15" cy="5.8" r="0.55" />
+                  <circle cx="4" cy="7.6" r="0.55" />
+                  <circle cx="6.1" cy="7.6" r="0.55" />
+                  <circle cx="8.2" cy="7.6" r="0.55" />
+                </g>
+              </g>
+            </svg>
+          `;
         };
 
         const state = {
@@ -1517,7 +1564,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
           setNavText("live", label.navLive);
 
           if (languageToggle) {
-            languageToggle.textContent = label.languageToggle;
+            languageToggle.innerHTML = renderLanguageFlag(lang);
             languageToggle.setAttribute("aria-label", label.languageTitle);
             languageToggle.setAttribute("title", label.languageTitle);
           }

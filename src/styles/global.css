@@ -311,6 +311,15 @@ svg {
   text-align: justify;
 }
 
+.card-justified-text,
+.development-card-description,
+.project-card-description,
+.interest-card-description {
+  hyphens: auto;
+  text-align: justify;
+  text-wrap: pretty;
+}
+
 .hero-copy {
   max-width: 42rem !important;
 }
@@ -2238,6 +2247,7 @@ html.light .about-work-card.about-profile-card,
 
 .article-mobile-excerpt {
   -webkit-line-clamp: 3;
+  text-align: justify;
 }
 
 .article-feature-copy {
@@ -5988,7 +5998,8 @@ header,
     -webkit-overflow-scrolling: touch;
   }
 
-  #project-filters {
+  #project-filters,
+  #insights-filters {
     display: block;
     margin-top: 0.15rem;
     overflow: visible;
@@ -5997,7 +6008,8 @@ header,
     width: 100%;
   }
 
-  #project-filters .project-filter-desktop {
+  #project-filters .project-filter-desktop,
+  #insights-filters .article-filter-desktop {
     display: none;
   }
 
@@ -6006,7 +6018,13 @@ header,
     width: min(100%, 18.5rem);
   }
 
-  #project-filters .project-filter-mobile-toggle {
+  #insights-filters .article-filter-mobile {
+    display: block;
+    width: min(100%, 18.5rem);
+  }
+
+  #project-filters .project-filter-mobile-toggle,
+  #insights-filters .article-filter-mobile-toggle {
     width: 100%;
     min-width: 0;
     justify-content: flex-start;
@@ -6020,11 +6038,13 @@ header,
     padding: 0.72rem 0.95rem;
   }
 
-  #project-filters .project-filter-mobile-toggle::after {
+  #project-filters .project-filter-mobile-toggle::after,
+  #insights-filters .article-filter-mobile-toggle::after {
     margin-left: auto;
   }
 
-  #project-filters .project-filter-mobile-menu {
+  #project-filters .project-filter-mobile-menu,
+  #insights-filters .article-filter-mobile-menu {
     left: 0;
     right: auto;
     width: min(calc(100vw - 3rem), 18.5rem);
@@ -6035,7 +6055,8 @@ header,
     z-index: 60;
   }
 
-  #project-filters .project-filter-menu-item {
+  #project-filters .project-filter-menu-item,
+  #insights-filters .project-filter-menu-item {
     border-radius: 0.75rem;
     line-height: 1.15;
     white-space: normal;
@@ -6047,11 +6068,6 @@ header,
     gap: 0.45rem;
     margin-top: 0.15rem;
     overflow: visible;
-    padding-top: 0.22rem;
-  }
-
-  #insights-filters {
-    margin-top: 0.15rem;
     padding-top: 0.22rem;
   }
 
@@ -6152,6 +6168,23 @@ header,
   #projects-grid.projects-scroll-row {
     padding-top: 0.8rem;
     padding-bottom: 0.85rem;
+  }
+
+  #projects-grid .project-live-card .project-card-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  #projects-grid .project-live-card .project-card-actions .project-card-action:first-child {
+    grid-column: 1 / -1;
+  }
+
+  #projects-grid .project-card-action {
+    min-height: 2.45rem;
+    padding-inline: 0.45rem;
+    font-size: clamp(0.58rem, 2.45vw, 0.64rem);
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   #certificates-grid.certificates-grid {
