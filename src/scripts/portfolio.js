@@ -119,6 +119,7 @@ const content = {
     },
     projects: {
       title: "Proyectos",
+      filterButton: "Filtro",
       liveDemoLabel: "Proyecto real",
       imageAlt: "Vista previa del proyecto",
       interactCta: "Interactuar",
@@ -253,6 +254,7 @@ const content = {
     },
     projects: {
       title: "Projects",
+      filterButton: "Filter",
       liveDemoLabel: "Real project",
       imageAlt: "Project preview",
       interactCta: "Interact",
@@ -553,6 +555,10 @@ function renderIcon(icon, className = "") {
     return strokeIcon('<path d="M6 6l12 12"></path><path d="M18 6 6 18"></path>');
   }
 
+  if (icon === "filter") {
+    return strokeIcon('<path d="M4 5h16"></path><path d="M7 12h10"></path><path d="M10 19h4"></path>');
+  }
+
   if (icon === "arrow_forward") {
     return strokeIcon('<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>');
   }
@@ -797,6 +803,35 @@ function createProjectFilterButton(filter, label, className = "filter-chip") {
   return button;
 }
 
+function createProjectFilterMobileToggle(activeLabel) {
+  const button = document.createElement("button");
+  const icon = document.createElement("span");
+  const copy = document.createElement("span");
+  const kicker = document.createElement("span");
+  const label = document.createElement("span");
+
+  button.type = "button";
+  button.className = "filter-chip filter-chip-more project-filter-mobile-toggle";
+  button.dataset.projectFilterToggle = "true";
+  button.classList.toggle("is-active", state.filter !== "all");
+  button.setAttribute("aria-haspopup", "true");
+  button.setAttribute("aria-expanded", String(state.projectFiltersOpen));
+
+  icon.className = "project-filter-mobile-icon";
+  icon.innerHTML = renderIcon("filter");
+
+  copy.className = "project-filter-mobile-copy";
+  kicker.className = "project-filter-mobile-kicker";
+  kicker.textContent = getCopy("projects.filterButton") || "Filtro";
+  label.className = "project-filter-mobile-label";
+  label.textContent = activeLabel;
+
+  copy.append(kicker, label);
+  button.append(icon, copy);
+
+  return button;
+}
+
 function normalizeArticleFilter(value) {
   return String(value || "")
     .normalize("NFD")
@@ -859,15 +894,22 @@ function renderFilters() {
     state.filter = "all";
   }
 
+  const allFilters = [{ filter: "all", label: labels.all }, ...filters];
+  const activeFilter = allFilters.find((item) => item.filter === state.filter) || allFilters[0];
   const primaryFilters = filters.slice(0, projectPrimaryFilterLimit);
   const secondaryFilters = filters.slice(projectPrimaryFilterLimit);
   const activeSecondaryFilter = secondaryFilters.find((item) => item.filter === state.filter);
+  const desktopFilters = document.createElement("div");
+  const mobileFilters = document.createElement("div");
 
   elements.projectFilters.innerHTML = "";
-  elements.projectFilters.append(createProjectFilterButton("all", labels.all));
+  desktopFilters.className = "project-filter-desktop";
+  mobileFilters.className = "project-filter-mobile project-filter-more";
+  mobileFilters.classList.toggle("is-open", state.projectFiltersOpen);
 
+  desktopFilters.append(createProjectFilterButton("all", labels.all));
   primaryFilters.forEach((item) => {
-    elements.projectFilters.append(createProjectFilterButton(item.filter, item.label));
+    desktopFilters.append(createProjectFilterButton(item.filter, item.label));
   });
 
   if (secondaryFilters.length > 0) {
@@ -893,8 +935,19 @@ function renderFilters() {
     });
 
     moreGroup.append(moreButton, menu);
-    elements.projectFilters.append(moreGroup);
+    desktopFilters.append(moreGroup);
   }
+
+  const mobileMenu = document.createElement("div");
+  mobileMenu.className = "project-filter-menu project-filter-mobile-menu";
+  mobileMenu.setAttribute("role", "menu");
+
+  allFilters.forEach((item) => {
+    mobileMenu.append(createProjectFilterButton(item.filter, item.label, "project-filter-menu-item"));
+  });
+
+  mobileFilters.append(createProjectFilterMobileToggle(activeFilter.label), mobileMenu);
+  elements.projectFilters.append(desktopFilters, mobileFilters);
 }
 
 function renderArticleFilters() {
@@ -3115,6 +3168,7 @@ function wireEvents() {
     const toggle = target?.closest("[data-project-filter-toggle]");
 
     if (toggle && elements.projectFilters.contains(toggle)) {
+      event.stopPropagation();
       state.projectFiltersOpen = !state.projectFiltersOpen;
       renderFilters();
       return;
