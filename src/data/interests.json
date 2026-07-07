@@ -1,27 +1,70 @@
 [
   {
-    "filter": "games",
-    "visualClass": "visual-gaming",
-    "image": "/interest-assets/stray.webp",
     "copy": {
-      "es": {
-        "category": "Videojuegos",
-        "title": "Stray",
-        "meta": "Aventura / exploracion felina",
-        "imageAlt": "Captura de la biblioteca de juegos con Stray seleccionado",
-        "description": "Uno de los pocos juegos que he pasado por completo y que me hizo pensar desde la observacion, la paciencia y la creatividad.",
-        "body": "Stray me gusto porque no se trata de avanzar solo con fuerza o velocidad. El juego obliga a mirar el entorno con otros ojos: buscar rutas, notar detalles pequenos, entender comportamientos y resolver situaciones desde una perspectiva distinta. Al controlar a un gato perdido en una ciberciudad, la exploracion se vuelve mas intuitiva y curiosa. Esa forma de jugar me ayudo a salir del pensamiento normal, a observar mejor y a probar ideas hasta encontrar una salida.",
-        "tags": ["Observacion", "Creatividad", "Exploracion", "Persistencia"]
-      },
       "en": {
-        "category": "Games",
-        "title": "Stray",
-        "meta": "Adventure / feline exploration",
-        "imageAlt": "Game library screenshot with Stray selected",
-        "description": "One of the few games I have completed, and one that pushed me to think through observation, patience, and creativity.",
         "body": "I liked Stray because progress is not only about force or speed. The game asks you to read the environment differently: find paths, notice small details, understand behaviors, and solve situations from another perspective. Playing as a lost cat in a cybercity makes exploration feel intuitive and curious. That experience helped me move beyond ordinary thinking, observe more carefully, and test ideas until I found a way forward.",
-        "tags": ["Observation", "Creativity", "Exploration", "Persistence"]
+        "category": "Games",
+        "description": "One of the few games I have completed, and one that pushed me to think through observation, patience, and creativity.",
+        "meta": "Adventure / feline exploration",
+        "tags": [
+          "Observation",
+          "Creativity",
+          "Exploration",
+          "Persistence"
+        ],
+        "title": "Stray"
+      },
+      "es": {
+        "body": "Stray me gusto porque no se trata de avanzar solo con fuerza o velocidad. El juego obliga a mirar el entorno con otros ojos: buscar rutas, notar detalles pequenos, entender comportamientos y resolver situaciones desde una perspectiva distinta. Al controlar a un gato perdido en una ciberciudad, la exploracion se vuelve mas intuitiva y curiosa. Esa forma de jugar me ayudo a salir del pensamiento normal, a observar mejor y a probar ideas hasta encontrar una salida.",
+        "category": "Videojuegos",
+        "description": "Uno de los pocos juegos que he pasado por completo y que me hizo pensar desde la observacion, la paciencia y la creatividad.",
+        "meta": "Aventura / exploracion felina",
+        "tags": [
+          "Observacion",
+          "Creatividad",
+          "Exploracion",
+          "Persistencia"
+        ],
+        "title": "Stray"
       }
-    }
+    },
+    "filter": "games",
+    "image": "/project-assets/stray/stray-smmq5.webp",
+    "visualClass": "visual-gaming"
+  },
+  {
+    "copy": {
+      "en": {
+        "body": "The Hobbit has a special meaning for me because it was the first book my father gave me when I was in school. This story introduced me to reading through fantasy, adventure, and imagination. Also, Bilbo’s story taught me that an ordinary person can face great challenges, learn along the way, and discover abilities they did not know they had.",
+        "category": "Books",
+        "description": "The first book my father gave me as a gift when I was in school, and a story that introduced me to reading through adventure and imagination.",
+        "meta": "Fantasy / adventure / first special book",
+        "tags": [
+          "Reading",
+          "Fantasy",
+          "Adventure",
+          "Imagination",
+          "Family"
+        ],
+        "title": "The Hobbit"
+      },
+      "es": {
+        "body": "El Hobbit tiene un valor especial para mí porque fue el primer libro que mi papá me regaló cuando estaba en el colegio. Esta historia me acercó a la lectura desde la fantasía, la aventura y la imaginación. Además, la historia de Bilbo me enseñó que una persona común puede enfrentar grandes retos, aprender en el camino y descubrir habilidades que no sabía que tenía.",
+        "category": "Libros",
+        "description": "El primer libro que recibí como regalo de mi papá cuando estaba en el colegio, y una historia que me acercó a la lectura desde la aventura y la imaginación.",
+        "meta": "Fantasía / aventura / primer libro especial",
+        "tags": [
+          "Lectura",
+          "Fantasía",
+          "Aventura",
+          "Imaginación",
+          "Familia"
+        ],
+        "title": "El Hobbit"
+      }
+    },
+    "filter": "Books",
+    "image": "/project-assets/interes/d-nq-np-763484-mlc49588674713-042022-o.webp",
+    "visualClass": "visual-cinema"
   }
 ]

@@ -395,6 +395,7 @@ const projectFilterPriority = [
   "research-project",
 ];
 const projectPrimaryFilterLimit = 4;
+const interestFilterPriority = ["movies", "series", "anime", "books", "games"];
 
 const elements = {
   brandText: document.getElementById("brand-text"),
@@ -434,7 +435,6 @@ const elements = {
   sectionLinks: document.querySelectorAll(".nav-link, .mobile-link"),
   developmentFilterButtons: document.querySelectorAll("#development-filters [data-development-filter]"),
   articleFilterButtons: document.querySelectorAll("#insights-filters [data-article-filter]"),
-  interestFilterButtons: document.querySelectorAll("#interests-media-filters [data-interest-filter]"),
   scrollButtons: document.querySelectorAll("[data-scroll-target]"),
   homeLinks: document.querySelectorAll('a[href="#home"]'),
   menuToggle: document.getElementById("menu-toggle"),
@@ -1030,6 +1030,69 @@ function renderArticleFilters() {
 
   mobileFilters.append(createArticleFilterMobileToggle(activeFilter.label), mobileMenu);
   elements.articleFilters.append(desktopFilters, mobileFilters);
+}
+
+function getInterestFilterLabel(labels, filter, item) {
+  const rawFilter = String(item.filter || "").trim();
+
+  return labels[filter] || labels[rawFilter] || labels[rawFilter.toLowerCase()] || item.category || String(filter).replace(/[-_]/g, " ");
+}
+
+function getInterestFilterKey(item) {
+  return normalizeArticleFilter(item.filter || item.category || "general");
+}
+
+function getInterestFilterOptions() {
+  const labels = getCopy("interests.filters") || {};
+  const filters = new Map();
+
+  (getCopy("interests.mediaItems") || []).forEach((item) => {
+    const filter = getInterestFilterKey(item);
+
+    if (!filter) {
+      return;
+    }
+
+    const current = filters.get(filter);
+
+    filters.set(filter, {
+      filter,
+      label: current?.label || getInterestFilterLabel(labels, filter, item),
+      count: (current?.count || 0) + 1,
+    });
+  });
+
+  return [...filters.values()].sort((filterA, filterB) => {
+    const normalizedA = filterA.filter.toLowerCase();
+    const normalizedB = filterB.filter.toLowerCase();
+    const priorityA = interestFilterPriority.includes(normalizedA)
+      ? interestFilterPriority.indexOf(normalizedA)
+      : Number.MAX_SAFE_INTEGER;
+    const priorityB = interestFilterPriority.includes(normalizedB)
+      ? interestFilterPriority.indexOf(normalizedB)
+      : Number.MAX_SAFE_INTEGER;
+
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    if (filterA.count !== filterB.count) {
+      return filterB.count - filterA.count;
+    }
+
+    return filterA.label.localeCompare(filterB.label);
+  });
+}
+
+function createInterestFilterButton(filter, label, className = "filter-chip") {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = className;
+  button.dataset.interestFilter = filter;
+  button.textContent = label;
+  button.classList.toggle("is-active", filter === state.interestFilter);
+
+  return button;
 }
 
 function syncProjectPreviewModalCopy() {
@@ -2401,38 +2464,41 @@ function toggleAboutWorkItem(item) {
 }
 
 function renderInterestFilters() {
-  const labels = getCopy("interests.filters");
-  const mediaItems = getCopy("interests.mediaItems") || [];
-  const availableFilters = new Set(mediaItems.map((item) => item.filter));
-  const shouldShowFilters = mediaItems.length > 0;
+  if (!elements.interestFilters) {
+    return;
+  }
+
+  const labels = getCopy("interests.filters") || {};
+  const filters = getInterestFilterOptions();
+  const availableFilters = new Set(filters.map((item) => item.filter));
+  const shouldShowFilters = filters.length > 0;
 
   if (state.interestFilter !== "all" && !availableFilters.has(state.interestFilter)) {
     state.interestFilter = "all";
   }
 
-  if (elements.interestFilters) {
-    elements.interestFilters.style.display = shouldShowFilters ? "" : "none";
+  elements.interestFilters.style.display = shouldShowFilters ? "" : "none";
+  elements.interestFilters.innerHTML = "";
+
+  if (!shouldShowFilters) {
+    return;
   }
 
-  elements.interestFilterButtons.forEach((button) => {
-    const filter = button.dataset.interestFilter;
-
-    button.textContent = labels[button.dataset.interestFilter];
-    button.hidden = !shouldShowFilters || (filter !== "all" && !availableFilters.has(filter));
-    button.classList.toggle("is-active", filter === state.interestFilter);
+  [{ filter: "all", label: labels.all || "Todo" }, ...filters].forEach((item) => {
+    elements.interestFilters.append(createInterestFilterButton(item.filter, item.label));
   });
 }
 
 function renderInterestMedia(preserveScroll = false) {
   const allMediaItems = getCopy("interests.mediaItems") || [];
 
-  if (state.interestFilter !== "all" && !allMediaItems.some((item) => item.filter === state.interestFilter)) {
+  if (state.interestFilter !== "all" && !allMediaItems.some((item) => getInterestFilterKey(item) === state.interestFilter)) {
     state.interestFilter = "all";
   }
 
   const mediaItems = allMediaItems
     .map((item, index) => ({ ...item, index }))
-    .filter((item) => (state.interestFilter === "all" ? true : item.filter === state.interestFilter));
+    .filter((item) => (state.interestFilter === "all" ? true : getInterestFilterKey(item) === state.interestFilter));
   const active = mediaItems.find((item) => item.index === state.activeInterest) || mediaItems[0];
   const mobileLayout = isMobileViewport();
   const listScrollOffset = preserveScroll
@@ -3284,13 +3350,18 @@ function wireEvents() {
     queueSectionMetricsRefresh();
   });
 
-  elements.interestFilterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.interestFilter = button.dataset.interestFilter;
-      renderInterestFilters();
-      renderInterestMedia();
-      queueSectionMetricsRefresh();
-    });
+  elements.interestFilters?.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest("[data-interest-filter]");
+
+    if (!button || !elements.interestFilters.contains(button)) {
+      return;
+    }
+
+    state.interestFilter = button.dataset.interestFilter || "all";
+    renderInterestFilters();
+    renderInterestMedia();
+    queueSectionMetricsRefresh();
   });
 
   elements.projectsGrid?.addEventListener("click", (event) => {

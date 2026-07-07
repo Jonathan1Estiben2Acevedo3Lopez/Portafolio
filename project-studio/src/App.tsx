@@ -179,6 +179,17 @@ const defaultInterestForm = (): InterestFormState => ({
   tagsEn: "",
 });
 
+const interestFilterSuggestions = ["movies", "series", "anime", "books", "games"];
+const interestCategorySuggestions = ["Peliculas", "Series", "Anime", "Libros", "Videojuegos"];
+const interestCategoryEnSuggestions = ["Movies", "Series", "Anime", "Books", "Games"];
+const interestVisualClassSuggestions = [
+  "visual-cinema",
+  "visual-series",
+  "visual-anime",
+  "visual-library",
+  "visual-gaming",
+];
+
 const defaultProfileForm = (): ProfileFormState => ({
   name: "JONATHAN ACEVEDO",
   fullName: "Jonathan Estiben Acevedo López",
@@ -299,7 +310,16 @@ const fieldHints = {
   developmentCover: "Imagen de portada para la tarjeta de En desarrollo. Puede ser una ruta de public o una URL.",
   developmentProgress: "Porcentaje de avance visible en la tarjeta. Usa un numero entre 0 y 100.",
   developmentCertificateUrl: "Enlace opcional al certificado online. Solo se muestra cuando el tipo es Certificado.",
+  interestTitle: "Nombre visible del interes. Aparece como titulo principal en la card.",
+  interestFilter: "Clave interna que controla el filtro publico. Usa valores como movies, series, anime, books o games.",
+  interestCategory: "Categoria visible en la card. Ejemplo: Peliculas, Series, Anime, Libros o Videojuegos.",
+  interestVisualClass: "Estilo visual de respaldo cuando no hay imagen. Ejemplo: visual-cinema, visual-series, visual-anime, visual-library o visual-gaming.",
   interestImage: "Imagen de portada del interes. Puede ser una ruta de public o una URL externa.",
+  interestMeta: "Dato corto que acompana la card. Usa formato, genero o enfoque. Ejemplo: Videojuego / exploracion.",
+  interestDescription: "Texto breve para la card. Explica en 1 o 2 frases por que este interes conecta contigo.",
+  interestBody: "Texto ampliado para la vista destacada. Cuenta que observaste, aprendiste o por que te marco.",
+  interestTags: "Palabras clave separadas por coma. Se muestran como chips. Ejemplo: Observacion, Paciencia, Creatividad.",
+  interestEnglish: "Version en ingles de este campo. Si queda vacio, el portafolio usara el texto en espanol como respaldo.",
   profileDescription: "Texto principal que aparece en el hero del portafolio.",
   profileFocus: "Frase corta que aparece en la tarjeta de enfoque del hero.",
   profileCvPath: "Ruta del CV en public o URL externa. Ejemplo: /CV_Jonathan_Acevedo.pdf.",
@@ -1572,6 +1592,22 @@ function App() {
   const blogCategoryEnOptions = useMemo(
     () => uniqueTextOptions([...contentItems.blog.map((item) => item.metadata?.categoryEn), blogForm.categoryEn]),
     [blogForm.categoryEn, contentItems.blog],
+  );
+  const interestFilterOptions = useMemo(
+    () => uniqueTextOptions([...interestFilterSuggestions, interestForm.filter]),
+    [interestForm.filter],
+  );
+  const interestCategoryOptions = useMemo(
+    () => uniqueTextOptions([...interestCategorySuggestions, ...contentItems.interests.map((item) => item.detail), interestForm.category]),
+    [contentItems.interests, interestForm.category],
+  );
+  const interestCategoryEnOptions = useMemo(
+    () => uniqueTextOptions([...interestCategoryEnSuggestions, interestForm.categoryEn]),
+    [interestForm.categoryEn],
+  );
+  const interestVisualClassOptions = useMemo(
+    () => uniqueTextOptions([...interestVisualClassSuggestions, interestForm.visualClass]),
+    [interestForm.visualClass],
   );
   const aboutEducationItems = contentItems.about.filter((item) => item.key.startsWith("education:"));
   const aboutWorkItems = contentItems.about.filter((item) => item.key.startsWith("work:"));
@@ -5060,22 +5096,62 @@ function App() {
                     <span className="section-label">Intereses</span>
                     <h3>Referencia personal</h3>
                   </div>
+                  <datalist id="interest-filter-options">
+                    {interestFilterOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                  <datalist id="interest-category-options">
+                    {interestCategoryOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                  <datalist id="interest-category-en-options">
+                    {interestCategoryEnOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                  <datalist id="interest-visual-class-options">
+                    {interestVisualClassOptions.map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
                   <div className="form-grid">
                     <label className="field">
-                      <span className="compact-label">Titulo ES</span>
-                      <input value={interestForm.title} onChange={(event) => updateInterestField("title", event.target.value)} required />
+                      <FieldLabel hint={fieldHints.interestTitle}>Titulo ES</FieldLabel>
+                      <input
+                        value={interestForm.title}
+                        onChange={(event) => updateInterestField("title", event.target.value)}
+                        placeholder="Stray"
+                        required
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Filtro</span>
-                      <input value={interestForm.filter} onChange={(event) => updateInterestField("filter", event.target.value)} placeholder="movies, series, anime, books, games" />
+                      <FieldLabel hint={fieldHints.interestFilter}>Filtro</FieldLabel>
+                      <input
+                        list="interest-filter-options"
+                        value={interestForm.filter}
+                        onChange={(event) => updateInterestField("filter", event.target.value)}
+                        placeholder="movies, series, anime, books o games"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Categoria ES</span>
-                      <input value={interestForm.category} onChange={(event) => updateInterestField("category", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestCategory}>Categoria ES</FieldLabel>
+                      <input
+                        list="interest-category-options"
+                        value={interestForm.category}
+                        onChange={(event) => updateInterestField("category", event.target.value)}
+                        placeholder="Videojuegos"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Visual class</span>
-                      <input value={interestForm.visualClass} onChange={(event) => updateInterestField("visualClass", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestVisualClass}>Visual class</FieldLabel>
+                      <input
+                        list="interest-visual-class-options"
+                        value={interestForm.visualClass}
+                        onChange={(event) => updateInterestField("visualClass", event.target.value)}
+                        placeholder="visual-gaming"
+                      />
                     </label>
                     <div className="field field-wide">
                       <FieldLabel hint={fieldHints.interestImage}>Imagen de portada</FieldLabel>
@@ -5089,20 +5165,40 @@ function App() {
                       </div>
                     </div>
                     <label className="field field-wide">
-                      <span className="compact-label">Meta ES</span>
-                      <input value={interestForm.meta} onChange={(event) => updateInterestField("meta", event.target.value)} placeholder="Serie / estructura narrativa" />
+                      <FieldLabel hint={fieldHints.interestMeta}>Meta ES</FieldLabel>
+                      <input
+                        value={interestForm.meta}
+                        onChange={(event) => updateInterestField("meta", event.target.value)}
+                        placeholder="Videojuego / exploracion"
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Descripcion ES</span>
-                      <textarea value={interestForm.description} onChange={(event) => updateInterestField("description", event.target.value)} rows={3} required />
+                      <FieldLabel hint={fieldHints.interestDescription}>Descripcion ES</FieldLabel>
+                      <textarea
+                        value={interestForm.description}
+                        onChange={(event) => updateInterestField("description", event.target.value)}
+                        placeholder="Texto corto para la card: por que te interesa y que representa para ti."
+                        rows={3}
+                        required
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Cuerpo ES</span>
-                      <textarea value={interestForm.body} onChange={(event) => updateInterestField("body", event.target.value)} rows={5} required />
+                      <FieldLabel hint={fieldHints.interestBody}>Cuerpo ES</FieldLabel>
+                      <textarea
+                        value={interestForm.body}
+                        onChange={(event) => updateInterestField("body", event.target.value)}
+                        placeholder="Texto ampliado: que observaste, que aprendiste o como influyo en tu forma de crear."
+                        rows={5}
+                        required
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Tags ES</span>
-                      <input value={interestForm.tags} onChange={(event) => updateInterestField("tags", event.target.value)} placeholder="Color, Ritmo, Sistema" />
+                      <FieldLabel hint={fieldHints.interestTags}>Tags ES</FieldLabel>
+                      <input
+                        value={interestForm.tags}
+                        onChange={(event) => updateInterestField("tags", event.target.value)}
+                        placeholder="Observacion, Paciencia, Creatividad"
+                      />
                     </label>
                   </div>
 
@@ -5112,28 +5208,55 @@ function App() {
                   </div>
                   <div className="form-grid">
                     <label className="field">
-                      <span className="compact-label">Title EN</span>
-                      <input value={interestForm.titleEn} onChange={(event) => updateInterestField("titleEn", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Title EN</FieldLabel>
+                      <input
+                        value={interestForm.titleEn}
+                        onChange={(event) => updateInterestField("titleEn", event.target.value)}
+                        placeholder="Stray"
+                      />
                     </label>
                     <label className="field">
-                      <span className="compact-label">Category EN</span>
-                      <input value={interestForm.categoryEn} onChange={(event) => updateInterestField("categoryEn", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Category EN</FieldLabel>
+                      <input
+                        list="interest-category-en-options"
+                        value={interestForm.categoryEn}
+                        onChange={(event) => updateInterestField("categoryEn", event.target.value)}
+                        placeholder="Games"
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Meta EN</span>
-                      <input value={interestForm.metaEn} onChange={(event) => updateInterestField("metaEn", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Meta EN</FieldLabel>
+                      <input
+                        value={interestForm.metaEn}
+                        onChange={(event) => updateInterestField("metaEn", event.target.value)}
+                        placeholder="Game / exploration"
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Description EN</span>
-                      <textarea value={interestForm.descriptionEn} onChange={(event) => updateInterestField("descriptionEn", event.target.value)} rows={3} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Description EN</FieldLabel>
+                      <textarea
+                        value={interestForm.descriptionEn}
+                        onChange={(event) => updateInterestField("descriptionEn", event.target.value)}
+                        placeholder="Short card text in English. Leave empty to reuse Spanish."
+                        rows={3}
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Body EN</span>
-                      <textarea value={interestForm.bodyEn} onChange={(event) => updateInterestField("bodyEn", event.target.value)} rows={5} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Body EN</FieldLabel>
+                      <textarea
+                        value={interestForm.bodyEn}
+                        onChange={(event) => updateInterestField("bodyEn", event.target.value)}
+                        placeholder="Extended featured text in English. Leave empty to reuse Spanish."
+                        rows={5}
+                      />
                     </label>
                     <label className="field field-wide">
-                      <span className="compact-label">Tags EN</span>
-                      <input value={interestForm.tagsEn} onChange={(event) => updateInterestField("tagsEn", event.target.value)} />
+                      <FieldLabel hint={fieldHints.interestEnglish}>Tags EN</FieldLabel>
+                      <input
+                        value={interestForm.tagsEn}
+                        onChange={(event) => updateInterestField("tagsEn", event.target.value)}
+                        placeholder="Observation, Patience, Creativity"
+                      />
                     </label>
                   </div>
 
