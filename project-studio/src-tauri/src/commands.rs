@@ -6,6 +6,7 @@ use std::{
     net::{SocketAddr, TcpStream},
     path::{Component, Path, PathBuf},
     process::{Command, Stdio},
+    sync::{Mutex, OnceLock},
     time::Duration,
 };
 
@@ -17,6 +18,7 @@ const CERTIFICATE_EXTENSIONS: &[&str] = &["pdf", "png", "jpg", "jpeg", "webp"];
 const PDF_EXTENSIONS: &[&str] = &["pdf"];
 const PREVIEW_SLUG: &str = "studio-preview";
 const PREVIEW_PORT: u16 = 4321;
+static GIT_SYNC_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -507,11 +509,15 @@ pub fn save_profile(input: ProfileInput) -> Result<SavedContent, String> {
 
     write_json_file(&file_path, &profile)?;
 
-    Ok(SavedContent {
-        key: "profile".to_string(),
-        file_path: display_path(&file_path),
-        total_items: 1,
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: actualizar perfil",
+        SavedContent {
+            key: "profile".to_string(),
+            file_path: display_path(&file_path),
+            total_items: 1,
+        },
+    )
 }
 
 #[tauri::command]
@@ -551,11 +557,15 @@ pub fn set_studio_content_hidden(
 
     write_json_array(&file_path, &items)?;
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: actualizar visibilidad",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -668,11 +678,15 @@ pub fn save_certificate(
     upsert_by_field(&mut items, "id", existing_id, &id, certificate)?;
     write_json_array(&file_path, &items)?;
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: guardar certificado",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -702,11 +716,15 @@ pub fn delete_certificate(id: String) -> Result<SavedContent, String> {
         remove_local_public_file_references(&root_dir, &item)?;
     }
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar certificado",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -739,11 +757,15 @@ pub fn move_certificate(id: String, direction: String) -> Result<SavedContent, S
         write_json_array(&file_path, &items)?;
     }
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: ordenar certificados",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -780,11 +802,15 @@ pub fn save_development_item(
     upsert_by_field(&mut items, "id", existing_id, &id, development_item)?;
     write_json_array(&file_path, &items)?;
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: guardar contenido en desarrollo",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -812,11 +838,15 @@ pub fn move_development_item(id: String, direction: String) -> Result<SavedConte
         write_json_array(&file_path, &items)?;
     }
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: ordenar contenido en desarrollo",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -848,11 +878,15 @@ pub fn delete_development_item(id: String) -> Result<SavedContent, String> {
         remove_local_public_file_references(&root_dir, &item)?;
     }
 
-    Ok(SavedContent {
-        key: id,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar contenido en desarrollo",
+        SavedContent {
+            key: id,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -895,11 +929,15 @@ pub fn save_about_item(
     write_json_file(&file_path, &about)?;
     let total_items = count_about_items(&about);
 
-    Ok(SavedContent {
-        key: saved_key,
-        file_path: display_path(&file_path),
-        total_items,
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: actualizar sobre mi",
+        SavedContent {
+            key: saved_key,
+            file_path: display_path(&file_path),
+            total_items,
+        },
+    )
 }
 
 #[tauri::command]
@@ -913,11 +951,15 @@ pub fn delete_about_item(key: String) -> Result<SavedContent, String> {
     remove_about_item_at(&mut about, "en", &group, index)?;
     write_json_file(&file_path, &about)?;
 
-    Ok(SavedContent {
-        key,
-        file_path: display_path(&file_path),
-        total_items: count_about_items(&about),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar contenido sobre mi",
+        SavedContent {
+            key,
+            file_path: display_path(&file_path),
+            total_items: count_about_items(&about),
+        },
+    )
 }
 
 #[tauri::command]
@@ -952,11 +994,15 @@ pub fn save_blog_post(
     upsert_by_field(&mut items, "slug", existing_slug, &slug, post)?;
     write_json_array(&file_path, &items)?;
 
-    Ok(SavedContent {
-        key: slug,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: guardar articulo",
+        SavedContent {
+            key: slug,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -986,11 +1032,15 @@ pub fn delete_blog_post(slug: String) -> Result<SavedContent, String> {
         remove_local_public_file_references(&root_dir, &item)?;
     }
 
-    Ok(SavedContent {
-        key: slug,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar articulo",
+        SavedContent {
+            key: slug,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1017,11 +1067,15 @@ pub fn save_interest(
 
     write_json_array(&file_path, &items)?;
 
-    Ok(SavedContent {
-        key,
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: guardar interes",
+        SavedContent {
+            key,
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1039,11 +1093,15 @@ pub fn delete_interest(index: usize) -> Result<SavedContent, String> {
     remove_project_assets_dir(&root_dir, &index.to_string())?;
     remove_local_public_file_references(&root_dir, &removed_item)?;
 
-    Ok(SavedContent {
-        key: index.to_string(),
-        file_path: display_path(&file_path),
-        total_items: items.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar interes",
+        SavedContent {
+            key: index.to_string(),
+            file_path: display_path(&file_path),
+            total_items: items.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1122,12 +1180,16 @@ pub fn create_project(input: CreateProjectInput) -> Result<CreatedProject, Strin
     fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
     write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
 
-    Ok(CreatedProject {
-        slug,
-        file_path: display_path(&file_path),
-        generated_path: display_path(&generated_file),
-        total_projects: all_projects.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: crear proyecto",
+        CreatedProject {
+            slug,
+            file_path: display_path(&file_path),
+            generated_path: display_path(&generated_file),
+            total_projects: all_projects.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1189,12 +1251,16 @@ pub fn update_project(
     fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
     write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
 
-    Ok(CreatedProject {
-        slug,
-        file_path: display_path(&file_path),
-        generated_path: display_path(&generated_file),
-        total_projects: all_projects.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: actualizar proyecto",
+        CreatedProject {
+            slug,
+            file_path: display_path(&file_path),
+            generated_path: display_path(&generated_file),
+            total_projects: all_projects.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1246,11 +1312,15 @@ pub fn move_project(slug: String, direction: String) -> Result<SavedContent, Str
     fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
     write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
 
-    Ok(SavedContent {
-        key: slug,
-        file_path: display_path(&generated_file),
-        total_items: all_projects.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: ordenar proyectos",
+        SavedContent {
+            key: slug,
+            file_path: display_path(&generated_file),
+            total_items: all_projects.len(),
+        },
+    )
 }
 
 #[tauri::command]
@@ -1291,11 +1361,15 @@ pub fn delete_project(slug: String) -> Result<SavedContent, String> {
     fs::create_dir_all(generated_file.parent().unwrap()).map_err(|error| error.to_string())?;
     write_json_file(&generated_file, &Value::Array(all_projects.clone()))?;
 
-    Ok(SavedContent {
-        key: slug,
-        file_path: display_path(&file_path),
-        total_items: all_projects.len(),
-    })
+    sync_and_return(
+        &root_dir,
+        "Project Studio: eliminar proyecto",
+        SavedContent {
+            key: slug,
+            file_path: display_path(&file_path),
+            total_items: all_projects.len(),
+        },
+    )
 }
 
 fn portfolio_root() -> Result<PathBuf, String> {
@@ -1304,6 +1378,70 @@ fn portfolio_root() -> Result<PathBuf, String> {
         .and_then(Path::parent)
         .map(Path::to_path_buf)
         .ok_or_else(|| "No se pudo resolver la raiz del portafolio.".to_string())
+}
+
+fn sync_and_return<T>(root_dir: &Path, commit_message: &str, value: T) -> Result<T, String> {
+    sync_portfolio_to_github(root_dir, commit_message).map_err(|error| {
+        format!("El cambio se guardo localmente, pero no se pudo publicar en GitHub: {error}")
+    })?;
+
+    Ok(value)
+}
+
+fn sync_portfolio_to_github(root_dir: &Path, commit_message: &str) -> Result<(), String> {
+    let sync_lock = GIT_SYNC_LOCK.get_or_init(|| Mutex::new(()));
+    let _guard = sync_lock
+        .lock()
+        .map_err(|_| "No se pudo iniciar la sincronizacion automatica.".to_string())?;
+    let status = run_git(
+        root_dir,
+        &["status", "--porcelain", "--untracked-files=all"],
+    )?;
+
+    if !status.trim().is_empty() {
+        run_git(root_dir, &["add", "--all"])?;
+        run_git(root_dir, &["commit", "-m", commit_message])?;
+    }
+
+    let branch = run_git(root_dir, &["branch", "--show-current"])?;
+    let branch = branch.trim();
+
+    if branch.is_empty() {
+        return Err("Git no tiene una rama activa para publicar.".to_string());
+    }
+
+    run_git(root_dir, &["push", "--set-upstream", "origin", branch])?;
+    Ok(())
+}
+
+fn run_git(root_dir: &Path, args: &[&str]) -> Result<String, String> {
+    let mut command = Command::new("git");
+    command.current_dir(root_dir).args(args);
+
+    #[cfg(target_os = "windows")]
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    let output = command
+        .output()
+        .map_err(|error| format!("No se pudo ejecutar Git: {error}"))?;
+
+    if output.status.success() {
+        return Ok(String::from_utf8_lossy(&output.stdout).to_string());
+    }
+
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let detail = if stderr.trim().is_empty() {
+        stdout.trim()
+    } else {
+        stderr.trim()
+    };
+
+    Err(if detail.is_empty() {
+        format!("Git termino con el codigo {:?}.", output.status.code())
+    } else {
+        detail.to_string()
+    })
 }
 
 fn project_preview_file(root_dir: &Path) -> PathBuf {
