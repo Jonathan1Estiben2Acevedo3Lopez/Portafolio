@@ -83,17 +83,11 @@ const certificateSources = certificates
         const allowedFile = Boolean(selectedCertificate?.source);
 
         const renderPdfCertificate = () => {
-          const safeFile = escapeAttribute(file);
           content.classList.add("is-pdf");
           content.classList.remove("is-image");
-          content.innerHTML = `
-            <iframe
-              class="certificate-page-frame"
-              src="${safeFile}#view=FitH"
-              title="${safeTitle}"
-              data-certificate-frame
-            ></iframe>
-          `;
+          content.dataset.pdfSource = file;
+          content.dataset.pdfTitle = title;
+          content.innerHTML = '<div class="certificate-page-loading" role="status">Ajustando certificado...</div>';
         };
 
         if (!allowedFile) {
@@ -116,6 +110,100 @@ const certificateSources = certificates
           content.innerHTML = `<img class="certificate-page-image" src="${safeFile}" alt="${safeTitle}" decoding="async" draggable="false" />`;
         }
       })();
+    </script>
+    <script>
+      import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
+      import pdfJsWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+
+      const content = document.getElementById("certificate-page-content");
+      const viewer = document.getElementById("certificate-page-viewer");
+      const pdfSource = content?.dataset.pdfSource;
+
+      if (content && viewer && pdfSource) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfJsWorkerUrl;
+
+        let pdfDocumentPromise;
+        let renderVersion = 0;
+        let resizeTimer;
+
+        const showError = () => {
+          content.innerHTML = '<div class="certificate-page-error">No se pudo mostrar el certificado.</div>';
+        };
+
+        const renderPdf = async () => {
+          const currentVersion = ++renderVersion;
+
+          try {
+            pdfDocumentPromise ||= pdfjsLib.getDocument({ url: pdfSource }).promise;
+            const pdfDocument = await pdfDocumentPromise;
+
+            if (currentVersion !== renderVersion) {
+              return;
+            }
+
+            const pages = document.createElement("div");
+            pages.className = "certificate-pdf-pages";
+            pages.classList.toggle("is-single-page", pdfDocument.numPages === 1);
+            pages.setAttribute("aria-label", content.dataset.pdfTitle || "Certificado PDF");
+            content.replaceChildren(pages);
+
+            const styles = getComputedStyle(pages);
+            const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+            const verticalPadding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+            const availableWidth = Math.max(content.clientWidth - horizontalPadding, 1);
+            const availableHeight = Math.max(content.clientHeight - verticalPadding, 1);
+            const outputScale = Math.min(Math.max(window.devicePixelRatio || 1, 2), 4);
+
+            for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+              if (currentVersion !== renderVersion) {
+                return;
+              }
+
+              const page = await pdfDocument.getPage(pageNumber);
+              const baseViewport = page.getViewport({ scale: 1 });
+              const fitScale = Math.min(
+                availableWidth / baseViewport.width,
+                availableHeight / baseViewport.height,
+              );
+              const cssViewport = page.getViewport({ scale: fitScale });
+              const renderViewport = page.getViewport({ scale: fitScale * outputScale });
+              const pageElement = document.createElement("div");
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d", { alpha: false });
+
+              if (!context) {
+                throw new Error("Canvas no disponible");
+              }
+
+              context.imageSmoothingEnabled = true;
+              context.imageSmoothingQuality = "high";
+              pageElement.className = "certificate-pdf-page";
+              canvas.className = "certificate-pdf-canvas";
+              canvas.width = Math.ceil(renderViewport.width);
+              canvas.height = Math.ceil(renderViewport.height);
+              canvas.style.width = `${Math.floor(cssViewport.width)}px`;
+              canvas.style.height = `${Math.floor(cssViewport.height)}px`;
+              canvas.setAttribute("aria-label", `Pagina ${pageNumber} de ${pdfDocument.numPages}`);
+              pageElement.appendChild(canvas);
+              pages.appendChild(pageElement);
+
+              await page.render({ canvasContext: context, viewport: renderViewport }).promise;
+            }
+          } catch (error) {
+            if (currentVersion === renderVersion) {
+              showError();
+            }
+          }
+        };
+
+        const resizeObserver = new ResizeObserver(() => {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(renderPdf, 140);
+        });
+
+        resizeObserver.observe(viewer);
+        renderPdf();
+      }
     </script>
   </body>
 </html>

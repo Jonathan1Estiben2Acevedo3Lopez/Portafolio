@@ -197,7 +197,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
       </nav>
 
       <section class="detail-story-layout site-shell site-shell--main mx-auto mt-12 grid max-w-7xl gap-8 lg:grid-cols-12">
-        <div class="space-y-8 lg:col-span-7">
+        <div class="space-y-8 lg:col-span-7" data-detail-column="primary">
           <article id="detail-overview-section" class="detail-feature-card detail-reveal glass-panel" data-detail-reveal>
             <div class="detail-card-heading">
               <span class="material-symbols-outlined" aria-hidden="true">explore</span>
@@ -239,9 +239,24 @@ const youtubeEmbedUrl = youtube?.youtubeId
             </div>
             <p id="detail-results-body" class="mt-5 whitespace-pre-line text-base leading-8 text-on-surface-variant"></p>
           </section>
+
+          <div class="detail-project-tree-slot blog-article-pixel-companion" data-detail-tree-slot hidden aria-hidden="true">
+            <div
+              class="blog-pixel-tree"
+              style={`--blog-tree-top: url("${withBase("/blog-pixels/reading-tree/tree-top.svg")}"); --blog-tree-middle: url("${withBase("/blog-pixels/reading-tree/tree-middle.svg")}"); --blog-tree-bottom: url("${withBase("/blog-pixels/reading-tree/tree-bottom.svg")}"); --blog-tree-ground: url("${withBase("/blog-pixels/reading-tree/tree-ground.svg")}");`}
+            >
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--middle"></span>
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--top"></span>
+              <span class="blog-pixel-tree-layer blog-pixel-tree-layer--bottom"></span>
+              <span class="blog-pixel-tree-ground"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--top"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--middle"></span>
+              <span class="blog-pixel-tree-glow blog-pixel-tree-glow--bottom"></span>
+            </div>
+          </div>
         </div>
 
-        <aside class="detail-insight-rail space-y-8 lg:col-span-5">
+        <aside class="detail-insight-rail space-y-8 lg:col-span-5" data-detail-column="secondary">
           <section id="detail-stack-section" class="detail-side-card detail-reveal glass-panel" data-detail-reveal>
             <div class="detail-card-heading">
               <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
@@ -273,6 +288,7 @@ const youtubeEmbedUrl = youtube?.youtubeId
             </div>
             <ul id="detail-learnings-list" class="mt-5 space-y-3 text-sm leading-7 text-on-surface-variant"></ul>
           </section>
+
         </aside>
 
         <div id="detail-ordered-sections" class="detail-ordered-sections">
@@ -1708,7 +1724,105 @@ const youtubeEmbedUrl = youtube?.youtubeId
 
         languageToggle?.addEventListener("click", () => {
           applyLanguage(state.lang === "es" ? "en" : "es");
+          queueProjectTreePlacement();
         });
+
+        const storyNav = document.querySelector(".detail-story-nav");
+        const storyNavLinks = [...(storyNav?.querySelectorAll("a[href^='#']") || [])];
+        let storyNavFrame = null;
+
+        const syncStoryNavigation = () => {
+          const availableLinks = storyNavLinks.filter((link) => !link.hidden);
+          const activationLine = Math.min(window.innerHeight * 0.38, 300);
+          let activeLink = availableLinks[0] || null;
+
+          availableLinks.forEach((link) => {
+            const target = document.querySelector(link.getAttribute("href"));
+
+            if (target && !target.hidden && target.getBoundingClientRect().top <= activationLine) {
+              activeLink = link;
+            }
+          });
+
+          storyNavLinks.forEach((link) => {
+            const isActive = link === activeLink;
+            link.classList.toggle("is-active", isActive);
+
+            if (isActive) {
+              link.setAttribute("aria-current", "location");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+
+          storyNavFrame = null;
+        };
+
+        const queueStoryNavigationSync = () => {
+          if (storyNavFrame !== null) {
+            return;
+          }
+
+          storyNavFrame = window.requestAnimationFrame(syncStoryNavigation);
+        };
+
+        storyNavLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            storyNavLinks.forEach((item) => item.classList.toggle("is-active", item === link));
+          });
+        });
+        window.addEventListener("scroll", queueStoryNavigationSync, { passive: true });
+        window.addEventListener("resize", queueStoryNavigationSync, { passive: true });
+        queueStoryNavigationSync();
+
+        const projectColumns = [...document.querySelectorAll("[data-detail-column]")];
+        const projectTreeSlot = document.querySelector("[data-detail-tree-slot]");
+        let projectTreeFrame = null;
+
+        const placeProjectTree = () => {
+          if (!projectTreeSlot) {
+            projectTreeFrame = null;
+            return;
+          }
+
+          projectTreeSlot.hidden = true;
+          projectTreeSlot.style.removeProperty("--detail-project-tree-height");
+
+          if (!window.matchMedia("(min-width: 1024px)").matches || projectColumns.length < 2) {
+            projectTreeFrame = null;
+            return;
+          }
+
+          const [primaryColumn, secondaryColumn] = projectColumns;
+          const primaryHeight = primaryColumn.scrollHeight;
+          const secondaryHeight = secondaryColumn.scrollHeight;
+          const shorterColumn = primaryHeight <= secondaryHeight ? primaryColumn : secondaryColumn;
+          const availableHeight = Math.abs(primaryHeight - secondaryHeight);
+
+          shorterColumn.appendChild(projectTreeSlot);
+          projectTreeSlot.style.setProperty(
+            "--detail-project-tree-height",
+            `${Math.max(Math.min(availableHeight, 736), 352)}px`,
+          );
+          projectTreeSlot.hidden = false;
+
+          projectTreeFrame = null;
+        };
+
+        const queueProjectTreePlacement = () => {
+          if (projectTreeFrame !== null) {
+            return;
+          }
+
+          projectTreeFrame = window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(placeProjectTree);
+          });
+        };
+
+        window.addEventListener("resize", queueProjectTreePlacement, { passive: true });
+        window.addEventListener("load", queueProjectTreePlacement, { once: true });
+        document.fonts?.ready?.then(queueProjectTreePlacement);
+        queueProjectTreePlacement();
 
         if (isStudioPreview) {
           refreshStudioPreview();

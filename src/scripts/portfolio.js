@@ -377,7 +377,8 @@ const state = {
   headerOffset: 88,
   sectionMetrics: [],
   deferredSectionsReady: false,
-  initialMobileHomeResetActive: window.matchMedia("(max-width: 767px)").matches,
+  initialMobileHomeResetActive:
+    window.matchMedia("(max-width: 767px)").matches && !window.location.hash,
 };
 
 const projectFilterPriority = [
@@ -1617,7 +1618,7 @@ async function renderCertificatePdfCover(cover) {
     const pdf = await pdfjsLib.getDocument({ url }).promise;
     const page = await pdf.getPage(1);
     const baseViewport = page.getViewport({ scale: 1 });
-    const outputScale = Math.min(window.devicePixelRatio || 1, 3);
+    const outputScale = Math.min(Math.max(window.devicePixelRatio || 1, 2), 4);
     const targetWidth = Math.max(cover.clientWidth || 320, 320) * outputScale;
     const targetHeight = Math.max(cover.clientHeight || 200, 200) * outputScale;
     const scale = Math.min(Math.max(targetWidth / baseViewport.width, targetHeight / baseViewport.height), 3);
@@ -1628,6 +1629,8 @@ async function renderCertificatePdfCover(cover) {
       return;
     }
 
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
     canvas.width = Math.ceil(viewport.width);
     canvas.height = Math.ceil(viewport.height);
     canvas.style.aspectRatio = `${viewport.width} / ${viewport.height}`;
@@ -2856,6 +2859,15 @@ function renderDeferredSections() {
   state.deferredSectionsReady = true;
   queueSectionMetricsRefresh();
   queueInitialMobileHomeReset();
+
+  const initialSectionId = window.location.hash.replace(/^#/, "");
+
+  if (sectionIds.includes(initialSectionId) && initialSectionId !== "home") {
+    window.requestAnimationFrame(() => {
+      refreshSectionMetrics();
+      scrollToSection(`#${initialSectionId}`, "auto");
+    });
+  }
 }
 
 function scheduleDeferredSections() {
@@ -2914,7 +2926,7 @@ function getHeaderBottom() {
   return Math.ceil(Math.max(headerBottom, navBottom));
 }
 
-function scrollToSection(selector) {
+function scrollToSection(selector, behavior = "smooth") {
   const sectionId = selector.replace("#", "");
   const section = document.querySelector(selector);
   const titleLandingGap = sectionTitleLandingGaps[sectionId];
@@ -2924,7 +2936,7 @@ function scrollToSection(selector) {
 
     if (title) {
       const top = Math.max(title.getBoundingClientRect().top + window.scrollY - getHeaderBottom() - titleLandingGap, 0);
-      window.scrollTo({ top, behavior: "smooth" });
+      window.scrollTo({ top, behavior });
       return;
     }
   }
@@ -2934,7 +2946,7 @@ function scrollToSection(selector) {
 
   if (metric) {
     const top = Math.max(metric.top - state.headerOffset + scrollNudge, 0);
-    window.scrollTo({ top, behavior: "smooth" });
+    window.scrollTo({ top, behavior });
     return;
   }
 
@@ -2946,7 +2958,7 @@ function scrollToSection(selector) {
 
   const top = Math.max(target.getBoundingClientRect().top + window.scrollY - state.headerOffset + scrollNudge, 0);
 
-  window.scrollTo({ top, behavior: "smooth" });
+  window.scrollTo({ top, behavior });
 }
 
 function wireScrollButtons() {

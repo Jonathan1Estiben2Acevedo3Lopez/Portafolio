@@ -52,13 +52,7 @@ const withBase = (path) => `${baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`}${
           window.history.scrollRestoration = "manual";
         }
 
-        const isMobileInitialLoad = window.matchMedia("(max-width: 767px)").matches;
-
-        if (isMobileInitialLoad && window.location.hash) {
-          window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-        }
-
-        const shouldResetToHome = isMobileInitialLoad || !window.location.hash;
+        const shouldResetToHome = !window.location.hash;
         const resetToHome = () => {
           if (!shouldResetToHome) {
             return;
