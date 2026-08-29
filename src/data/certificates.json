@@ -28,30 +28,6 @@
       "en": {
         "issuer": "Training",
         "tags": [
-          "ENGLISH"
-        ],
-        "title": "English Beginner A1"
-      },
-      "es": {
-        "issuer": "Formacion",
-        "tags": [
-          "INGLES"
-        ],
-        "title": "English Beginner A1"
-      }
-    },
-    "fileName": "coursera-4a6p8i6r9ho8.pdf",
-    "id": "english-beginner-a1",
-    "issued": "2026",
-    "mime": "application/pdf",
-    "status": "completed",
-    "type": "pdf"
-  },
-  {
-    "copy": {
-      "en": {
-        "issuer": "Training",
-        "tags": [
           "PROGRAMMING"
         ],
         "title": "GIT"
@@ -70,6 +46,30 @@
     "mime": "application/pdf",
     "status": "completed",
     "type": "PROGRAMACIÓN"
+  },
+  {
+    "copy": {
+      "en": {
+        "issuer": "Training",
+        "tags": [
+          "ENGLISH"
+        ],
+        "title": "English Beginner A1"
+      },
+      "es": {
+        "issuer": "Formacion",
+        "tags": [
+          "INGLES"
+        ],
+        "title": "English Beginner A1"
+      }
+    },
+    "fileName": "coursera-4a6p8i6r9ho8.pdf",
+    "id": "english-beginner-a1",
+    "issued": "2026",
+    "mime": "application/pdf",
+    "status": "completed",
+    "type": "pdf"
   },
   {
     "copy": {
