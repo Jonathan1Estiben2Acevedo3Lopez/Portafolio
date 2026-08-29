@@ -52,30 +52,6 @@
       "en": {
         "issuer": "Training",
         "tags": [
-          "ENGLISH"
-        ],
-        "title": "English Beginner A1"
-      },
-      "es": {
-        "issuer": "Formacion",
-        "tags": [
-          "INGLES"
-        ],
-        "title": "English Beginner A1"
-      }
-    },
-    "fileName": "coursera-4a6p8i6r9ho8.pdf",
-    "id": "english-beginner-a1",
-    "issued": "2026",
-    "mime": "application/pdf",
-    "status": "completed",
-    "type": "pdf"
-  },
-  {
-    "copy": {
-      "en": {
-        "issuer": "Training",
-        "tags": [
           "Programming"
         ],
         "title": "Programming Fundamentals"
@@ -90,6 +66,30 @@
     },
     "fileName": "2b3e9138-8668-4a07-b9c8-4ea46ef25805.pdf",
     "id": "fundamentos-de-programacion",
+    "issued": "2026",
+    "mime": "application/pdf",
+    "status": "completed",
+    "type": "pdf"
+  },
+  {
+    "copy": {
+      "en": {
+        "issuer": "Training",
+        "tags": [
+          "ENGLISH"
+        ],
+        "title": "English Beginner A1"
+      },
+      "es": {
+        "issuer": "Formacion",
+        "tags": [
+          "INGLES"
+        ],
+        "title": "English Beginner A1"
+      }
+    },
+    "fileName": "coursera-4a6p8i6r9ho8.pdf",
+    "id": "english-beginner-a1",
     "issued": "2026",
     "mime": "application/pdf",
     "status": "completed",
