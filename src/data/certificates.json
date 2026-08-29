@@ -28,30 +28,6 @@
       "en": {
         "issuer": "Training",
         "tags": [
-          "PROGRAMMING"
-        ],
-        "title": "GIT"
-      },
-      "es": {
-        "issuer": "Formacion",
-        "tags": [
-          "PROGRAMACIÓN"
-        ],
-        "title": "Git"
-      }
-    },
-    "fileName": "12089d04-0f5f-46fa-9f93-228d72609e66.pdf",
-    "id": "git",
-    "issued": "2026",
-    "mime": "application/pdf",
-    "status": "completed",
-    "type": "PROGRAMACIÓN"
-  },
-  {
-    "copy": {
-      "en": {
-        "issuer": "Training",
-        "tags": [
           "Programming"
         ],
         "title": "Python"
@@ -70,6 +46,30 @@
     "mime": "application/pdf",
     "status": "completed",
     "type": "pdf"
+  },
+  {
+    "copy": {
+      "en": {
+        "issuer": "Training",
+        "tags": [
+          "PROGRAMMING"
+        ],
+        "title": "GIT"
+      },
+      "es": {
+        "issuer": "Formacion",
+        "tags": [
+          "PROGRAMACIÓN"
+        ],
+        "title": "Git"
+      }
+    },
+    "fileName": "12089d04-0f5f-46fa-9f93-228d72609e66.pdf",
+    "id": "git",
+    "issued": "2026",
+    "mime": "application/pdf",
+    "status": "completed",
+    "type": "PROGRAMACIÓN"
   },
   {
     "copy": {
